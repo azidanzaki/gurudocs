@@ -10,6 +10,12 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+/* Biar konten turun sedikit ke bawah navbar */
+main {
+    margin-top: 70px;
+}
+
+
 /* === app.css === */
 body {
     font-family: 'Inter', sans-serif;
@@ -25,21 +31,23 @@ body {
 
 .sidebar {
     position: fixed;
-    top: 0;
+    top: 70px;
     left: 0;
-    height: 100vh;
+    height: calc(100vh - 70px);
     width: 240px;
     background-color: white;
     color: #1f331d;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    z-index: 40;
 }
+
 
 .sidebar .profile-section {
     text-align: center;
     padding-top: 20px;
-    padding-bottom: 0; /* hilangkan jarak bawah */
+    padding-bottom: 0;
     background-color: #5d8b4e;
 }
 
@@ -64,13 +72,15 @@ body {
 
 .sidebar nav a:hover,
 .sidebar nav a.active {
-    background-color: #5d8b4e;
+    background-color: #b1cda2;
 }
 
 .content {
     margin-left: 240px;
     padding: 30px;
+    margin-top: 70px; /* biar konten juga di bawah navbar */
 }
+
 
 .card-box {
     border-radius: 16px;
