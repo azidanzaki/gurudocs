@@ -9,3 +9,150 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* === app.css === */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    color: #1f2937;
+}
+
+.app-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    background-color: white;
+    color: #1f331d;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar .profile-section {
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 0; /* hilangkan jarak bawah */
+    background-color: #5d8b4e;
+}
+
+
+
+.sidebar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.sidebar nav a {
+    color: #1f331d;
+    text-decoration: none;
+    display: block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin: 5px 10px;
+    transition: 0.2s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background-color: #5d8b4e;
+}
+
+.content {
+    margin-left: 240px;
+    padding: 30px;
+}
+
+.card-box {
+    border-radius: 16px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+}
+
+.card-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 20px 25px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* === Tombol Burger & Sidebar Toggle === */
+.burger-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 999;
+    background: #1f331d;
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
+    /* hanya tampil di layar kecil */
+}
+
+.close-btn {
+    display: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Saat layar kecil */
+@media (max-width: 768px) {
+    .burger-btn {
+        display: block;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        /* sembunyikan dulu */
+        width: 240px;
+        height: 100%;
+        background-color: #1f331d;
+        color: white;
+        transition: left 0.3s ease;
+        z-index: 998;
+    }
+
+    .sidebar.show {
+        left: 0;
+        /* tampilkan saat aktif */
+    }
+
+    .close-btn {
+        display: block;
+    }
+
+    .content {
+        margin-left: 240px;
+        padding: 30px;
+    }
+}
