@@ -10,18 +10,17 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Biar konten turun sedikit ke bawah navbar */
-main {
-    margin-top: 70px;
-}
-
-
-/* === app.css === */
+/* === Umum === */
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f4f7fa;
     margin: 0;
     color: #1f2937;
+    overflow-x: hidden;
+}
+
+main {
+    margin-top: 70px;
 }
 
 .app-wrapper {
@@ -29,6 +28,7 @@ body {
     flex-direction: row;
 }
 
+/* === SIDEBAR === */
 .sidebar {
     position: fixed;
     top: 70px;
@@ -41,46 +41,101 @@ body {
     flex-direction: column;
     justify-content: space-between;
     z-index: 40;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
 }
 
+/* Efek muncul halus */
+.sidebar.show {
+    transform: translateX(0);
+}
 
+/* === PROFIL === */
 .sidebar .profile-section {
     text-align: center;
     padding-top: 20px;
     padding-bottom: 0;
-    background-color: #5d8b4e;
+    background: linear-gradient(135deg, #5d8b4e, #3f6636);
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.2);
 }
-
-
 
 .sidebar img {
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     margin-bottom: 10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease;
 }
 
+.sidebar img:hover {
+    transform: scale(1.05);
+}
+
+/* === LINK MENU === */
 .sidebar nav a {
+    position: relative;
     color: #1f331d;
     text-decoration: none;
-    display: block;
-    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
     border-radius: 8px;
-    margin: 5px 10px;
-    transition: 0.2s;
+    margin: 6px 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.sidebar nav a:hover,
+/* Efek background bergerak */
+.sidebar nav a::before {
+    content: '';
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(93, 139, 78, 0.1);
+    transition: left 0.3s ease;
+    z-index: 0;
+}
+
+.sidebar nav a:hover::before {
+    left: 0;
+}
+
+.sidebar nav a i {
+    transition: transform 0.3s ease, color 0.3s ease;
+    z-index: 1;
+}
+
+.sidebar nav a:hover {
+    color: #1f331d;
+    transform: translateX(6px);
+}
+
+.sidebar nav a:hover i {
+    transform: scale(1.2);
+    color: #3f6636;
+}
+
+/* === ACTIVE STATE === */
 .sidebar nav a.active {
     background-color: #b1cda2;
+    color: #1f331d;
+    font-weight: 600;
+    border-left: 4px solid #5d8b4e;
+    box-shadow: 0 2px 6px rgba(93, 139, 78, 0.2);
 }
 
+/* === KONTEN === */
 .content {
     margin-left: 240px;
     padding: 30px;
-    margin-top: 70px; /* biar konten juga di bawah navbar */
+    margin-top: 70px;
+    transition: margin-left 0.3s ease;
 }
-
 
 .card-box {
     border-radius: 16px;
@@ -104,7 +159,7 @@ body {
     vertical-align: middle;
 }
 
-/* === Tombol Burger & Sidebar Toggle === */
+/* === BURGER BUTTON === */
 .burger-btn {
     position: fixed;
     top: 15px;
@@ -118,9 +173,15 @@ body {
     border-radius: 8px;
     cursor: pointer;
     display: none;
-    /* hanya tampil di layar kecil */
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
+.burger-btn:hover {
+    background: #5d8b4e;
+    transform: scale(1.05);
+}
+
+/* === CLOSE BUTTON === */
 .close-btn {
     display: none;
     position: absolute;
@@ -131,19 +192,22 @@ body {
     color: white;
     font-size: 22px;
     cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-/* Saat layar kecil */
+.close-btn:hover {
+    transform: rotate(90deg);
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
     .burger-btn {
         display: block;
     }
 
     .sidebar {
-        position: fixed;
         top: 0;
         left: -260px;
-        /* sembunyikan dulu */
         width: 240px;
         height: 100%;
         background-color: #1f331d;
@@ -154,15 +218,23 @@ body {
 
     .sidebar.show {
         left: 0;
-        /* tampilkan saat aktif */
+    }
+
+    .sidebar nav a {
+        color: white;
+    }
+
+    .sidebar nav a.active {
+        background: rgba(255, 255, 255, 0.15);
+        border-left-color: #9acd32;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 20px;
     }
 
     .close-btn {
         display: block;
-    }
-
-    .content {
-        margin-left: 240px;
-        padding: 30px;
     }
 }

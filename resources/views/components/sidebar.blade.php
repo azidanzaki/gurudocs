@@ -1,31 +1,39 @@
-<div class="sidebar" id="sidebar">
+<div
+  class="sidebar fixed top-0 left-0 h-full w-60 bg-[#1f331d] text-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 z-50"
+  id="sidebar">
   <div>
-    <div class="profile-section text-center pt-4 pb-0">
-      <img class="ms-4 w-20 h-20 mx-auto rounded-full"
+    <div class="profile-section text-center">
+      <img
+        class="w-20 h-20 mx-auto rounded-full border-4 border-white/30 shadow-md transition-transform duration-300 hover:scale-105"
         src="https://www.freeiconspng.com/uploads/png-file-png-file-png-file-png-file-png-file-27.png" alt="Profile">
-      <p class="mt-3 fw-semibold bg-black/60 text-white py-1 w-full text-left block mb-0 ps-4">
+      <p class="mt-3 font-semibold bg-black/20 text-white py-2 w-full text-left ps-4">
         M. Zidan Zaki
       </p>
-    </div>
 
-    <nav class="mt-3">
-      <a href="{{ route('dashboardguru') }}" class="{{ request()->routeIs('dashboardguru') ? 'active' : '' }}">
+    </div>  
+
+    <nav class="mt-6 space-y-2">
+      <a href="{{ route('dashboardguru') }}" class="nav-link {{ request()->routeIs('dashboardguru') ? 'active' : '' }}">
         <i class="fa-solid fa-house me-2"></i>Dashboard
       </a>
 
-      <a href="{{ route('dokumenguru') }}" class="{{ request()->routeIs('dokumenguru') ? 'active' : '' }}">
+      <a href="{{ route('dokumenguru') }}" class="nav-link {{ request()->routeIs('dokumenguru') ? 'active' : '' }}">
         <i class="fa-regular fa-file-lines me-2"></i>Dokumen
       </a>
 
-      <a href="{{ route('tugasguru') }}" class="{{ request()->routeIs('tugasguru') ? 'active' : '' }}">
+
+
+
+      
+      <a href="{{ route('tugasguru') }}" class="nav-link {{ request()->routeIs('tugasguru') ? 'active' : '' }}">
         <i class="fa-solid fa-puzzle-piece me-2"></i>Tugas
       </a>
 
-      <a href="{{ route('historyguru') }}" class="{{ request()->routeIs('historyguru') ? 'active' : '' }}">
+      <a href="{{ route('historyguru') }}" class="nav-link {{ request()->routeIs('historyguru') ? 'active' : '' }}">
         <i class="fa-solid fa-clock-rotate-left me-2"></i>History
       </a>
 
-      <a href="{{ route('profilguru') }}" class="{{ request()->routeIs('profilguru') ? 'active' : '' }}">
+      <a href="{{ route('profilguru') }}" class="nav-link {{ request()->routeIs('profilguru') ? 'active' : '' }}">
         <i class="fa-solid fa-gear me-2"></i>Profil
       </a>
     </nav>

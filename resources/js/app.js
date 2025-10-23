@@ -1,8 +1,3 @@
-import './bootstrap';
-import '../css/app.css';
-
-console.log('GuruDocs Dashboard Loaded ✅');
-
 document.addEventListener('DOMContentLoaded', () => {
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.getElementById('toggleSidebar');
