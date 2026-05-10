@@ -9,6 +9,6 @@ class GuruController extends Controller
     // Menampilkan halaman dashboard guru
     public function index()
     {
-        return view('dashboardguru');
+        return view('guru.dashboardguru');
     }
 }

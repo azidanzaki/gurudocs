@@ -3,14 +3,14 @@
   id="sidebar">
   <div>
     <div class="profile-section text-center">
-      <img
-        class="w-20 h-20 mx-auto rounded-full border-4 border-white/30 shadow-md transition-transform duration-300 hover:scale-105"
-        src="https://www.freeiconspng.com/uploads/png-file-png-file-png-file-png-file-png-file-27.png" alt="Profile">
+      <div class="ms-4 bg-green-100 rounded-full w-16 h-16 flex items-center justify-center">
+        <i class="fa-solid fa-user text-green-600 text-2xl"></i>
+      </div>
       <p class="mt-3 font-semibold bg-black/20 text-white py-2 w-full text-left ps-4">
         M. Zidan Zaki
       </p>
 
-    </div>  
+    </div>
 
     <nav class="mt-6 space-y-2">
       <a href="{{ route('dashboardguru') }}" class="nav-link {{ request()->routeIs('dashboardguru') ? 'active' : '' }}">
@@ -24,7 +24,7 @@
 
 
 
-      
+
       <a href="{{ route('tugasguru') }}" class="nav-link {{ request()->routeIs('tugasguru') ? 'active' : '' }}">
         <i class="fa-solid fa-puzzle-piece me-2"></i>Tugas
       </a>

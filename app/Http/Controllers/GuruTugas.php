@@ -9,6 +9,6 @@ class GuruTugas extends Controller
     // Menampilkan tugas dashboard guru
     public function index()
     {
-        return view('tugasguru');
+        return view('guru.tugasguru');
     }
 }

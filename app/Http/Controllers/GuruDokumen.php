@@ -9,6 +9,6 @@ class GuruDokumen extends Controller
     // Menampilkan halaman dokumen guru
     public function index()
     {
-        return view('dokumenguru');
+        return view('guru.dokumenguru');
     }
 }

@@ -9,6 +9,6 @@ class GuruProfil extends Controller
     // Menampilkan halaman profil guru
     public function index()
     {
-        return view('profilguru');
+        return view('guru.profilguru');
     }
 }

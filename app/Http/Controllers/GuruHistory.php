@@ -9,6 +9,6 @@ class GuruHistory extends Controller
     // Menampilkan halaman history guru
     public function index()
     {
-        return view('historyguru');
+        return view('guru.historyguru');
     }
 }
