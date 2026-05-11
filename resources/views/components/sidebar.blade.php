@@ -1,5 +1,5 @@
 <div
-  class="sidebar fixed top-0 left-0 h-full w-60 bg-[#1f331d] text-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 z-50"
+  class="sidebar fixed top-0 left-0 h-full w-64 bg-[#1f331d] text-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 z-50"
   id="sidebar">
   <div>
     <div class="profile-section text-center">
@@ -20,11 +20,6 @@
       <a href="{{ route('dokumenguru') }}" class="nav-link {{ request()->routeIs('dokumenguru') ? 'active' : '' }}">
         <i class="fa-regular fa-file-lines me-2"></i>Dokumen
       </a>
-
-
-
-
-
       <a href="{{ route('tugasguru') }}" class="nav-link {{ request()->routeIs('tugasguru') ? 'active' : '' }}">
         <i class="fa-solid fa-puzzle-piece me-2"></i>Tugas
       </a>

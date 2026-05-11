@@ -1,5 +1,5 @@
 @extends('layouts.main')
-
+@section('title', 'Tugas')
 @section('content')
 <div class="p-6">
   <h3 class="fw-bold mb-6 text-[#1f331d] text-2xl">Profil Guru</h3>
