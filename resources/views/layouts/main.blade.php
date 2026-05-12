@@ -36,7 +36,7 @@
     <div class="flex"> {{-- padding top = tinggi navbar --}}
         
         {{-- ===== SIDEBAR ===== --}}
-        <aside class="sidebar w-64 bg-white text-[#1f331d] min-h-screen border-r border-gray-200">
+        <aside class="sidebar w-65 bg-white text-[#1f331d] min-h-screen border-r border-gray-200">
             @include('components.sidebar')
         </aside>
 
