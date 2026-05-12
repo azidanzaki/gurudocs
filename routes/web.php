@@ -56,11 +56,25 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admindashboard');
 
-    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/users', [AdminController::class, 'users'])
+        ->name('admin.users');
 
-    Route::get('/admin/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
+    Route::get('/admin/users/create', [AdminController::class, 'createUser'])
+        ->name('admin.users.create');
+
+    Route::post('/admin/users/store', [AdminController::class, 'storeUser'])
+        ->name('admin.users.store');
 
     Route::get('/admin/template', [AdminController::class, 'template'])->name('admin.template');
+    Route::put(
+        '/admin/users/{id}',
+        [AdminController::class, 'updateUser']
+    )->name('admin.users.update');
+
+    Route::delete(
+        '/admin/users/{id}',
+        [AdminController::class, 'deleteUser']
+    )->name('admin.users.delete');
 });
 
 /*
@@ -84,4 +98,4 @@ Route::middleware(['auth', 'can:kepala'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
