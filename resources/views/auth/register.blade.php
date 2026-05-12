@@ -1,52 +1,108 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - GuruDocs</title>
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+    <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+</head>
+
+<body class="hold-transition register-page" style="background:#1f331d;">
+
+<div class="register-box">
+
+    <div class="register-logo text-white">
+        <b>GuruDocs</b><br>
+        <small>MTsN 03 Rohul</small>
+    </div>
+
+    <div class="card">
+        <div class="card-body register-card-body">
+
+            <p class="login-box-msg">Daftar akun baru</p>
+
+            <form method="POST" action="{{ route('register') }}">
+    @csrf
+
+    <!-- NIP -->
+    <div class="input-group mb-3">
+        <input type="text"
+               name="nip"
+               class="form-control"
+               placeholder="NIP"
+               required>
+
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-id-card"></span>
+            </div>
         </div>
+    </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <!-- NAME -->
+    <div class="input-group mb-3">
+        <input type="text"
+               name="name"
+               class="form-control"
+               placeholder="Nama"
+               required>
+
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-user"></span>
+            </div>
         </div>
+    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <!-- PASSWORD -->
+    <div class="input-group mb-3">
+        <input type="password"
+               name="password"
+               class="form-control"
+               placeholder="Password"
+               required>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+            </div>
         </div>
+    </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+    <!-- CONFIRM PASSWORD -->
+    <div class="input-group mb-3">
+        <input type="password"
+               name="password_confirmation"
+               class="form-control"
+               placeholder="Konfirmasi Password"
+               required>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+            </div>
         </div>
+    </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+    <!-- BUTTON -->
+    <button type="submit" class="btn btn-success btn-block">
+        Register
+    </button>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
+</form>
+
+            <p class="mt-3 mb-0 text-center">
+                <a href="{{ route('login') }}">Sudah punya akun? Login</a>
+            </p>
+
         </div>
-    </form>
-</x-guest-layout>
+    </div>
+
+</div>
+
+<script src="{{ asset('vendor/adminlte/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+
+</body>
+</html>

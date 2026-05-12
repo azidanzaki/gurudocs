@@ -1,41 +1,87 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\GuruController;
-use App\Http\Controllers\GuruDokumen;
-use App\Http\Controllers\GuruHistory;
-use App\Http\Controllers\GuruProfil;
-use App\Http\Controllers\GuruTugas;
+use App\Http\Controllers\Guru\GuruController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Kepala\KepalaController;
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Dashboard bawaan Breeze
+/*
+|--------------------------------------------------------------------------
+| AUTH DASHBOARD REDIRECT
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/dashboard', function () {
     return redirect()->route('dashboardguru');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified']);
 
-// Semua route guru harus login dulu
+/*
+|--------------------------------------------------------------------------
+| GURU ROUTES
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboardguru', [GuruController::class, 'index'])->name('dashboardguru');
+    Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboardguru');
 
-    Route::get('/dokumenguru', [GuruDokumen::class, 'index'])->name('dokumenguru');
+    Route::get('/repository', [GuruController::class, 'repository'])->name('repositoryguru');
 
-    Route::get('/historyguru', [GuruHistory::class, 'index'])->name('historyguru');
+    Route::get('/dokumen', [GuruController::class, 'dokumen'])->name('dokumenguru');
 
-    Route::get('/profilguru', [GuruProfil::class, 'index'])->name('profilguru');
+    Route::get('/profil', [GuruController::class, 'profil'])->name('profilguru');
 
-    Route::get('/tugasguru', [GuruTugas::class, 'index'])->name('tugasguru');
+    Route::get('/perangkat', [GuruController::class, 'perangkat'])->name('perangkatguru');
 
-    // Profile Breeze
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/dokumen-admin', [GuruController::class, 'dokumenAdmin'])->name('dokumenadmguru');
 });
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'can:admin'])->group(function () {
+
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admindashboard');
+
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+
+    Route::get('/admin/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
+
+    Route::get('/admin/template', [AdminController::class, 'template'])->name('admin.template');
+});
+
+/*
+|--------------------------------------------------------------------------
+| KEPALA SEKOLAH ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'can:kepala'])->group(function () {
+
+    Route::get('/kepala/dashboard', [KepalaController::class, 'dashboard'])->name('kepala.dashboard');
+
+    Route::get('/kepala/penilaian', [KepalaController::class, 'penilaian'])->name('kepala.penilaian');
+
+    Route::get('/kepala/repository', [KepalaController::class, 'repository'])->name('kepala.repository');
+});
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES (BREEZE)
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__.'/auth.php';

@@ -22,13 +22,39 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        $request->validate([
+            'nip' => ['required'],
+            'password' => ['required'],
+        ]);
 
-        $request->session()->regenerate();
+        if (
+            Auth::attempt([
+                'nip' => $request->nip,
+                'password' => $request->password
+            ])
+        ) {
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+
+            // REDIRECT BERDASARKAN ROLE
+            if ($user->role == 'admin') {
+                return redirect('/admin/dashboard');
+            }
+
+            if ($user->role == 'kepala_sekolah') {
+                return redirect('/kepala/dashboard');
+            }
+
+            return redirect('/dashboard');
+        }
+
+        return back()->withErrors([
+            'nip' => 'NIp atau password salah.',
+        ])->onlyInput('nip');
     }
 
     /**

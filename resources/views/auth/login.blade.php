@@ -1,47 +1,84 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - GuruDocs</title>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+</head>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+<body class="hold-transition login-page" style="background:#1f331d;">
+
+<div class="login-box">
+
+    <div class="login-logo text-white">
+        <b>GuruDocs</b><br>
+        <small>MTsN 03 Rohul</small>
+    </div>
+
+    <div class="card">
+        <div class="card-body login-card-body">
+
+            <p class="login-box-msg">Login untuk masuk sistem</p>
+
+            <form method="POST" action="{{ route('login') }}">
+    @csrf
+
+    <!-- NIP -->
+    <div class="input-group mb-3">
+        <input type="text"
+               name="nip"
+               class="form-control"
+               placeholder="NIP"
+               required>
+
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-id-card"></span>
+            </div>
         </div>
+    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <!-- PASSWORD -->
+    <div class="input-group mb-3">
+        <input type="password"
+               name="password"
+               class="form-control"
+               placeholder="Password"
+               required>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="input-group-append">
+            <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+            </div>
         </div>
+    </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
+    <!-- REMEMBER -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="icheck-primary">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember Me</label>
+            </div>
         </div>
+    </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+    <!-- BUTTON -->
+    <button type="submit" class="btn btn-success btn-block">
+        Login
+    </button>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+</form>
+
         </div>
-    </form>
-</x-guest-layout>
+    </div>
+
+</div>
+
+<script src="{{ asset('vendor/adminlte/plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+
+</body>
+</html>
