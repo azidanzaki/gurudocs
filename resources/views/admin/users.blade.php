@@ -86,37 +86,33 @@
                         <td>
                             {{ $user->created_at->format('d-M-Y H:i:s') }}
                         </td>
-                        <td>
+                        <td class="project-actions text-right">
 
-    <!-- EDIT -->
-    <button
-        class="btn btn-warning btn-sm"
-        data-toggle="modal"
-        data-target="#modalEdit{{ $user->id }}">
+                            <!-- EDIT -->
+                            <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
+                                data-target="#modalEdit{{ $user->id }}">
+                                <i class="fas fa-pencil-alt">
+                                    Edit
+                                </i>
+                            </a>
+                            <!-- HAPUS -->
+                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="d-inline">
 
-        <i class="fas fa-edit"></i>
-    </button>
+                                @csrf
+                                @method('DELETE')
 
-    <!-- HAPUS -->
-    <form action="{{ route('admin.users.delete', $user->id) }}"
-          method="POST"
-          class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Hapus user ini?')">
 
-        @csrf
-        @method('DELETE')
+                                    <i class="fas fa-trash">
+                                        Delete
+                                    </i>
 
-        <button
-            type="submit"
-            class="btn btn-danger btn-sm"
-            onclick="return confirm('Hapus user ini?')">
+                                </button>
 
-            <i class="fas fa-trash"></i>
+                            </form>
 
-        </button>
-
-    </form>
-
-</td>
+                        </td>
                     </tr>
 
                 @empty
@@ -228,110 +224,94 @@
 </div>
 @foreach($users as $user)
 
-<div class="modal fade" id="modalEdit{{ $user->id }}" tabindex="-1">
+    <div class="modal fade" id="modalEdit{{ $user->id }}" tabindex="-1">
 
-    <div class="modal-dialog">
+        <div class="modal-dialog">
 
-        <div class="modal-content">
+            <div class="modal-content">
 
-            <form action="{{ route('admin.users.update', $user->id) }}"
-                  method="POST">
+                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
 
-                @csrf
-                @method('PUT')
+                    @csrf
+                    @method('PUT')
 
-                <div class="modal-header bg-warning">
+                    <div class="modal-header bg-warning">
 
-                    <h5 class="modal-title">
-                        Edit User
-                    </h5>
+                        <h5 class="modal-title">
+                            Edit User
+                        </h5>
 
-                    <button type="button"
-                            class="close"
-                            data-dismiss="modal">
+                        <button type="button" class="close" data-dismiss="modal">
 
-                        <span>&times;</span>
+                            <span>&times;</span>
 
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <!-- NAMA -->
-                    <div class="form-group">
-
-                        <label>Nama</label>
-
-                        <input type="text"
-                               name="name"
-                               class="form-control"
-                               value="{{ $user->name }}"
-                               required>
+                        </button>
 
                     </div>
 
-                    <!-- NIP -->
-                    <div class="form-group">
+                    <div class="modal-body">
 
-                        <label>NIP</label>
+                        <!-- NAMA -->
+                        <div class="form-group">
 
-                        <input type="text"
-                               name="nip"
-                               class="form-control"
-                               value="{{ $user->nip }}"
-                               required>
+                            <label>Nama</label>
+
+                            <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
+
+                        </div>
+
+                        <!-- NIP -->
+                        <div class="form-group">
+
+                            <label>NIP</label>
+
+                            <input type="text" name="nip" class="form-control" value="{{ $user->nip }}" required>
+
+                        </div>
+
+                        <!-- ROLE -->
+                        <div class="form-group">
+
+                            <label>Role</label>
+
+                            <select name="role" class="form-control">
+
+                                <option value="guru" {{ $user->role == 'guru' ? 'selected' : '' }}>
+                                    Guru
+                                </option>
+
+                                <option value="kepala" {{ $user->role == 'kepala' ? 'selected' : '' }}>
+                                    Kepala Sekolah
+                                </option>
+
+                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>
+                                    Admin
+                                </option>
+
+                            </select>
+
+                        </div>
 
                     </div>
 
-                    <!-- ROLE -->
-                    <div class="form-group">
+                    <div class="modal-footer">
 
-                        <label>Role</label>
+                        <button type="submit" class="btn btn-warning">
 
-                        <select name="role"
-                                class="form-control">
+                            <i class="fas fa-save"></i>
+                            Update
 
-                            <option value="guru"
-                                {{ $user->role == 'guru' ? 'selected' : '' }}>
-                                Guru
-                            </option>
-
-                            <option value="kepala"
-                                {{ $user->role == 'kepala' ? 'selected' : '' }}>
-                                Kepala Sekolah
-                            </option>
-
-                            <option value="admin"
-                                {{ $user->role == 'admin' ? 'selected' : '' }}>
-                                Admin
-                            </option>
-
-                        </select>
+                        </button>
 
                     </div>
 
-                </div>
+                </form>
 
-                <div class="modal-footer">
-
-                    <button type="submit"
-                            class="btn btn-warning">
-
-                        <i class="fas fa-save"></i>
-                        Update
-
-                    </button>
-
-                </div>
-
-            </form>
+            </div>
 
         </div>
 
     </div>
-
-</div>
 
 @endforeach
 @stop
