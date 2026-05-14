@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Guru\GuruController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Kepala\KepalaController;
+use App\Http\Controllers\Guru\PerangkatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,7 @@ use App\Http\Controllers\Guru\RepositoryController;
 
 Route::prefix('guru')->middleware(['auth'])->group(function () {
 
+    // Repository Routes
     Route::get('/repository', [RepositoryController::class, 'index'])
         ->name('guru.repository');
 
@@ -62,6 +64,13 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
 
     Route::delete('/repository/delete/{id}', [RepositoryController::class, 'destroy'])
         ->name('guru.repository.delete');
+
+    // Perangkat Routes
+    Route::get('/perangkat', [PerangkatController::class, 'index'])
+        ->name('guru.perangkat');
+
+    Route::get('/perangkat/{id}', [PerangkatController::class, 'show'])
+        ->name('guru.perangkat.show');
 });
 
 /*

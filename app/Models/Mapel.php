@@ -13,5 +13,9 @@ class Mapel extends Model
     {
         return $this->belongsToMany(User::class, 'guru_mapel');
     }
+    public function perangkats()
+    {
+        return $this->hasMany(Perangkat::class);
+    }
 
 }

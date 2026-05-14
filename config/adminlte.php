@@ -357,7 +357,7 @@ Loading<span class="dot">...</span>
     [
         'text' => 'Perangkat Pembelajaran',
         'icon' => 'fas fa-book',
-        'route' => 'perangkatguru',
+        'route' => 'guru.perangkat',
     ],
 
     [

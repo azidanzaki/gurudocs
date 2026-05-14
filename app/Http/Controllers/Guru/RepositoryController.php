@@ -17,7 +17,7 @@ class RepositoryController extends Controller
             ->latest()
             ->get();
 
-        return view('guru.repositoryguru', compact('repositories'));
+        return view('guru.repository.index', compact('repositories'));
     }
 
     public function store(Request $request)
