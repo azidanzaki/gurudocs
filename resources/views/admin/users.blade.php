@@ -9,7 +9,7 @@
 @section('content')
 
 @if(session('success'))
-    <div class="alert alert-success">
+    <div id="success-alert" class="alert alert-success">
         {{ session('success') }}
     </div>
 @endif
@@ -195,6 +195,117 @@
 
                         </select>
                     </div>
+                    <!-- MAPEL + KELAS -->
+                    <div class="form-group">
+
+                        <label>
+                            Mata Pelajaran & Kelas
+                        </label>
+
+                        <div id="mapel-wrapper">
+
+                            <div class="row mb-2 mapel-item">
+
+                                <!-- MAPEL -->
+                                <div class="col-md-6">
+
+                                    <select name="mapels[]" class="form-control">
+
+                                        <option value="">
+                                            -- Pilih Mapel --
+                                        </option>
+
+                                        @foreach($mapels as $mapel)
+
+                                            <option value="{{ $mapel->id }}">
+                                                {{ $mapel->nama_mapel }}
+                                            </option>
+
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+                                <!-- KELAS -->
+                                <div class="col-md-6">
+
+                                    <select name="kelas[]" class="form-control">
+
+                                        <option value="">
+                                            -- Pilih Kelas --
+                                        </option>
+
+                                        @foreach($kelas as $k)
+
+                                            <option value="{{ $k->id }}">
+                                                {{ $k->nama_kelas }}
+                                            </option>
+
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BUTTON TAMBAH -->
+                        <button type="button" class="btn btn-sm btn-primary mt-2" onclick="tambahMapelKelas()">
+
+                            <i class="fas fa-plus"></i>
+                            Tambah Mapel
+
+                        </button>
+
+                    </div>
+
+                    <!-- WALI KELAS -->
+                    <div class="form-group">
+
+                        <label>
+                            Wali Kelas
+                        </label>
+
+                        <div id="wali-wrapper">
+
+                            <div class="row mb-2 wali-item">
+
+                                <div class="col-md-10">
+
+                                    <select name="wali_kelas[]" class="form-control">
+
+                                        <option value="">
+                                            -- Pilih Kelas --
+                                        </option>
+
+                                        @foreach($kelas as $k)
+
+                                            <option value="{{ $k->id }}">
+                                                {{ $k->nama_kelas }}
+                                            </option>
+
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BUTTON -->
+                        <button type="button" class="btn btn-sm btn-warning mt-2" onclick="tambahWaliKelas()">
+
+                            <i class="fas fa-plus"></i>
+                            Tambah Wali Kelas
+
+                        </button>
+
+                    </div>
                 </div>
 
                 <!-- FOOTER -->
@@ -249,50 +360,211 @@
 
                     </div>
 
-                    <div class="modal-body">
+<div class="modal-body">
 
-                        <!-- NAMA -->
-                        <div class="form-group">
+    <!-- NAMA -->
+    <div class="form-group">
 
-                            <label>Nama</label>
+        <label>Nama</label>
 
-                            <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
+        <input type="text"
+               name="name"
+               class="form-control"
+               value="{{ $user->name }}"
+               required>
 
-                        </div>
+    </div>
 
-                        <!-- NIP -->
-                        <div class="form-group">
+    <!-- NIP -->
+    <div class="form-group">
 
-                            <label>NIP</label>
+        <label>NIP</label>
 
-                            <input type="text" name="nip" class="form-control" value="{{ $user->nip }}" required>
+        <input type="text"
+               name="nip"
+               class="form-control"
+               value="{{ $user->nip }}"
+               required>
 
-                        </div>
+    </div>
 
-                        <!-- ROLE -->
-                        <div class="form-group">
+    <!-- ROLE -->
+    <div class="form-group">
 
-                            <label>Role</label>
+        <label>Role</label>
 
-                            <select name="role" class="form-control">
+        <select name="role" class="form-control">
 
-                                <option value="guru" {{ $user->role == 'guru' ? 'selected' : '' }}>
-                                    Guru
+            <option value="guru"
+                {{ $user->role == 'guru' ? 'selected' : '' }}>
+                Guru
+            </option>
+
+            <option value="kepala_sekolah"
+                {{ $user->role == 'kepala_sekolah' ? 'selected' : '' }}>
+                Kepala Sekolah
+            </option>
+
+            <option value="admin"
+                {{ $user->role == 'admin' ? 'selected' : '' }}>
+                Admin
+            </option>
+
+        </select>
+
+    </div>
+
+
+
+    <!-- MAPEL & KELAS -->
+    <div class="form-group">
+
+        <label>
+            Mata Pelajaran & Kelas
+        </label>
+
+        <div id="edit-mapel-wrapper-{{ $user->id }}">
+
+            @foreach($user->mapels as $index => $mapel)
+
+                <div class="row mb-2">
+
+                    <!-- MAPEL -->
+                    <div class="col-md-5">
+
+                        <select name="mapels[]" class="form-control">
+
+                            @foreach($mapels as $m)
+
+                                <option value="{{ $m->id }}"
+                                    {{ $mapel->id == $m->id ? 'selected' : '' }}>
+
+                                    {{ $m->nama_mapel }}
+
                                 </option>
 
-                                <option value="kepala" {{ $user->role == 'kepala' ? 'selected' : '' }}>
-                                    Kepala Sekolah
-                                </option>
+                            @endforeach
 
-                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>
-                                    Admin
-                                </option>
-
-                            </select>
-
-                        </div>
+                        </select>
 
                     </div>
+
+                    <!-- KELAS -->
+                    <div class="col-md-5">
+
+                        <select name="kelas[]" class="form-control">
+
+                            @foreach($kelas as $k)
+
+                                <option value="{{ $k->id }}"
+                                    {{ $user->kelas->contains($k->id) ? 'selected' : '' }}>
+
+                                    {{ $k->nama_kelas }}
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <!-- HAPUS -->
+                    <div class="col-md-2">
+
+                        <button type="button"
+                                class="btn btn-danger btn-block"
+                                onclick="hapusItem(this)">
+
+                            <i class="fas fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            @endforeach
+
+        </div>
+
+        <!-- BUTTON -->
+        <button type="button"
+                class="btn btn-sm btn-primary mt-2"
+                onclick="tambahEditMapel({{ $user->id }})">
+
+            <i class="fas fa-plus"></i>
+            Tambah Mapel
+
+        </button>
+
+    </div>
+
+
+
+    <!-- WALI KELAS -->
+    <div class="form-group">
+
+        <label>
+            Wali Kelas
+        </label>
+
+        <div id="edit-wali-wrapper-{{ $user->id }}">
+
+            @foreach($user->waliKelas as $wali)
+
+                <div class="row mb-2">
+
+                    <div class="col-md-10">
+
+                        <select name="wali_kelas[]" class="form-control">
+
+                            @foreach($kelas as $k)
+
+                                <option value="{{ $k->id }}"
+                                    {{ $wali->id == $k->id ? 'selected' : '' }}>
+
+                                    {{ $k->nama_kelas }}
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <button type="button"
+                                class="btn btn-danger btn-block"
+                                onclick="hapusItem(this)">
+
+                            <i class="fas fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            @endforeach
+
+        </div>
+
+        <!-- BUTTON -->
+        <button type="button"
+                class="btn btn-sm btn-warning mt-2"
+                onclick="tambahEditWali({{ $user->id }})">
+
+            <i class="fas fa-plus"></i>
+            Tambah Wali
+
+        </button>
+
+    </div>
+
+</div>
 
                     <div class="modal-footer">
 
@@ -314,4 +586,245 @@
     </div>
 
 @endforeach
+
+<script>
+
+function tambahMapelKelas()
+{
+    let html = `
+    
+    <div class="row mb-2 mapel-item">
+
+        <div class="col-md-5">
+
+            <select name="mapels[]" class="form-control">
+
+                <option value="">
+                    -- Pilih Mapel --
+                </option>
+
+                @foreach($mapels as $mapel)
+
+                    <option value="{{ $mapel->id }}">
+                        {{ $mapel->nama_mapel }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-5">
+
+            <select name="kelas[]" class="form-control">
+
+                <option value="">
+                    -- Pilih Kelas --
+                </option>
+
+                @foreach($kelas as $k)
+
+                    <option value="{{ $k->id }}">
+                        {{ $k->nama_kelas }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button type="button"
+                    class="btn btn-danger btn-block"
+                    onclick="hapusItem(this)">
+
+                <i class="fas fa-trash"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+    `;
+
+    $('#mapel-wrapper').append(html);
+}
+
+
+
+function tambahWaliKelas()
+{
+    let html = `
+    
+    <div class="row mb-2 wali-item">
+
+        <div class="col-md-10">
+
+            <select name="wali_kelas[]" class="form-control">
+
+                <option value="">
+                    -- Pilih Kelas --
+                </option>
+
+                @foreach($kelas as $k)
+
+                    <option value="{{ $k->id }}">
+                        {{ $k->nama_kelas }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button type="button"
+                    class="btn btn-danger btn-block"
+                    onclick="hapusItem(this)">
+
+                <i class="fas fa-trash"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+    `;
+
+    $('#wali-wrapper').append(html);
+}
+
+
+
+function hapusItem(button)
+{
+    $(button).closest('.row').remove();
+}
+
+</script>
+<script>
+
+function tambahEditMapel(userId)
+{
+    let html = `
+    
+    <div class="row mb-2">
+
+        <div class="col-md-5">
+
+            <select name="mapels[]" class="form-control">
+
+                @foreach($mapels as $m)
+
+                    <option value="{{ $m->id }}">
+                        {{ $m->nama_mapel }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-5">
+
+            <select name="kelas[]" class="form-control">
+
+                @foreach($kelas as $k)
+
+                    <option value="{{ $k->id }}">
+                        {{ $k->nama_kelas }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button type="button"
+                    class="btn btn-danger btn-block"
+                    onclick="hapusItem(this)">
+
+                <i class="fas fa-trash"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+    `;
+
+    $('#edit-mapel-wrapper-' + userId).append(html);
+}
+
+
+
+function tambahEditWali(userId)
+{
+    let html = `
+    
+    <div class="row mb-2">
+
+        <div class="col-md-10">
+
+            <select name="wali_kelas[]" class="form-control">
+
+                @foreach($kelas as $k)
+
+                    <option value="{{ $k->id }}">
+                        {{ $k->nama_kelas }}
+                    </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button type="button"
+                    class="btn btn-danger btn-block"
+                    onclick="hapusItem(this)">
+
+                <i class="fas fa-trash"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+    `;
+
+    $('#edit-wali-wrapper-' + userId).append(html);
+}
+
+
+
+function hapusItem(button)
+{
+    $(button).closest('.row').remove();
+}
+
+</script>
+
+<script>
+    setTimeout(function () {
+
+        let alertBox = document.getElementById('success-alert');
+
+        if (alertBox) {
+            $(alertBox).alert('close');
+        }
+
+    }, {{ session('timeout', 5000) }});
+</script>
 @stop

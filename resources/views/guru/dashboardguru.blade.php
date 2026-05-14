@@ -24,6 +24,7 @@
             <a href="/perangkat" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
+    
 
     <!-- dokumen adm lainnya -->
     <div class="col-lg-3 col-6">
@@ -73,45 +74,7 @@
     <!-- ./col -->
 </div>
 <!-- TOP CARDS -->
-<div class="row">
 
-    <!-- Tugas -->
-    <div class="col-md-4">
-        <div class="small-box bg-success">
-            <div class="inner">
-                <h3>2 / 10</h3>
-                <p>Tugas Semester</p>
-            </div>
-            <div class="icon">
-                <i class="fas fa-file-lines"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profil -->
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body d-flex align-items-center justify-content-between">
-
-                <div class="d-flex align-items-center">
-                    <img src="{{ asset('images/logomts.png') }}" class="img-circle mr-3"
-                        style="width:60px; height:60px; object-fit:cover;">
-
-                    <div>
-                        <h5 class="mb-0">Zakiah</h5>
-                        <small class="text-muted">12345678890</small>
-                    </div>
-                </div>
-
-                <a href="#" class="btn btn-sm btn-warning">
-                    <i class="fas fa-pen"></i>
-                </a>
-
-            </div>
-        </div>
-    </div>
-
-</div>
 
 <!-- MAIN CONTENT -->
 <div class="row">

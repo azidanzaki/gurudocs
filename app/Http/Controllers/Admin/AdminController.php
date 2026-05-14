@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Mapel;
+use App\Models\Kelas;
 
 class AdminController extends Controller
 {
@@ -20,7 +22,15 @@ class AdminController extends Controller
     {
         $users = User::latest()->get();
 
-        return view('admin.users', compact('users'));
+        $mapels = Mapel::all();
+
+        $kelas = Kelas::all();
+
+        return view('admin.users', compact(
+            'users',
+            'mapels',
+            'kelas'
+        ));
     }
 
     // FORM TAMBAH USER
@@ -38,54 +48,62 @@ class AdminController extends Controller
             'role' => 'required',
         ]);
 
-        // PASSWORD = NIP
         $defaultPassword = $request->nip;
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'nip' => $request->nip,
             'role' => $request->role,
-
             'password' => Hash::make($defaultPassword),
-
-            // opsional untuk ditampilkan admin
             'default_password' => $defaultPassword,
         ]);
+
+        // RELASI
+        $user->mapels()->sync($request->mapels ?? []);
+
+        $user->kelas()->sync($request->kelas ?? []);
+
+        $user->waliKelas()->sync($request->wali_kelas ?? []);
 
         return redirect()
             ->route('admin.users')
             ->with('success', 'User berhasil ditambahkan');
     }
     public function updateUser(Request $request, $id)
-{
-    $user = User::findOrFail($id);
+    {
+        $user = User::findOrFail($id);
+        $user->mapels()->sync($request->mapels ?? []);
 
-    $request->validate([
-        'name' => 'required',
-        'nip' => 'required',
-        'role' => 'required',
-    ]);
+        $user->kelas()->sync($request->kelas ?? []);
 
-    $user->update([
-        'name' => $request->name,
-        'nip' => $request->nip,
-        'role' => $request->role,
-    ]);
+        $user->waliKelas()->sync($request->wali_kelas ?? []);
 
-    return redirect()
-        ->route('admin.users')
-        ->with('success', 'User berhasil diupdate');
-}
-public function deleteUser($id)
-{
-    $user = User::findOrFail($id);
+        $request->validate([
+            'name' => 'required',
+            'nip' => 'required',
+            'role' => 'required',
+        ]);
 
-    $user->delete();
+        $user->update([
+            'name' => $request->name,
+            'nip' => $request->nip,
+            'role' => $request->role,
+        ]);
 
-    return redirect()
-        ->route('admin.users')
-        ->with('success', 'User berhasil dihapus');
-}
+        return redirect()
+            ->route('admin.users')
+            ->with('success', 'User berhasil diupdate');
+    }
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        $user->delete();
+
+        return redirect()
+            ->route('admin.users')
+            ->with('success', 'User berhasil dihapus');
+    }
 
     // TEMPLATE
     public function template()
