@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Kepala;
 
 use App\Http\Controllers\Controller;
 
-class KepalaController extends Controller
+class PenilaianController extends Controller
 {
     public function index()
     {
-        return view('kepala.dasboard.index');
+        return view('kepala.penilaian.index');
     }
 }

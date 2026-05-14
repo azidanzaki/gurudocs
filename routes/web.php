@@ -2,9 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Guru\GuruController;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Kepala\KepalaController;
+use App\Http\Controllers\Guru\DokumenAdmController;
+use App\Http\Controllers\Guru\DokumenNonAdmController;
+use App\Http\Controllers\Guru\RepositoryController;
 use App\Http\Controllers\Guru\PerangkatController;
+use App\Http\Controllers\Admin\KelolaPerangkatController;
+use App\Http\Controllers\Admin\KelolaUserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\TemplateController;
+use App\Http\Controllers\Admin\KelolaDokumenAdmController;
+use App\Http\Controllers\Admin\KelolaDokumenNonAdmController;
+use App\Http\Controllers\Kepala\KepalaController;
+use App\Http\Controllers\Kepala\PenilaianController;
+use App\Http\Controllers\ProfilController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +34,7 @@ Route::get('/', function () {
 */
 
 Route::get('/dashboard', function () {
-    return redirect()->route('dashboardguru');
+    return redirect()->route('guru.dashboard');
 })->middleware(['auth', 'verified']);
 
 /*
@@ -34,20 +45,35 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboardguru');
+    Route::get('auth()->user()->role/dashboard', function () {
 
-    Route::get('/dokumen', [GuruController::class, 'dokumen'])->name('dokumenguru');
+        if (auth()->user()->role == 'admin') {
+            return app(AdminController::class)->dashboard();
+        }
+        if (auth()->user()->role == 'kepala_sekolah') {
+            return app(KepalaController::class)->dashboard();
+        }
 
-    Route::get('/profil', [GuruController::class, 'profil'])->name('profilguru');
+        return app(GuruController::class)->index();
 
-    Route::get('/perangkat', [GuruController::class, 'perangkat'])->name('perangkatguru');
+    })->name('dashboard');
 
-    Route::get('/dokumen-admin', [GuruController::class, 'dokumenAdmin'])->name('dokumenadmguru');
 });
 
-use App\Http\Controllers\Guru\RepositoryController;
 
 Route::prefix('guru')->middleware(['auth'])->group(function () {
+
+    //dashboard
+    Route::get('/dashboard', [GuruController::class, 'index'])->name('guru.dashboard');
+
+    //dokumen non adm
+    Route::get('/dokumen-non-administrasi', [DokumenNonAdmController::class, 'index'])->name('guru.dokumennonadm');
+
+    // dokumen adm
+    Route::get('/dokumen-administasi', [DokumenAdmController::class, 'index'])->name('guru.dokumenadmguru');
+
+    // profil
+    Route::get('/profil', [ProfilController::class, 'index'])->name('guru.profil');
 
     // Repository Routes
     Route::get('/repository', [RepositoryController::class, 'index'])
@@ -71,6 +97,8 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
 
     Route::get('/perangkat/{id}', [PerangkatController::class, 'show'])
         ->name('guru.perangkat.show');
+
+    Route::get('/dokumen-admin', [GuruController::class, 'dokumenAdmin'])->name('dokumenadmguru');
 });
 
 /*
@@ -81,27 +109,30 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'can:admin'])->group(function () {
 
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admindashboard');
+    // dashboard
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-    Route::get('/admin/users', [AdminController::class, 'users'])
-        ->name('admin.users');
+    // kelola user
+    Route::get('/admin/users', [KelolaUserController::class, 'users'])->name('admin.users');
+    Route::get('/admin/users/create', [KelolaUserController::class, 'createUser'])->name('admin.users.create');
+    Route::post('/admin/users/store', [KelolaUserController::class, 'storeUser'])->name('admin.users.store');
+    Route::put('/admin/users/{id}',[KelolaUserController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/admin/users/{id}',[KelolaUserController::class, 'deleteUser'])->name('admin.users.delete');
 
-    Route::get('/admin/users/create', [AdminController::class, 'createUser'])
-        ->name('admin.users.create');
+    // kelola template
+    Route::get('/admin/template', [TemplateController::class, 'createUser'])->name('admin.template');
 
-    Route::post('/admin/users/store', [AdminController::class, 'storeUser'])
-        ->name('admin.users.store');
+    // kelola perangkat pembelajaran
+    Route::get('/admin/kelola-perangkat', [KelolaPerangkatController::class, 'index'])->name('admin.kelolaperangkat');
 
-    Route::get('/admin/template', [AdminController::class, 'template'])->name('admin.template');
-    Route::put(
-        '/admin/users/{id}',
-        [AdminController::class, 'updateUser']
-    )->name('admin.users.update');
+    // kelola dokumen administratif
+    Route::get('/admin/kelola-dokumen-administratif', [KelolaDokumenAdmController::class, 'index'])->name('admin.dokumenadm');
 
-    Route::delete(
-        '/admin/users/{id}',
-        [AdminController::class, 'deleteUser']
-    )->name('admin.users.delete');
+    // kelola dokumen non administratif
+    Route::get('admin/kelola-dokumen-non-administrasi', [KelolaDokumenNonAdmController::class, 'index'])->name('admin.dokumennonadm');
+
+    // Profil admin
+    Route::get('/admin/profil', [ProfilController::class, 'index'])->name('admin.profil');
 });
 
 /*
@@ -112,11 +143,14 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
 Route::middleware(['auth', 'can:kepala'])->group(function () {
 
-    Route::get('/kepala/dashboard', [KepalaController::class, 'dashboard'])->name('kepala.dashboard');
+    Route::get('/kepala/dashboard', [KepalaController::class, 'index'])->name('kepala.dashboard');
 
-    Route::get('/kepala/penilaian', [KepalaController::class, 'penilaian'])->name('kepala.penilaian');
+    Route::get('/kepala/penilaian', [PenilaianController::class, 'index'])->name('kepala.penilaian');
 
-    Route::get('/kepala/repository', [KepalaController::class, 'repository'])->name('kepala.repository');
+    Route::get('/kepala/profil', [ProfilController::class, 'index'])->name('kepala.profil');
+
+    //dokumen non admin
+    Route::get('/kepala/dokumen-non-administrasi', [DokumenNonAdmController::class, 'index'])->name('kepala.dokumennonadm');
 });
 
 /*

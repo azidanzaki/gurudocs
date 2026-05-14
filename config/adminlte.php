@@ -310,83 +310,149 @@ Loading<span class="dot">...</span>
 
     'menu' => [
 
-    [
-        'text' => 'Dashboard',
-        'route' => 'dashboardguru',
-        'icon' => 'fas fa-tachometer-alt',
-    ],
-
-    [
-        'text' => 'Repository',
-        'route' => 'guru.repository',
-        'icon' => 'fas fa-folder',
-    ],
         [
-        'header' => 'ADMIN MENU',
-        'can' => 'admin',
-    ],
-
-    [
-        'text' => 'Manajemen User',
-        'route' => 'admin.users',
-        'icon' => 'fas fa-users',
-        'can' => 'admin',
-    ],
-
-    [
-        'text' => 'Template Dokumen',
-        'route' => 'admin.template',
-        'icon' => 'fas fa-folder-open',
-        'can' => 'admin',
-    ],
+            'text' => 'Dashboard',
+            'route' => 'guru.dashboard',
+            'icon' => 'fas fa-tachometer-alt',
+            'can' => 'guru',
+        ],
         [
-        'header' => 'KEPALA SEKOLAH',
-        'can' => 'kepala',
-    ],
-
-    [
-        'text' => 'Penilaian Guru',
-        'route' => 'kepala.penilaian',
-        'icon' => 'fas fa-star',
-        'can' => 'kepala',
-    ],
+            'text' => 'Dashboard',
+            'route' => 'admin.dashboard',
+            'icon' => 'fas fa-tachometer-alt',
+            'can' => 'admin',
+        ],
         [
-        'header' => 'DOKUMEN ADMINISTRATIF',
-    ],
+            'text' => 'Dashboard',
+            'route' => 'kepala.dashboard',
+            'icon' => 'fas fa-tachometer-alt',
+            'can' => 'kepala',
+        ],
+        [
+            'text' => 'Repository',
+            'route' => 'guru.repository',
+            'icon' => 'fas fa-folder',
+            'can' => 'guru',
+        ],
+        [
+            'header' => 'ADMIN MENU',
+            'can' => 'admin',
+        ],
 
-    [
-        'text' => 'Perangkat Pembelajaran',
-        'icon' => 'fas fa-book',
-        'route' => 'guru.perangkat',
-    ],
+        [
+            'text' => 'Manajemen User',
+            'route' => 'admin.users',
+            'icon' => 'fas fa-users',
+            'can' => 'admin',
+        ],
 
-    [
-        'text' => 'Dokumen Administratif Lainnya',
-        'icon' => 'far fa-folder-open',
-        'route' => 'dokumenadmguru',
-    ],
+        [
+            'text' => 'Template Dokumen',
+            'route' => 'admin.template',
+            'icon' => 'fas fa-folder-open',
+            'can' => 'admin',
+        ],
+        [
+            'header' => 'KEPALA SEKOLAH',
+            'can' => 'kepala',
+        ],
 
-    [
-        'header' => 'DOKUMEN NON ADMINISTRATIF',
-    ],
+        [
+            'text' => 'Penilaian Guru',
+            'route' => 'kepala.penilaian',
+            'icon' => 'fas fa-star',
+            'can' => 'kepala',
+        ],
+        [
+            'header' => 'DOKUMEN ADMINISTRATIF',
+            'can' => 'guru',
+        ],
 
-    [
-        'text' => 'Dokumen',
-        'route' => 'dokumenguru',
-        'icon' => 'fas fa-file',
-    ],
+        [
+            'header' => 'DOKUMEN ADMINISTRATIF',
+            'can' => 'admin',
+        ],
+        [
+            'text' => 'Perangkat Pembelajaran',
+            'icon' => 'fas fa-book',
+            'route' => 'guru.perangkat',
+            'can' => 'guru',
+        ],
 
-    [
-        'header' => 'AKUN',
-    ],
+        [
+            'text' => 'Kelola Perangkat Pembelajaran',
+            'icon' => 'fas fa-book',
+            'route' => 'admin.kelolaperangkat',
+            'can' => 'admin',
+        ],
 
-    [
-        'text' => 'Profil',
-        'route' => 'profilguru',
-        'icon' => 'far fa-user',
-    ],
+        [
+            'text' => 'Dokumen Administratif Lainnya',
+            'icon' => 'far fa-folder-open',
+            'route' => 'guru.dokumenadmguru',
+            'can' => 'guru',
+        ],
+        [
+            'text' => 'Kelola Dokumen Administratif',
+            'icon' => 'far fa-folder-open',
+            'route' => 'admin.dokumenadm',
+            'can' => 'admin',
+        ],
 
-],
+        [
+            'header' => 'DOKUMEN NON ADMINISTRATIF',    
+            'can' => 'guru',
+        ],
+        [
+            'header' => 'DOKUMEN NON ADMINISTRATIF',    
+            'can' => 'admin',
+        ],
+        [
+            'header' => 'DOKUMEN NON ADMINISTRATIF',    
+            'can' => 'kepala',
+        ],
+
+        [
+            'text' => 'Dokumen',
+            'route' => 'guru.dokumennonadm',
+            'icon' => 'far fa-folder',
+            'can' => 'guru',
+        ],
+        [
+            'text' => 'Dokumen',
+            'route' => 'kepala.dokumennonadm',
+            'icon' => 'far fa-folder',
+            'can' => 'kepala',
+        ],
+        [
+            'text' => 'Kelola Dokumen',
+            'route' => 'admin.dokumennonadm',
+            'icon' => 'far fa-folder',
+            'can' => 'admin',
+        ],
+        [
+            'header' => 'PROFIL',
+        ],
+        [
+            'text' => 'Profil',
+            'route' => 'guru.profil',
+            'icon' => 'far fa-user',
+            'can' => 'guru',
+        ],
+        [
+            'text' => 'Profil',
+            'route' => 'kepala.profil',
+            'icon' => 'far fa-user',
+            'can' => 'kepala',
+        ],
+        [
+            'text' => 'Profil',
+            'route' => 'admin.profil',
+            'icon' => 'far fa-user',
+            'can' => 'admin',
+        ],
+
+    ],
 
     /*
     |--------------------------------------------------------------------------
