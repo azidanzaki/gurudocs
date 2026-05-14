@@ -11,11 +11,6 @@ class GuruController extends Controller
         return view('guru.dashboardguru');
     }
 
-    public function repository()
-    {
-        return view('guru.repositoryguru');
-    }
-
     public function dokumen()
     {
         return view('guru.dokumenadmguru');

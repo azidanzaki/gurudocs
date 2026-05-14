@@ -35,8 +35,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboardguru');
 
-    Route::get('/repository', [GuruController::class, 'repository'])->name('repositoryguru');
-
     Route::get('/dokumen', [GuruController::class, 'dokumen'])->name('dokumenguru');
 
     Route::get('/profil', [GuruController::class, 'profil'])->name('profilguru');
@@ -44,6 +42,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perangkat', [GuruController::class, 'perangkat'])->name('perangkatguru');
 
     Route::get('/dokumen-admin', [GuruController::class, 'dokumenAdmin'])->name('dokumenadmguru');
+});
+
+use App\Http\Controllers\Guru\RepositoryController;
+
+Route::prefix('guru')->middleware(['auth'])->group(function () {
+
+    Route::get('/repository', [RepositoryController::class, 'index'])
+        ->name('guru.repository');
+
+    Route::get('/repository/sertifikat/{id}', [RepositoryController::class, 'viewSertifikat'])
+        ->name('guru.repository.sertifikat');
+
+    Route::post('/repository/store', [RepositoryController::class, 'store'])
+        ->name('guru.repository.store');
+
+    Route::put('/repository/update/{id}', [RepositoryController::class, 'update'])
+        ->name('guru.repository.update');
+
+    Route::delete('/repository/delete/{id}', [RepositoryController::class, 'destroy'])
+        ->name('guru.repository.delete');
 });
 
 /*

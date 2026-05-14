@@ -318,7 +318,7 @@ Loading<span class="dot">...</span>
 
     [
         'text' => 'Repository',
-        'route' => 'repositoryguru',
+        'route' => 'guru.repository',
         'icon' => 'fas fa-folder',
     ],
         [

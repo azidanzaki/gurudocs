@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Kelas::class, 'wali_kelas');
     }
 
+    public function repositories()
+    {
+        return $this->hasMany(Repository::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
