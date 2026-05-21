@@ -10,7 +10,7 @@
 
 <div class="row">
 
-@foreach($mapels as $mapel)
+@forelse($mapels as $mapel)
 
 <div class="col-md-4">
 
@@ -54,7 +54,31 @@
 
 </div>
 
-@endforeach
+@empty
+
+<div class="col-12">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body text-center py-5">
+
+            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486740.png"
+                 width="120"
+                 class="mb-3">
+
+            <h4>Anda Belum Memiliki Mata Pelajaran</h4>
+
+            <p class="text-muted">
+                Minta admin untuk menambahkan mata pelajaran yang Anda ampu.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+@endforelse
 
 </div>
 

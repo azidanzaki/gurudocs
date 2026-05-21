@@ -345,13 +345,6 @@ Loading<span class="dot">...</span>
             'icon' => 'fas fa-users',
             'can' => 'admin',
         ],
-
-        [
-            'text' => 'Template Dokumen',
-            'route' => 'admin.template',
-            'icon' => 'fas fa-folder-open',
-            'can' => 'admin',
-        ],
         [
             'header' => 'KEPALA SEKOLAH',
             'can' => 'kepala',
@@ -375,7 +368,7 @@ Loading<span class="dot">...</span>
         [
             'text' => 'Perangkat Pembelajaran',
             'icon' => 'fas fa-book',
-            'route' => 'guru.perangkat',
+            'route' => 'guru.perangkat.index',
             'can' => 'guru',
         ],
 
@@ -387,47 +380,21 @@ Loading<span class="dot">...</span>
         ],
 
         [
-            'text' => 'Dokumen Administratif Lainnya',
+            'text' => 'Template Dokumen',
             'icon' => 'far fa-folder-open',
-            'route' => 'guru.dokumenadmguru',
+            'route' => 'guru.dokumenadmguru.index',
             'can' => 'guru',
+        ],
+        [
+            'text' => 'Template Dokumen',
+            'icon' => 'far fa-folder-open',
+            'route' => 'guru.dokumenadmguru.index',
+            'can' => 'kepala',
         ],
         [
             'text' => 'Kelola Dokumen Administratif',
             'icon' => 'far fa-folder-open',
-            'route' => 'admin.dokumenadm',
-            'can' => 'admin',
-        ],
-
-        [
-            'header' => 'DOKUMEN NON ADMINISTRATIF',    
-            'can' => 'guru',
-        ],
-        [
-            'header' => 'DOKUMEN NON ADMINISTRATIF',    
-            'can' => 'admin',
-        ],
-        [
-            'header' => 'DOKUMEN NON ADMINISTRATIF',    
-            'can' => 'kepala',
-        ],
-
-        [
-            'text' => 'Dokumen',
-            'route' => 'guru.dokumennonadm',
-            'icon' => 'far fa-folder',
-            'can' => 'guru',
-        ],
-        [
-            'text' => 'Dokumen',
-            'route' => 'kepala.dokumennonadm',
-            'icon' => 'far fa-folder',
-            'can' => 'kepala',
-        ],
-        [
-            'text' => 'Kelola Dokumen',
-            'route' => 'admin.dokumennonadm',
-            'icon' => 'far fa-folder',
+            'route' => 'admin.dokumenadm.index',
             'can' => 'admin',
         ],
         [

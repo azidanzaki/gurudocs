@@ -53,6 +53,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Kelas::class, 'wali_kelas');
     }
 
+    // Kelas for a specific mapel
+    public function kelasForMapel(int $mapelId)
+    {
+        // Returns kelas IDs that are linked to both this teacher AND this mapel
+        // via the guru_kelas pivot. You may need to adjust based on your pivot structure.
+        return $this->kelas()->get();
+    }
+
     public function repositories()
     {
         return $this->hasMany(Repository::class);
