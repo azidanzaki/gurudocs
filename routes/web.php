@@ -26,6 +26,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'id'])) {
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('lang.switch');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH DASHBOARD REDIRECT
@@ -108,6 +115,10 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
     Route::get('perangkat/{mapel}/kelas/{kelas}', [PerangkatController::class, 'showKelas'])
         ->name('guru.perangkat.kelas');
 
+    // History Perangkat
+    Route::get('perangkat/{mapel}/kelas/{kelas}/history', [PerangkatController::class, 'history'])
+        ->name('guru.perangkat.history');
+
     // Template selected → edit form
     Route::get('perangkat/{mapel}/kelas/{kelas}/template/{template}', [PerangkatGuruController::class, 'edit'])
         ->name('guru.perangkat.edit');
@@ -123,6 +134,10 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
     // Print
     Route::get('perangkat/{perangkatGuru}/print', [PerangkatGuruController::class, 'print'])
         ->name('guru.perangkat.print');
+
+    // Toggle complete status
+    Route::post('perangkat/{perangkatGuru}/toggle-complete', [PerangkatGuruController::class, 'toggleComplete'])
+        ->name('guru.perangkat.toggleComplete');
 });
 
 /*
@@ -161,11 +176,21 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 |--------------------------------------------------------------------------
 */
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // General profile update route for all roles
+    Route::post('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
+});
+
 Route::middleware(['auth', 'can:kepala'])->group(function () {
 
     Route::get('/kepala/dashboard', [KepalaController::class, 'index'])->name('kepala.dashboard');
 
     Route::get('/kepala/penilaian', [PenilaianController::class, 'index'])->name('kepala.penilaian');
+    Route::get('/kepala/penilaian/guru/{id}', [PenilaianController::class, 'showGuru'])->name('kepala.penilaian.show');
 
     Route::get('/kepala/profil', [ProfilController::class, 'index'])->name('kepala.profil');
 });

@@ -40,7 +40,7 @@ class AuthenticatedSessionController extends Controller
             if (!$user->is_active) {
                 Auth::logout();
                 return back()->withErrors([
-                    'nip' => 'Akun Anda telah dinonaktifkan. Jika ingin masuk, minta admin untuk mengaktifkan akun Anda.',
+                    'nip' => __('Akun Anda telah dinonaktifkan. Jika ingin masuk, minta admin untuk mengaktifkan akun Anda.'),
                 ])->onlyInput('nip');
             }
 
@@ -59,7 +59,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return back()->withErrors([
-            'nip' => 'NIP atau password salah.',
+            'nip' => __('NIP atau password salah.'),
         ])->onlyInput('nip');
     }
 

@@ -25,9 +25,10 @@ class PerangkatGuruController extends Controller
                 'mapel_id' => $mapel->id,
                 'kelas_id' => $kelas->id,
                 'perangkat_template_id' => $template->id,
+                'tahun' => now()->year,
             ],
             [
-                'tahun_ajaran' => '2025/2026',
+                'tahun_ajaran' => now()->year . '/' . (now()->year + 1),
                 'semester' => 1,
                 'status' => 'draft',
             ]
@@ -136,6 +137,23 @@ class PerangkatGuruController extends Controller
         return view('guru.perangkat.print', compact('perangkatGuru', 'savedValues'));
     }
 
+    public function toggleComplete(Request $request, PerangkatGuru $perangkatGuru)
+    {
+        abort_if($perangkatGuru->user_id !== Auth::id(), 403);
+
+        $perangkatGuru->is_completed = !$perangkatGuru->is_completed;
+        $perangkatGuru->save();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_completed' => $perangkatGuru->is_completed,
+            ]);
+        }
+
+        return back()->with('success', 'Status penyelesaian perangkat diperbarui.');
+    }
+
     private function resolvePerangkatGuru(Mapel $mapel, Kelas $kelas, PerangkatTemplate $template): PerangkatGuru
     {
         return PerangkatGuru::where([
@@ -143,6 +161,7 @@ class PerangkatGuruController extends Controller
             'mapel_id' => $mapel->id,
             'kelas_id' => $kelas->id,
             'perangkat_template_id' => $template->id,
+            'tahun' => now()->year,
         ])->firstOrFail();
     }
 }

@@ -201,8 +201,8 @@
 
 @push('js')
 <script>
-const SAVE_URL   = @json(route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id]));
-const SUBMIT_URL = @json(route('guru.perangkat.submit', [$mapel->id, $kelas->id, $template->id]));
+const SAVE_URL   = "{{ route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id]) }}";
+const SUBMIT_URL = "{{ route('guru.perangkat.submit', [$mapel->id, $kelas->id, $template->id]) }}";
 
 function getFormData() {
     const form = document.getElementById('perangkat-form');

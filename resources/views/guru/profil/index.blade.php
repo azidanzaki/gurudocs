@@ -16,7 +16,7 @@
             <div class="card card-primary card-outline">
                 <div class="card-body box-profile">
                     <div class="text-center">
-                        <img src="{{ asset('images/logomts.png') }}" class="img-circle elevation-2 mb-3"
+                        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('images/logomts.png') }}" class="img-circle elevation-2 mb-3"
                             style="width:160px; height:160px; object-fit:cover;">
                     </div>
 
@@ -24,21 +24,37 @@
                         {{ auth()->user()->name }}
                     </h3>
 
-                    <p class="text-muted text-center">Jabatan (wali kelas, kepsek, staf TU, dll)</p>
+                    <p class="text-muted text-center">
+                        @if(auth()->user()->role === 'admin')
+                            Administrator
+                        @elseif(auth()->user()->role === 'kepala_sekolah')
+                            Kepala Sekolah
+                        @else
+                            Guru
+                        @endif
+                        <br><small>NIP: {{ auth()->user()->nip }}</small>
+                    </p>
 
+                    @if(auth()->user()->role === 'guru')
                     <ul class="list-group list-group-unbordered mb-3">
+                        @php
+                            $mengajar = auth()->user()->mengajar();
+                            $mapelsGrouped = [];
+                            foreach ($mengajar as $m) {
+                                $mapel = \App\Models\Mapel::find($m->mapel_id);
+                                $kelas = \App\Models\Kelas::find($m->kelas_id);
+                                if ($mapel && $kelas) {
+                                    $mapelsGrouped[$mapel->nama_mapel][] = $kelas->nama_kelas;
+                                }
+                            }
+                        @endphp
+                        @foreach($mapelsGrouped as $mapelName => $kelases)
                         <li class="list-group-item">
-                            <b>Mapel 1</b> <a class="float-right">IX1, IX2</a>
+                            <b>{{ $mapelName }}</b> <a class="float-right">{{ implode(', ', $kelases) }}</a>
                         </li>
-                        <li class="list-group-item">
-                            <b>Mapel 2</b> <a class="float-right">IX3, IX4</a>
-                        </li>
-                        <li class="list-group-item">
-                            <b>Mapel 3</b> <a class="float-right">IX5, IX6</a>
-                        </li>
+                        @endforeach
                     </ul>
-
-                    <a href="#" class="btn btn-primary btn-block"><b>Edit Foto Profil</b></a>
+                    @endif
                 </div>
                 <!-- /.card-body -->
             </div>
@@ -60,161 +76,88 @@
                             <!-- Post -->
                             <div class="post">
                                 <div class="user-block">
-                                    <img class="img-circle img-bordered-sm" src="../../dist/img/user1-128x128.jpg"
-                                        alt="user image">
-                                    <span class="username">
-                                        <a href="#">Jonathan Burke Jr.</a>
-                                        <a href="#" class="float-right btn-tool"><i class="fas fa-times"></i></a>
+                                    <span class="username ml-0">
+                                        <a href="#">Sistem Aktivitas</a>
                                     </span>
-                                    <span class="description">Shared publicly - 7:30 PM today</span>
+                                    <span class="description ml-0">Hari ini</span>
                                 </div>
-                                <!-- /.user-block -->
                                 <p>
-                                    testing 
+                                    Berhasil masuk (login) ke dalam sistem.
                                 </p>
-
-                                <p>
-                                    <a href="#" class="link-black text-sm mr-2"><i class="fas fa-share mr-1"></i>
-                                        Share</a>
-                                    <a href="#" class="link-black text-sm"><i class="far fa-thumbs-up mr-1"></i>
-                                        Like</a>
-                                    <span class="float-right">
-                                        <a href="#" class="link-black text-sm">
-                                            <i class="far fa-comments mr-1"></i> Comments (5)
-                                        </a>
-                                    </span>
-                                </p>
-
-                                <input class="form-control form-control-sm" type="text" placeholder="Type a comment">
                             </div>
-                            <!-- /.post -->
-
-                            <!-- Post -->
-                            <div class="post clearfix">
-                                <div class="user-block">
-                                    <img class="img-circle img-bordered-sm" src="../../dist/img/user7-128x128.jpg"
-                                        alt="User Image">
-                                    <span class="username">
-                                        <a href="#">Sarah Ross</a>
-                                        <a href="#" class="float-right btn-tool"><i class="fas fa-times"></i></a>
-                                    </span>
-                                    <span class="description">Sent you a message - 3 days ago</span>
-                                </div>
-                                <!-- /.user-block -->
-                                <p>
-                                    testing 
-                                </p>
-
-                                <form class="form-horizontal">
-                                    <div class="input-group input-group-sm mb-0">
-                                        <input class="form-control form-control-sm" placeholder="Response">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="btn btn-danger">Send</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <!-- /.post -->
-
-                            <!-- Post -->
-                            <div class="post">
-                                <div class="user-block">
-                                    <img class="img-circle img-bordered-sm" src="../../dist/img/user6-128x128.jpg"
-                                        alt="User Image">
-                                    <span class="username">
-                                        <a href="#">Adam Jones</a>
-                                        <a href="#" class="float-right btn-tool"><i class="fas fa-times"></i></a>
-                                    </span>
-                                    <span class="description">Posted 5 photos - 5 days ago</span>
-                                </div>
-                                <!-- /.user-block -->
-                                <div class="row mb-3">
-                                    <div class="col-sm-6">
-                                        <img class="img-fluid" src="../../dist/img/photo1.png" alt="Photo">
-                                    </div>
-                                    <!-- /.col -->
-                                    <div class="col-sm-6">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <img class="img-fluid mb-3" src="../../dist/img/photo2.png" alt="Photo">
-                                                <img class="img-fluid" src="../../dist/img/photo3.jpg" alt="Photo">
-                                            </div>
-                                            <!-- /.col -->
-                                            <div class="col-sm-6">
-                                                <img class="img-fluid mb-3" src="../../dist/img/photo4.jpg" alt="Photo">
-                                                <img class="img-fluid" src="../../dist/img/photo1.png" alt="Photo">
-                                            </div>
-                                            <!-- /.col -->
-                                        </div>
-                                        <!-- /.row -->
-                                    </div>
-                                    <!-- /.col -->
-                                </div>
-                                <!-- /.row -->
-
-                                <p>
-                                    <a href="#" class="link-black text-sm mr-2"><i class="fas fa-share mr-1"></i>
-                                        Share</a>
-                                    <a href="#" class="link-black text-sm"><i class="far fa-thumbs-up mr-1"></i>
-                                        Like</a>
-                                    <span class="float-right">
-                                        <a href="#" class="link-black text-sm">
-                                            <i class="far fa-comments mr-1"></i> Comments (5)
-                                        </a>
-                                    </span>
-                                </p>
-
-                                <input class="form-control form-control-sm" type="text" placeholder="Type a comment">
-                            </div>
-                            <!-- /.post -->
                         </div>
                         
                         <div class="tab-pane active" id="settings">
-                            <form class="form-horizontal">
+                            <form class="form-horizontal" method="POST" action="{{ route('profil.update') }}" enctype="multipart/form-data">
+                                @csrf
+                                
+                                @if(session('success'))
+                                    <div class="alert alert-success">{{ session('success') }}</div>
+                                @endif
+                                @if($errors->any())
+                                    <div class="alert alert-danger">
+                                        <ul class="mb-0">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
                                 <div class="form-group row">
-                                    <label for="inputName" class="col-sm-2 col-form-label">Name</label>
-                                    <div class="col-sm-10">
-                                        <input type="email" class="form-control" id="inputName" placeholder="Name">
+                                    <label for="inputFoto" class="col-sm-3 col-form-label">Foto Profil</label>
+                                    <div class="col-sm-9">
+                                        <input type="file" class="form-control-file mt-2" name="foto" id="inputFoto" accept="image/*">
+                                        <small class="text-muted">Biarkan kosong jika tidak ingin mengubah foto profil. Maksimal 2MB.</small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-                                    <div class="col-sm-10">
-                                        <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                                    <label for="inputName" class="col-sm-3 col-form-label">Nama</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="name" id="inputName" value="{{ old('name', auth()->user()->name) }}" required>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="inputName2" class="col-sm-2 col-form-label">Name</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputName2" placeholder="Name">
+                                    <label for="inputNIP" class="col-sm-3 col-form-label">NIP</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control bg-light" name="nip" id="inputNIP" value="{{ old('nip', auth()->user()->nip) }}" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="inputExperience" class="col-sm-2 col-form-label">Experience</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="inputExperience"
-                                            placeholder="Experience"></textarea>
+                                    <label for="inputEmail" class="col-sm-3 col-form-label">Email</label>
+                                    <div class="col-sm-9">
+                                        <input type="email" class="form-control" name="email" id="inputEmail" value="{{ old('email', auth()->user()->email) }}">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label for="inputSkills" class="col-sm-2 col-form-label">Skills</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
+                                    <label for="inputNoHP" class="col-sm-3 col-form-label">No. Handphone</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="no_hp" id="inputNoHP" value="{{ old('no_hp', auth()->user()->no_hp) }}">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <div class="offset-sm-2 col-sm-10">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox"> I agree to the <a href="#">terms and
-                                                    conditions</a>
-                                            </label>
-                                        </div>
+                                    <label for="inputPassword" class="col-sm-3 col-form-label">Password Baru <small class="text-muted">(opsional)</small></label>
+                                    <div class="col-sm-9">
+                                        <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Biarkan kosong jika tidak ingin mengubah password">
+                                        <small class="text-muted">
+                                            Status password Anda: 
+                                            @if(\Illuminate\Support\Facades\Hash::check('password', auth()->user()->password) || \Illuminate\Support\Facades\Hash::check(auth()->user()->nip, auth()->user()->password))
+                                                <span class="text-danger font-weight-bold">Masih menggunakan password default sistem! Harap segera diganti.</span>
+                                            @else
+                                                <span class="text-success font-weight-bold">Sudah aman (-)</span>
+                                            @endif
+                                        </small>
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <div class="offset-sm-2 col-sm-10">
-                                        <button type="submit" class="btn btn-danger">Submit</button>
+                                    <label for="inputPasswordConfirm" class="col-sm-3 col-form-label">Konfirmasi Password</label>
+                                    <div class="col-sm-9">
+                                        <input type="password" class="form-control" name="password_confirmation" id="inputPasswordConfirm" placeholder="Ulangi password baru">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="offset-sm-3 col-sm-9">
+                                        <button type="submit" class="btn btn-danger">Simpan Perubahan</button>
                                     </div>
                                 </div>
                             </form>

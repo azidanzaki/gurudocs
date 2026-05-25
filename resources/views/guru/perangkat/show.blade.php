@@ -27,14 +27,14 @@
                         <i class="fas fa-chalkboard text-white"></i>
                     </div>
                     <div class="ml-3">
-                        <h5 class="mb-0 font-weight-bold">{{ $k->nama_kelas }}</h5>
+                        <h5 class="mb-0 font-weight-bold">{{ $k->nama_kelas_simple }}</h5>
                         <small class="text-muted">Kelas</small>
                     </div>
                 </div>
 
                 <a href="{{ route('guru.perangkat.kelas', [$mapel->id, $k->id]) }}"
                    class="btn btn-primary btn-block mt-auto">
-                    Pilih Kelas
+                    Lengkapi Perangkat
                 </a>
 
             </div>

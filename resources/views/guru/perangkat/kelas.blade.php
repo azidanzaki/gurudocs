@@ -1,16 +1,19 @@
 @extends('adminlte::page')
 
-@section('title', 'Perangkat — ' . $kelas->nama_kelas)
+@section('title', 'Perangkat — ' . $kelas->nama_kelas_simple)
 
 @section('content_header')
-    <h1>Perangkat &mdash; {{ $mapel->nama_mapel }} / {{ $kelas->nama_kelas }}</h1>
+    <h1>Perangkat &mdash; {{ $mapel->nama_mapel }} / {{ $kelas->nama_kelas_simple }}</h1>
 @stop
 
 @section('content')
 
-<div class="mb-3">
+<div class="mb-3 d-flex justify-content-between align-items-center">
     <a href="{{ route('guru.perangkat.show', $mapel->id) }}" class="btn btn-sm btn-outline-secondary">
         <i class="fas fa-arrow-left"></i> Kembali
+    </a>
+    <a href="{{ route('guru.perangkat.history', [$mapel->id, $kelas->id]) }}" class="btn btn-sm btn-info">
+        <i class="fas fa-history"></i> History Perangkat
     </a>
 </div>
 
@@ -49,6 +52,17 @@
                     <p class="text-muted small mb-3">{{ $template->deskripsi }}</p>
                 @endif
 
+                @if($pg)
+                    <div class="form-group mb-3 mt-2">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input toggle-complete-checkbox" id="check_{{ $pg->id }}" data-id="{{ $pg->id }}" {{ $pg->is_completed ? 'checked' : '' }}>
+                            <label class="custom-control-label font-weight-normal text-muted" for="check_{{ $pg->id }}">
+                                {{ $pg->is_completed ? 'Perangkat Selesai (Ceklis)' : 'Tandai Perangkat Selesai' }}
+                            </label>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="mt-auto d-flex gap-2">
                     <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id]) }}"
                        class="btn btn-success flex-fill">
@@ -84,3 +98,39 @@
 </div>
 
 @stop
+
+@push('js')
+<script>
+$(document).ready(function() {
+    $('.toggle-complete-checkbox').change(function() {
+        var checkbox = $(this);
+        var pgId = checkbox.data('id');
+        var isChecked = checkbox.is(':checked');
+        var label = checkbox.siblings('label');
+
+        $.ajax({
+            url: '/guru/perangkat/' + pgId + '/toggle-complete',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    if (response.is_completed) {
+                        label.text('Perangkat Selesai (Ceklis)');
+                        checkbox.prop('checked', true);
+                    } else {
+                        label.text('Tandai Perangkat Selesai');
+                        checkbox.prop('checked', false);
+                    }
+                }
+            },
+            error: function() {
+                checkbox.prop('checked', !isChecked);
+                alert('Gagal memperbarui status perangkat.');
+            }
+        });
+    });
+});
+</script>
+@endpush

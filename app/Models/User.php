@@ -41,12 +41,12 @@ class User extends Authenticatable
 
     public function mapels()
     {
-        return $this->belongsToMany(Mapel::class, 'guru_mapel');
+        return $this->belongsToMany(Mapel::class, 'guru_mapel_kelas', 'user_id', 'mapel_id')->distinct();
     }
 
     public function kelas()
     {
-        return $this->belongsToMany(Kelas::class, 'guru_kelas');
+        return $this->belongsToMany(Kelas::class, 'guru_mapel_kelas', 'user_id', 'kelas_id')->distinct();
     }
 
     public function waliKelas()
@@ -57,9 +57,14 @@ class User extends Authenticatable
     // Kelas for a specific mapel
     public function kelasForMapel(int $mapelId)
     {
-        // Returns kelas IDs that are linked to both this teacher AND this mapel
-        // via the guru_kelas pivot. You may need to adjust based on your pivot structure.
-        return $this->kelas()->get();
+        return $this->belongsToMany(Kelas::class, 'guru_mapel_kelas', 'user_id', 'kelas_id')
+                    ->wherePivot('mapel_id', $mapelId)
+                    ->get();
+    }
+
+    public function mengajar()
+    {
+        return \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')->where('user_id', $this->id)->get();
     }
 
     public function repositories()

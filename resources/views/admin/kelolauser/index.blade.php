@@ -1,16 +1,16 @@
 @extends('adminlte::page')
 
-@section('title', 'Manajemen User')
+@section('title', __('Manajemen User'))
 
 @section('content_header')
-<h1>Manajemen User</h1>
+<h1>{{ __('Manajemen User') }}</h1>
 @stop
 
 @section('content')
 
 @if(session('success'))
     <div id="success-alert" class="alert alert-success">
-        {{ session('success') }}
+        {{ __(session('success')) }}
     </div>
 @endif
 
@@ -21,13 +21,13 @@
         <div class="d-flex justify-content-between align-items-center w-100">
 
             <h3 class="card-title mb-0">
-                Data User
+                {{ __('Data User') }}
             </h3>
 
             <button class="btn btn-success" data-toggle="modal" data-target="#modalTambahUser">
 
                 <i class="fas fa-plus"></i>
-                Tambah User
+                {{ __('Tambah User') }}
 
             </button>
 
@@ -42,13 +42,13 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Nama</th>
+                    <th>{{ __('Nama') }}</th>
                     <th>NIP</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Password Default</th>
-                    <th>Dibuat</th>
-                    <th width="180">Aksi</th>
+                    <th>{{ __('Role') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Password Default') }}</th>
+                    <th>{{ __('Dibuat') }}</th>
+                    <th width="180">{{ __('Aksi') }}</th>
                 </tr>
             </thead>
 
@@ -69,23 +69,23 @@
 
                             @elseif($user->role == 'kepala_sekolah')
                                 <span class="badge badge-warning">
-                                    Kepala Sekolah
+                                    {{ __('Kepala Sekolah') }}
                                 </span>
 
                             @else
                                 <span class="badge badge-success">
-                                    Guru
+                                    {{ __('Guru') }}
                                 </span>
                             @endif
                         </td>
                         <td>
                             @if($user->is_active)
                                 <span class="badge badge-success">
-                                    Aktif
+                                    {{ __('Aktif') }}
                                 </span>
                             @else
                                 <span class="badge badge-danger">
-                                    Nonaktif
+                                    {{ __('Nonaktif') }}
                                 </span>
                             @endif
                         </td>
@@ -103,7 +103,7 @@
                             <!-- EDIT -->
                             <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
                                 data-target="#modalEdit{{ $user->id }}">
-                                <i class="fas fa-pencil-alt"></i> Edit
+                                <i class="fas fa-pencil-alt"></i> {{ __('Edit') }}
                             </a>
                             <!-- TOGGLE AKTIF / NONAKTIF -->
                             <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="d-inline">
@@ -113,13 +113,13 @@
 
                                 @if($user->is_active)
                                     <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Nonaktifkan user ini?')">
-                                        <i class="fas fa-user-slash"></i> Nonaktifkan
+                                        onclick="return confirm('{{ __('Nonaktifkan user ini?') }}')">
+                                        <i class="fas fa-user-slash"></i> {{ __('Nonaktifkan') }}
                                     </button>
                                 @else
                                     <button type="submit" class="btn btn-success btn-sm"
-                                        onclick="return confirm('Aktifkan user ini?')">
-                                        <i class="fas fa-user-check"></i> Aktifkan
+                                        onclick="return confirm('{{ __('Aktifkan user ini?') }}')">
+                                        <i class="fas fa-user-check"></i> {{ __('Aktifkan') }}
                                     </button>
                                 @endif
 
@@ -131,8 +131,8 @@
                 @empty
 
                     <tr>
-                        <td colspan="5" class="text-center">
-                            Belum ada user
+                        <td colspan="8" class="text-center">
+                            {{ __('Belum ada user') }}
                         </td>
                     </tr>
 
@@ -156,7 +156,7 @@
             <div class="modal-header bg-success">
 
                 <h5 class="modal-title">
-                    Tambah User
+                    {{ __('Tambah User') }}
                 </h5>
 
                 <button type="button" class="close text-white" data-dismiss="modal">
@@ -176,7 +176,7 @@
 
                     <!-- NAMA -->
                     <div class="form-group">
-                        <label>Nama</label>
+                        <label>{{ __('Nama') }}</label>
 
                         <input type="text" name="name" class="form-control" required>
                     </div>
@@ -190,16 +190,16 @@
 
                     <!-- ROLE -->
                     <div class="form-group">
-                        <label>Role</label>
+                        <label>{{ __('Role') }}</label>
 
                         <select name="role" class="form-control" required>
 
                             <option value="guru">
-                                Guru
+                                {{ __('Guru') }}
                             </option>
 
                             <option value="kepala">
-                                Kepala Sekolah
+                                {{ __('Kepala Sekolah') }}
                             </option>
 
                             <option value="admin">
@@ -212,7 +212,7 @@
                     <div class="form-group">
 
                         <label>
-                            Mata Pelajaran & Kelas
+                            {{ __('Mata Pelajaran & Kelas') }}
                         </label>
 
                         <div id="mapel-wrapper">
@@ -225,7 +225,7 @@
                                     <select name="mapels[]" class="form-control">
 
                                         <option value="">
-                                            -- Pilih Mapel --
+                                            {{ __('-- Pilih Mapel --') }}
                                         </option>
 
                                         @foreach($mapels as $mapel)
@@ -246,7 +246,7 @@
                                     <select name="kelas[]" class="form-control">
 
                                         <option value="">
-                                            -- Pilih Kelas --
+                                            {{ __('-- Pilih Kelas --') }}
                                         </option>
 
                                         @foreach($kelas as $k)
@@ -269,7 +269,7 @@
                         <button type="button" class="btn btn-sm btn-primary mt-2" onclick="tambahMapelKelas()">
 
                             <i class="fas fa-plus"></i>
-                            Tambah Mapel
+                            {{ __('Tambah Mapel') }}
 
                         </button>
 
@@ -279,7 +279,7 @@
                     <div class="form-group">
 
                         <label>
-                            Wali Kelas
+                            {{ __('Wali Kelas') }}
                         </label>
 
                         <div id="wali-wrapper">
@@ -291,7 +291,7 @@
                                     <select name="wali_kelas[]" class="form-control">
 
                                         <option value="">
-                                            -- Pilih Kelas --
+                                            {{ __('-- Pilih Kelas --') }}
                                         </option>
 
                                         @foreach($kelas as $k)
@@ -314,7 +314,7 @@
                         <button type="button" class="btn btn-sm btn-warning mt-2" onclick="tambahWaliKelas()">
 
                             <i class="fas fa-plus"></i>
-                            Tambah Wali Kelas
+                            {{ __('Tambah Wali Kelas') }}
 
                         </button>
 
@@ -326,14 +326,14 @@
 
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
 
-                        Batal
+                        {{ __('Batal') }}
 
                     </button>
 
                     <button type="submit" class="btn btn-success">
 
                         <i class="fas fa-save"></i>
-                        Simpan
+                        {{ __('Simpan') }}
 
                     </button>
 
@@ -362,7 +362,7 @@
                     <div class="modal-header bg-warning">
 
                         <h5 class="modal-title">
-                            Edit User
+                            {{ __('Edit User') }}
                         </h5>
 
                         <button type="button" class="close" data-dismiss="modal">
@@ -378,7 +378,7 @@
     <!-- NAMA -->
     <div class="form-group">
 
-        <label>Nama</label>
+        <label>{{ __('Nama') }}</label>
 
         <input type="text"
                name="name"
@@ -404,18 +404,18 @@
     <!-- ROLE -->
     <div class="form-group">
 
-        <label>Role</label>
+        <label>{{ __('Role') }}</label>
 
         <select name="role" class="form-control">
 
             <option value="guru"
                 {{ $user->role == 'guru' ? 'selected' : '' }}>
-                Guru
+                {{ __('Guru') }}
             </option>
 
             <option value="kepala_sekolah"
                 {{ $user->role == 'kepala_sekolah' ? 'selected' : '' }}>
-                Kepala Sekolah
+                {{ __('Kepala Sekolah') }}
             </option>
 
             <option value="admin"
@@ -433,12 +433,12 @@
     <div class="form-group">
 
         <label>
-            Mata Pelajaran & Kelas
+            {{ __('Mata Pelajaran & Kelas') }}
         </label>
 
         <div id="edit-mapel-wrapper-{{ $user->id }}">
 
-            @foreach($user->mapels as $index => $mapel)
+            @foreach($user->mengajar() as $index => $mengajar)
 
                 <div class="row mb-2">
 
@@ -450,7 +450,7 @@
                             @foreach($mapels as $m)
 
                                 <option value="{{ $m->id }}"
-                                    {{ $mapel->id == $m->id ? 'selected' : '' }}>
+                                    {{ $mengajar->mapel_id == $m->id ? 'selected' : '' }}>
 
                                     {{ $m->nama_mapel }}
 
@@ -470,7 +470,7 @@
                             @foreach($kelas as $k)
 
                                 <option value="{{ $k->id }}"
-                                    {{ $user->kelas->contains($k->id) ? 'selected' : '' }}>
+                                    {{ $mengajar->kelas_id == $k->id ? 'selected' : '' }}>
 
                                     {{ $k->nama_kelas }}
 
@@ -507,7 +507,7 @@
                 onclick="tambahEditMapel({{ $user->id }})">
 
             <i class="fas fa-plus"></i>
-            Tambah Mapel
+            {{ __('Tambah Mapel') }}
 
         </button>
 
@@ -519,7 +519,7 @@
     <div class="form-group">
 
         <label>
-            Wali Kelas
+            {{ __('Wali Kelas') }}
         </label>
 
         <div id="edit-wali-wrapper-{{ $user->id }}">
@@ -571,7 +571,7 @@
                 onclick="tambahEditWali({{ $user->id }})">
 
             <i class="fas fa-plus"></i>
-            Tambah Wali
+            {{ __('Tambah Wali Kelas') }}
 
         </button>
 
@@ -584,7 +584,7 @@
                         <button type="submit" class="btn btn-warning">
 
                             <i class="fas fa-save"></i>
-                            Update
+                            {{ __('Update') }}
 
                         </button>
 

@@ -9,9 +9,13 @@ class PerangkatGuru extends Model
     protected $fillable = [
         'user_id', 'mapel_id', 'kelas_id', 'perangkat_template_id',
         'tahun_ajaran', 'semester', 'status', 'submitted_at',
+        'tahun', 'is_completed',
     ];
 
-    protected $casts = ['submitted_at' => 'datetime'];
+    protected $casts = [
+        'submitted_at' => 'datetime',
+        'is_completed' => 'boolean',
+    ];
 
     public function guru()
     {
