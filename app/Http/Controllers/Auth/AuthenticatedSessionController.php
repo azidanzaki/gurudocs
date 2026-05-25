@@ -35,10 +35,16 @@ class AuthenticatedSessionController extends Controller
                 'password' => $request->password
             ])
         ) {
+            $user = Auth::user();
+
+            if (!$user->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'nip' => 'Akun Anda telah dinonaktifkan. Jika ingin masuk, minta admin untuk mengaktifkan akun Anda.',
+                ])->onlyInput('nip');
+            }
 
             $request->session()->regenerate();
-
-            $user = Auth::user();
 
             // REDIRECT BERDASARKAN ROLE
             if ($user->role == 'admin') {
@@ -53,7 +59,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return back()->withErrors([
-            'nip' => 'NIp atau password salah.',
+            'nip' => 'NIP atau password salah.',
         ])->onlyInput('nip');
     }
 

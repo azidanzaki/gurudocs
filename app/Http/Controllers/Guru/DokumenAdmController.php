@@ -24,6 +24,11 @@ class DokumenAdmController extends Controller
             $query->where('jenis_dokumen', $request->jenis_dokumen);
         }
 
+        // FILTER TAHUN
+        if ($request->tahun_dokumen) {
+            $query->where('tahun', $request->tahun_dokumen);
+        }
+
         $dokumen = $query->latest()->get();
 
         $jenisDokumen = DokumenAdm::select('jenis_dokumen')

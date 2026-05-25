@@ -11,6 +11,7 @@ class DokumenAdm extends Model
     protected $fillable = [
         'judul',
         'jenis_dokumen',
+        'tahun',
         'file_word',
         'file_pdf',
         'created_by'

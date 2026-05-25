@@ -91,10 +91,13 @@ class KelolaUserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $user->delete();
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $statusMessage = $user->is_active ? 'User berhasil diaktifkan' : 'User berhasil dinonaktifkan';
 
         return redirect()
             ->route('admin.users')
-            ->with('success', 'User berhasil dihapus');
+            ->with('success', $statusMessage);
     }
 }

@@ -14,8 +14,15 @@
 
     <div class="card-body text-center">
 
+        <div class="alert alert-info border-0 shadow-sm text-left mb-4">
+            <i class="fas fa-info-circle mr-2"></i>
+            <strong>Catatan:</strong> Dokumen di bawah ini hanya merupakan berkas pratinjau (preview). Untuk mengisi atau menggunakan template ini, silakan unduh dokumen aslinya menggunakan tombol download di bawah.
+        </div>
+
         @php
-            $ext = pathinfo($dokumen->file, PATHINFO_EXTENSION);
+            $ext = $dokumen->file_pdf ? 'pdf' : ($dokumen->file_word ? 'docx' : '');
+            $wordExt = $dokumen->file_word ? pathinfo($dokumen->file_word, PATHINFO_EXTENSION) : '';
+            $isExcel = in_array($wordExt, ['xls', 'xlsx']);
         @endphp
 
         {{-- PDF PREVIEW --}}
@@ -26,10 +33,10 @@
 
         @else
 
-            <i class="fas fa-file-word text-primary" style="font-size: 120px;"></i>
+            <i class="fas {{ $isExcel ? 'fa-file-excel text-success' : 'fa-file-word text-primary' }}" style="font-size: 120px;"></i>
 
             <h4 class="mt-3">
-                File Word
+                File {{ $isExcel ? 'Excel' : 'Word' }}
             </h4>
 
         @endif
@@ -48,13 +55,13 @@
 
             @endif
 
-            {{-- DOWNLOAD WORD --}}
+            {{-- DOWNLOAD TEMPLATE (WORD / EXCEL) --}}
             @if($dokumen->file_word)
 
-                <a href="{{ asset('storage/' . $dokumen->file_word) }}" download class="btn btn-primary">
+                <a href="{{ asset('storage/' . $dokumen->file_word) }}" download class="btn {{ $isExcel ? 'btn-success' : 'btn-primary' }}">
 
-                    <i class="fas fa-file-word"></i>
-                    Download Word
+                    <i class="fas {{ $isExcel ? 'fa-file-excel' : 'fa-file-word' }}"></i>
+                    Download {{ $isExcel ? 'Excel' : 'Word' }}
 
                 </a>
 

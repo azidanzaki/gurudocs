@@ -45,6 +45,7 @@
                     <th>Nama</th>
                     <th>NIP</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Password Default</th>
                     <th>Dibuat</th>
                     <th width="180">Aksi</th>
@@ -78,6 +79,17 @@
                             @endif
                         </td>
                         <td>
+                            @if($user->is_active)
+                                <span class="badge badge-success">
+                                    Aktif
+                                </span>
+                            @else
+                                <span class="badge badge-danger">
+                                    Nonaktif
+                                </span>
+                            @endif
+                        </td>
+                        <td>
                             <span class="badge badge-secondary">
                                 {{ $user->default_password }}
                             </span>
@@ -91,24 +103,25 @@
                             <!-- EDIT -->
                             <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
                                 data-target="#modalEdit{{ $user->id }}">
-                                <i class="fas fa-pencil-alt">
-                                    Edit
-                                </i>
+                                <i class="fas fa-pencil-alt"></i> Edit
                             </a>
-                            <!-- HAPUS -->
+                            <!-- TOGGLE AKTIF / NONAKTIF -->
                             <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="d-inline">
 
                                 @csrf
                                 @method('DELETE')
 
-                                <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Hapus user ini?')">
-
-                                    <i class="fas fa-trash">
-                                        Delete
-                                    </i>
-
-                                </button>
+                                @if($user->is_active)
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Nonaktifkan user ini?')">
+                                        <i class="fas fa-user-slash"></i> Nonaktifkan
+                                    </button>
+                                @else
+                                    <button type="submit" class="btn btn-success btn-sm"
+                                        onclick="return confirm('Aktifkan user ini?')">
+                                        <i class="fas fa-user-check"></i> Aktifkan
+                                    </button>
+                                @endif
 
                             </form>
 

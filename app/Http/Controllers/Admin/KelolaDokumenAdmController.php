@@ -20,7 +20,8 @@ class KelolaDokumenAdmController extends Controller
         $request->validate([
             'judul' => 'required',
             'jenis_dokumen' => 'required',
-            'file' => 'required|mimes:pdf,doc,docx|max:20480',
+            'tahun' => 'required',
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx|max:20480',
         ]);
 
         $file = $request->file('file');
@@ -104,6 +105,8 @@ class KelolaDokumenAdmController extends Controller
             'judul' => $request->judul,
 
             'jenis_dokumen' => $request->jenis_dokumen,
+
+            'tahun' => $request->tahun,
 
             'file_word' => $wordPath,
 

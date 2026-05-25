@@ -65,8 +65,8 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
     //dashboard
     Route::get('/dashboard', [GuruController::class, 'index'])->name('guru.dashboard');
 
-    Route::get('/dokumen-administasi', [DokumenAdmController::class, 'index'])->name('guru.dokumenadmguru.index');
-    Route::get('/dokumen-administasi/{id}', [DokumenAdmController::class, 'show'])->name('guru.dokumenadmguru.show');
+    Route::get('/template-dokumen', [DokumenAdmController::class, 'index'])->name('guru.dokumenadmguru.index');
+    Route::get('/template-dokumen/{id}', [DokumenAdmController::class, 'show'])->name('guru.dokumenadmguru.show');
 
     // profil
     Route::get('/profil', [ProfilController::class, 'index'])->name('guru.profil');

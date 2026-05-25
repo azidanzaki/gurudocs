@@ -46,6 +46,7 @@
                     <th width="50">No</th>
                     <th>Judul Dokumen</th>
                     <th>Jenis</th>
+                    <th>Tahun</th>
                     <th>Dibuat</th>
                     <th width="250">Aksi</th>
                 </tr>
@@ -65,32 +66,20 @@
 
                         <td>
 
-                            @if($item->jenis_dokumen == 'RPP')
-                                <span class="badge badge-primary">
-                                    RPP
-                                </span>
-
-                            @elseif($item->jenis_dokumen == 'Modul Ajar')
+                            @if($item->jenis_dokumen == 'Dokumen Administratif')
                                 <span class="badge badge-success">
-                                    Modul Ajar
+                                    Dokumen Administratif
                                 </span>
-
-                            @elseif($item->jenis_dokumen == 'Silabus')
-                                <span class="badge badge-warning">
-                                    Silabus
-                                </span>
-
-                            @elseif($item->jenis_dokumen == 'Prota')
-                                <span class="badge badge-danger">
-                                    Prota
-                                </span>
-
                             @else
                                 <span class="badge badge-info">
-                                    {{ $item->jenis_dokumen }}
+                                    Dokumen Non Administratif
                                 </span>
                             @endif
 
+                        </td>
+
+                        <td>
+                            {{ $item->tahun ?? '-' }}
                         </td>
 
                         <td>
@@ -113,14 +102,17 @@
 
                             @endif
 
-                            {{-- DOWNLOAD WORD --}}
+                            {{-- DOWNLOAD TEMPLATE --}}
                             @if($item->file_word)
-
+                                @php
+                                    $wordExt = pathinfo($item->file_word, PATHINFO_EXTENSION);
+                                    $isExcel = in_array($wordExt, ['xls', 'xlsx']);
+                                @endphp
                                 <a href="{{ asset('storage/' . $item->file_word) }}"
                                    class="btn btn-success btn-sm">
 
-                                    <i class="fas fa-download"></i>
-                                    Word
+                                    <i class="fas {{ $isExcel ? 'fa-file-excel' : 'fa-file-word' }}"></i>
+                                    {{ $isExcel ? 'Excel' : 'Word' }}
 
                                 </a>
 
@@ -237,25 +229,37 @@
                                 -- Pilih Jenis --
                             </option>
 
-                            <option value="RPP">
-                                RPP
+                            <option value="Dokumen Administratif">
+                                Dokumen Administratif
                             </option>
 
-                            <option value="Modul Ajar">
-                                Modul Ajar
+                            <option value="Dokumen Non Administratif">
+                                Dokumen Non Administratif
                             </option>
 
-                            <option value="Silabus">
-                                Silabus
+                        </select>
+
+                    </div>
+
+                    {{-- TAHUN --}}
+                    <div class="form-group">
+
+                        <label>
+                            Tahun Dokumen
+                        </label>
+
+                        <select name="tahun"
+                                class="form-control"
+                                required>
+
+                            <option value="">
+                                -- Pilih Tahun --
                             </option>
 
-                            <option value="Prota">
-                                Prota
-                            </option>
-
-                            <option value="Promes">
-                                Promes
-                            </option>
+                            <option value="2026">Tahun 2026</option>
+                            <option value="2025">Tahun 2025</option>
+                            <option value="2024">Tahun 2024</option>
+                            <option value="2023">Tahun 2023</option>
 
                         </select>
 
@@ -271,11 +275,14 @@
                         <input type="file"
                                name="file"
                                class="form-control"
-                               accept=".pdf,.doc,.docx"
+                               accept=".pdf,.doc,.docx,.xls,.xlsx"
                                required>
 
-                        <small class="text-muted">
-                            Format: PDF, DOC, DOCX (Max 20MB)
+                        <small class="text-muted d-block">
+                            Format: PDF, DOC, DOCX, XLS, XLSX (Max 20MB)
+                        </small>
+                        <small class="text-info font-weight-bold d-block mt-1">
+                            Catatan: Format file yang Anda unggah adalah format asli yang akan diunduh langsung oleh user (Guru).
                         </small>
 
                     </div>
