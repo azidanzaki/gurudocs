@@ -87,6 +87,9 @@
             <table class="table table-sm table-borderless mb-0">
                 <tr><th width="140">Tahun Ajaran</th><td>: {{ $perangkatGuru->tahun_ajaran }}</td></tr>
                 <tr><th>Semester</th><td>: {{ $perangkatGuru->semester }}</td></tr>
+                @if($perangkatGuru->bab > 0)
+                <tr><th>Bab Ke-</th><td>: {{ $perangkatGuru->bab }}</td></tr>
+                @endif
                 <tr><th>Status</th>
                     <td>:
                         <span class="badge badge-{{ $perangkatGuru->statusBadgeClass() }}">
@@ -201,8 +204,8 @@
 
 @push('js')
 <script>
-const SAVE_URL   = "{{ route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id]) }}";
-const SUBMIT_URL = "{{ route('guru.perangkat.submit', [$mapel->id, $kelas->id, $template->id]) }}";
+const SAVE_URL   = "{{ route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
+const SUBMIT_URL = "{{ route('guru.perangkat.submit', [$mapel->id, $kelas->id, $template->id]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
 
 function getFormData() {
     const form = document.getElementById('perangkat-form');

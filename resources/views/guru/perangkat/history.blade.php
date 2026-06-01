@@ -1,15 +1,15 @@
 @extends('adminlte::page')
 
-@section('title', 'History Perangkat — ' . $kelas->nama_kelas_simple)
+@section('title', 'History Perangkat')
 
 @section('content_header')
-    <h1>History Perangkat &mdash; {{ $mapel->nama_mapel }} / {{ $kelas->nama_kelas_simple }}</h1>
+    <h1>History Perangkat Seluruh Mata Pelajaran</h1>
 @stop
 
 @section('content')
 
 <div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}" class="btn btn-sm btn-outline-secondary">
+    <a href="{{ route('guru.perangkat.index') }}" class="btn btn-sm btn-outline-secondary">
         <i class="fas fa-arrow-left"></i> Kembali
     </a>
 </div>
@@ -21,7 +21,7 @@
         </h4>
     </div>
     <div class="card-body">
-        <form method="GET" action="{{ route('guru.perangkat.history', [$mapel->id, $kelas->id]) }}" class="form-inline">
+        <form method="GET" action="{{ route('guru.perangkat.history') }}" class="form-inline">
             <div class="form-group mr-2">
                 <select name="tahun" class="form-control" onchange="this.form.submit()">
                     @if($availableYears->isEmpty())
@@ -63,6 +63,8 @@
                                         {{ $item->is_completed ? 'Selesai' : 'Draft' }}
                                     </span>
                                 </div>
+                                <p class="text-muted small mb-1">Mapel: {{ $item->mapel->nama_mapel }}</p>
+                                <p class="text-muted small mb-1">Kelas: {{ $item->kelas->nama_kelas }}</p>
                                 <p class="text-muted small mb-2">Tahun Ajaran: {{ $item->tahun_ajaran }}</p>
                                 <a href="{{ route('guru.perangkat.print', $item->id) }}" target="_blank" class="btn btn-xs btn-outline-primary">
                                     <i class="fas fa-print"></i> Cetak / Preview

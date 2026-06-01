@@ -11,6 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('nama_perangkat');       // e.g. "RPP", "Silabus"
             $table->text('deskripsi')->nullable();
+            $table->enum('frekuensi', ['tahunan', 'semesteran', 'per_bab'])->default('tahunan');
             $table->unsignedTinyInteger('urutan')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
@@ -38,14 +39,15 @@ return new class extends Migration {
             $table->foreignId('perangkat_template_id')
                   ->constrained()->cascadeOnDelete();
             $table->string('tahun_ajaran');         // e.g. "2025/2026"
-            $table->unsignedTinyInteger('semester');// 1 or 2
+            $table->unsignedTinyInteger('semester'); // 1 or 2
+            $table->unsignedTinyInteger('bab')->default(0); // 0 means not per bab
             $table->enum('status', ['draft', 'submitted', 'approved', 'rejected'])
                   ->default('draft');
             $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
 
             $table->unique(
-                ['user_id', 'mapel_id', 'kelas_id', 'perangkat_template_id', 'tahun_ajaran', 'semester'],
+                ['user_id', 'mapel_id', 'kelas_id', 'perangkat_template_id', 'tahun_ajaran', 'semester', 'bab'],
                 'unique_perangkat_guru'
             );
         });

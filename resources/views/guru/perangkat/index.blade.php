@@ -8,6 +8,12 @@
 
 @section('content')
 
+<div class="mb-3 d-flex justify-content-end">
+    <a href="{{ route('guru.perangkat.history') }}" class="btn btn-info">
+        <i class="fas fa-history"></i> History Dokumen
+    </a>
+</div>
+
 <div class="row">
 
 @forelse($mapels as $mapel)

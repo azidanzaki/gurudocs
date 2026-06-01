@@ -50,44 +50,36 @@ class PerangkatController extends Controller
             'mapel_id'  => $mapel->id,
             'kelas_id'  => $kelas->id,
             'tahun'     => $currentYear,
-        ])->get()->keyBy('perangkat_template_id');
+        ])->get()->groupBy('perangkat_template_id');
 
         return view('guru.perangkat.kelas', compact('mapel', 'kelas', 'templates', 'progress'));
     }
 
-    public function history(\Illuminate\Http\Request $request, Mapel $mapel, Kelas $kelas)
+    public function history(\Illuminate\Http\Request $request)
     {
-        $kelas->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
-
-        $availableYears = PerangkatGuru::where([
-            'user_id'   => Auth::id(),
-            'mapel_id'  => $mapel->id,
-            'kelas_id'  => $kelas->id,
-        ])->where(function($q) {
-            $q->where('tahun', '<', now()->year)->orWhereNull('tahun');
-        })
-          ->distinct()
-          ->pluck('tahun')
-          ->sortDesc();
+        $availableYears = PerangkatGuru::where('user_id', Auth::id())
+            ->where(function($q) {
+                $q->where('tahun', '<', now()->year)->orWhereNull('tahun');
+            })
+            ->distinct()
+            ->pluck('tahun')
+            ->sortDesc();
 
         $selectedYear = $request->get('tahun', $availableYears->first());
 
         $historyItems = collect();
         if ($selectedYear || $availableYears->contains(null)) {
-            $query = PerangkatGuru::where([
-                'user_id'   => Auth::id(),
-                'mapel_id'  => $mapel->id,
-                'kelas_id'  => $kelas->id,
-            ])->with('template');
+            $query = PerangkatGuru::where('user_id', Auth::id())
+                ->with(['template', 'mapel', 'kelas']);
             
             if ($selectedYear) {
                 $query->where('tahun', $selectedYear);
             } else {
                 $query->whereNull('tahun');
             }
-            $historyItems = $query->get();
+            $historyItems = $query->orderBy('mapel_id')->orderBy('kelas_id')->get();
         }
 
-        return view('guru.perangkat.history', compact('mapel', 'kelas', 'availableYears', 'selectedYear', 'historyItems'));
+        return view('guru.perangkat.history', compact('availableYears', 'selectedYear', 'historyItems'));
     }
 }

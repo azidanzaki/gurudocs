@@ -117,5 +117,9 @@ class DatabaseSeeder extends Seeder
                 'nama_mapel' => $mapel,
             ]);
         }
+
+        $this->call([
+            PerangkatTemplateSeeder::class,
+        ]);
     }
 }

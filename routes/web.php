@@ -108,19 +108,12 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
         ->name('guru.perangkat.index');
 
     // Subject detail → show classes (this is the "siapkan perangkat" destination)
-    Route::get('perangkat/{mapel}', [PerangkatController::class, 'show'])
-        ->name('guru.perangkat.show');
-
-    // Class selected → show available templates
-    Route::get('perangkat/{mapel}/kelas/{kelas}', [PerangkatController::class, 'showKelas'])
-        ->name('guru.perangkat.kelas');
-
-    // History Perangkat
-    Route::get('perangkat/{mapel}/kelas/{kelas}/history', [PerangkatController::class, 'history'])
-        ->name('guru.perangkat.history');
+    Route::get('/guru/perangkat/history', [PerangkatController::class, 'history'])->name('guru.perangkat.history');
+    Route::get('/guru/perangkat/{mapel}', [PerangkatController::class, 'show'])->name('guru.perangkat.show');
+    Route::get('/guru/perangkat/{mapel}/kelas/{kelas}', [PerangkatController::class, 'showKelas'])->name('guru.perangkat.kelas');
 
     // Template selected → edit form
-    Route::get('perangkat/{mapel}/kelas/{kelas}/template/{template}', [PerangkatGuruController::class, 'edit'])
+    Route::get('/guru/perangkat/{mapel}/kelas/{kelas}/template/{template}', [PerangkatGuruController::class, 'edit'])
         ->name('guru.perangkat.edit');
 
     // Save draft
@@ -177,9 +170,9 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 */
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // General profile update route for all roles
     Route::post('/profil/update', [ProfilController::class, 'update'])->name('profil.update');

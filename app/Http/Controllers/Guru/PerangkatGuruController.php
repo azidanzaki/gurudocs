@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\DB;
 class PerangkatGuruController extends Controller
 {
     // Step 4: Template selected — open the editable form
-    public function edit(Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
+    public function edit(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
         $template->load('sections');
+
+        $semester = $request->get('semester', 1);
+        $bab = $request->get('bab', 0);
 
         $perangkatGuru = PerangkatGuru::firstOrCreate(
             [
@@ -26,10 +29,11 @@ class PerangkatGuruController extends Controller
                 'kelas_id' => $kelas->id,
                 'perangkat_template_id' => $template->id,
                 'tahun' => now()->year,
+                'semester' => $semester,
+                'bab' => $bab,
             ],
             [
                 'tahun_ajaran' => now()->year . '/' . (now()->year + 1),
-                'semester' => 1,
                 'status' => 'draft',
             ]
         );
@@ -50,7 +54,7 @@ class PerangkatGuruController extends Controller
     // Step 5a: Save as draft
     public function save(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
-        $perangkatGuru = $this->resolvePerangkatGuru($mapel, $kelas, $template);
+        $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
         abort_if($perangkatGuru->isSubmitted(), 403);
 
         DB::transaction(function () use ($request, $perangkatGuru, $template) {
@@ -74,7 +78,7 @@ class PerangkatGuruController extends Controller
     // Step 5b: Submit
     public function submit(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
-        $perangkatGuru = $this->resolvePerangkatGuru($mapel, $kelas, $template);
+        $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
 
         abort_if($perangkatGuru->isSubmitted(), 403, 'Perangkat sudah disubmit.');
 
@@ -154,14 +158,18 @@ class PerangkatGuruController extends Controller
         return back()->with('success', 'Status penyelesaian perangkat diperbarui.');
     }
 
-    private function resolvePerangkatGuru(Mapel $mapel, Kelas $kelas, PerangkatTemplate $template): PerangkatGuru
+    private function resolvePerangkatGuru(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template): PerangkatGuru
     {
+        $semester = $request->get('semester', 1);
+        $bab = $request->get('bab', 0);
         return PerangkatGuru::where([
             'user_id' => Auth::id(),
             'mapel_id' => $mapel->id,
             'kelas_id' => $kelas->id,
             'perangkat_template_id' => $template->id,
             'tahun' => now()->year,
+            'semester' => $semester,
+            'bab' => $bab,
         ])->firstOrFail();
     }
 }

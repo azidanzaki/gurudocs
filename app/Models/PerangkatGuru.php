@@ -22,6 +22,11 @@ class PerangkatGuru extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function mapel()
     {
         return $this->belongsTo(Mapel::class);
