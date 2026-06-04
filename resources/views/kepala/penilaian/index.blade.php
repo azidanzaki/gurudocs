@@ -12,7 +12,7 @@
         <h3 class="card-title">Pilih Guru untuk Dilihat Profil/Penilaiannya</h3>
     </div>
     <div class="card-body">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th width="5%">No</th>

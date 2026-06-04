@@ -18,19 +18,7 @@
 
     {{-- Navbar right links --}}
     <ul class="navbar-nav ml-auto">
-        {{-- Language Switcher --}}
-        <li class="nav-item d-flex align-items-center pr-3 mr-2 border-right">
-            <a href="{{ route('lang.switch', 'id') }}" class="nav-link px-1 {{ app()->getLocale() == 'id' ? 'text-success font-weight-bold' : 'text-muted' }}" style="font-size: 14px;">ID</a>
-            <span class="text-muted text-xs mx-1">|</span>
-            <a href="{{ route('lang.switch', 'en') }}" class="nav-link px-1 {{ app()->getLocale() == 'en' ? 'text-success font-weight-bold' : 'text-muted' }}" style="font-size: 14px;">EN</a>
-        </li>
 
-        {{-- Dark/Light Mode Toggle --}}
-        <li class="nav-item">
-            <a href="#" id="dark-mode-toggle" class="nav-link" style="cursor: pointer;">
-                <i id="dark-mode-icon" class="fas fa-moon"></i>
-            </a>
-        </li>
 
         {{-- Custom right links --}}
         @yield('content_top_nav_right')

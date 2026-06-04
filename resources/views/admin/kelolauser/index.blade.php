@@ -48,7 +48,7 @@
                     <th>{{ __('Status') }}</th>
                     <th>{{ __('Password Default') }}</th>
                     <th>{{ __('Dibuat') }}</th>
-                    <th width="180">{{ __('Aksi') }}</th>
+                    <th width="250">{{ __('Aksi') }}</th>
                 </tr>
             </thead>
 
@@ -98,7 +98,7 @@
                         <td>
                             {{ $user->created_at->format('d-M-Y H:i:s') }}
                         </td>
-                        <td class="project-actions text-right">
+                        <td class="project-actions text-center">
 
                             <!-- EDIT -->
                             <a href="#" class="btn btn-info btn-sm" data-toggle="modal"

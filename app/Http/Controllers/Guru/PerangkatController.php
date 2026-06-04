@@ -34,11 +34,17 @@ class PerangkatController extends Controller
     }
 
     // Step 3: Class selected — show available perangkat templates + progress
-    public function showKelas(Mapel $mapel, Kelas $kelas)
+    public function showKelas(\Illuminate\Http\Request $request, Mapel $mapel, Kelas $kelas)
     {
         $kelas->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
 
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $selectedTahun = $request->query('tahun_ajaran', $tahunAjarans->first()->nama ?? '2025/2026');
+
         $templates = PerangkatTemplate::where('is_active', true)
+                        ->with(['tenggatWaktus' => function($q) use ($selectedTahun) {
+                            $q->where('tahun_ajaran', $selectedTahun);
+                        }])
                         ->orderBy('urutan')
                         ->get();
 
@@ -49,10 +55,10 @@ class PerangkatController extends Controller
             'user_id'   => Auth::id(),
             'mapel_id'  => $mapel->id,
             'kelas_id'  => $kelas->id,
-            'tahun'     => $currentYear,
+            'tahun_ajaran' => $selectedTahun,
         ])->get()->groupBy('perangkat_template_id');
 
-        return view('guru.perangkat.kelas', compact('mapel', 'kelas', 'templates', 'progress'));
+        return view('guru.perangkat.kelas', compact('mapel', 'kelas', 'templates', 'progress', 'tahunAjarans', 'selectedTahun'));
     }
 
     public function history(\Illuminate\Http\Request $request)

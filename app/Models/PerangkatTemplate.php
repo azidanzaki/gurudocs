@@ -16,6 +16,11 @@ class PerangkatTemplate extends Model
                     ->orderBy('urutan');
     }
 
+    public function tenggatWaktus()
+    {
+        return $this->hasMany(PerangkatTemplateTenggatWaktu::class);
+    }
+
     public function perangkatGurus()
     {
         return $this->hasMany(PerangkatGuru::class);

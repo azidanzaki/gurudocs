@@ -76,47 +76,72 @@
 </head>
 <body>
 
-    <div class="doc-title">{{ strtoupper($perangkatGuru->template->nama_perangkat) }}</div>
-    <div class="doc-sub">{{ $perangkatGuru->mapel->nama_mapel }} &mdash; Kelas {{ $perangkatGuru->kelas->nama_kelas }}</div>
+    @if($perangkatGuru->template_id == 3)
+        {{-- Custom Layout Khusus Capaian Pembelajaran (CP) - 1 WYSIWYG Besar --}}
+        <div style="font-family: Arial, sans-serif; padding-top: 20px;">
+            @foreach($perangkatGuru->template->sections as $section)
+                <div style="line-height: 1.6;">
+                    {!! $savedValues[$section->field_key] ?? '' !!}
+                </div>
+            @endforeach
 
-    <hr>
-
-    <table class="info-table">
-        <tr>
-            <td>Mata Pelajaran</td>
-            <td>: {{ $perangkatGuru->mapel->nama_mapel }}</td>
-            <td>Tahun Ajaran</td>
-            <td>: {{ $perangkatGuru->tahun_ajaran }}</td>
-        </tr>
-        <tr>
-            <td>Kelas</td>
-            <td>: {{ $perangkatGuru->kelas->nama_kelas }}</td>
-            <td>Semester</td>
-            <td>: {{ $perangkatGuru->semester }}</td>
-        </tr>
-        <tr>
-            <td>Guru</td>
-            <td colspan="3">: {{ $perangkatGuru->guru->name }}</td>
-        </tr>
-    </table>
-
-    <hr>
-
-    @foreach($perangkatGuru->template->sections as $section)
-        <div class="section-label">{{ $section->label }}</div>
-        <div class="section-value">
-            {!! nl2br(e($savedValues[$section->field_key] ?? '')) !!}
+            <div class="signature-area">
+                <div class="signature-box">
+                    <p>Mengetahui,</p>
+                    <div class="signature-line"></div>
+                    <strong>{{ $perangkatGuru->guru->name }}</strong><br>
+                    <small>Guru {{ $perangkatGuru->mapel->nama_mapel }}</small>
+                </div>
+            </div>
         </div>
-    @endforeach
+    @else
+        {{-- Generic Layout untuk Perangkat Lainnya --}}
+        <div class="doc-title">{{ strtoupper($perangkatGuru->template->nama_perangkat) }}</div>
+        <div class="doc-sub">{{ $perangkatGuru->mapel->nama_mapel }} &mdash; Kelas {{ $perangkatGuru->kelas->nama_kelas }}</div>
 
-    <div class="signature-area">
-        <div class="signature-box">
-            <p>Mengetahui,</p>
-            <div class="signature-line"></div>
-            <strong>{{ $perangkatGuru->guru->name }}</strong><br>
-            <small>Guru {{ $perangkatGuru->mapel->nama_mapel }}</small>
+        <hr>
+
+        <table class="info-table">
+            <tr>
+                <td>Mata Pelajaran</td>
+                <td>: {{ $perangkatGuru->mapel->nama_mapel }}</td>
+                <td>Tahun Ajaran</td>
+                <td>: {{ $perangkatGuru->tahun_ajaran }}</td>
+            </tr>
+            <tr>
+                <td>Kelas</td>
+                <td>: {{ $perangkatGuru->kelas->nama_kelas }}</td>
+                <td>Semester</td>
+                <td>: {{ $perangkatGuru->semester }}</td>
+            </tr>
+            <tr>
+                <td>Guru</td>
+                <td colspan="3">: {{ $perangkatGuru->guru->name }}</td>
+            </tr>
+        </table>
+
+        <hr>
+
+        @foreach($perangkatGuru->template->sections as $section)
+            <div class="section-label">{{ $section->label }}</div>
+            <div class="section-value" style="{{ $section->field_type === 'richtext' ? 'border:none; padding:0;' : '' }}">
+                @if($section->field_type === 'richtext')
+                    {!! $savedValues[$section->field_key] ?? '' !!}
+                @else
+                    {!! nl2br(e($savedValues[$section->field_key] ?? '')) !!}
+                @endif
+            </div>
+        @endforeach
+
+        <div class="signature-area">
+            <div class="signature-box">
+                <p>Mengetahui,</p>
+                <div class="signature-line"></div>
+                <strong>{{ $perangkatGuru->guru->name }}</strong><br>
+                <small>Guru {{ $perangkatGuru->mapel->nama_mapel }}</small>
+            </div>
         </div>
-    </div>
+    @endif
 
     <button class="print-btn" onclick="window.print()">
         &#128438; Cetak / Simpan PDF

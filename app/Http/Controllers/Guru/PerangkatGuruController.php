@@ -21,6 +21,7 @@ class PerangkatGuruController extends Controller
 
         $semester = $request->get('semester', 1);
         $bab = $request->get('bab', 0);
+        $tahun_ajaran = $request->get('tahun_ajaran', \App\Models\TahunAjaran::orderBy('nama', 'desc')->first()->nama ?? '2025/2026');
 
         $perangkatGuru = PerangkatGuru::firstOrCreate(
             [
@@ -28,12 +29,12 @@ class PerangkatGuruController extends Controller
                 'mapel_id' => $mapel->id,
                 'kelas_id' => $kelas->id,
                 'perangkat_template_id' => $template->id,
-                'tahun' => now()->year,
+                'tahun_ajaran' => $tahun_ajaran,
                 'semester' => $semester,
                 'bab' => $bab,
             ],
             [
-                'tahun_ajaran' => now()->year . '/' . (now()->year + 1),
+                'tahun' => now()->year,
                 'status' => 'draft',
             ]
         );
@@ -47,7 +48,8 @@ class PerangkatGuruController extends Controller
             'kelas',
             'template',
             'perangkatGuru',
-            'savedValues'
+            'savedValues',
+            'tahun_ajaran'
         ));
     }
 
@@ -67,7 +69,6 @@ class PerangkatGuruController extends Controller
             }
         });
 
-        // Return JSON for AJAX, redirect for normal POST
         if ($request->ajax()) {
             return response()->json(['message' => 'Draft berhasil disimpan.']);
         }
@@ -84,7 +85,6 @@ class PerangkatGuruController extends Controller
 
         $template->load('sections');
 
-        // Save latest input first
         DB::transaction(function () use ($request, $perangkatGuru, $template) {
             foreach ($template->sections as $section) {
                 PerangkatGuruSection::updateOrCreate(
@@ -100,7 +100,6 @@ class PerangkatGuruController extends Controller
             }
         });
 
-        // Validate required sections
         $filled = $perangkatGuru->fresh()->filledSections->pluck('value', 'field_key');
         $missing = $template->sections
             ->where('is_required', true)
@@ -145,7 +144,14 @@ class PerangkatGuruController extends Controller
     {
         abort_if($perangkatGuru->user_id !== Auth::id(), 403);
 
-        $perangkatGuru->is_completed = !$perangkatGuru->is_completed;
+        if ($request->has('force_complete')) {
+            $perangkatGuru->is_completed = true;
+            $perangkatGuru->status = 'submitted';
+            $perangkatGuru->submitted_at = now();
+        } else {
+            $perangkatGuru->is_completed = !$perangkatGuru->is_completed;
+        }
+        
         $perangkatGuru->save();
 
         if ($request->ajax()) {
@@ -162,12 +168,14 @@ class PerangkatGuruController extends Controller
     {
         $semester = $request->get('semester', 1);
         $bab = $request->get('bab', 0);
+        $tahun_ajaran = $request->get('tahun_ajaran', \App\Models\TahunAjaran::orderBy('nama', 'desc')->first()->nama ?? '2025/2026');
+
         return PerangkatGuru::where([
             'user_id' => Auth::id(),
             'mapel_id' => $mapel->id,
             'kelas_id' => $kelas->id,
             'perangkat_template_id' => $template->id,
-            'tahun' => now()->year,
+            'tahun_ajaran' => $tahun_ajaran,
             'semester' => $semester,
             'bab' => $bab,
         ])->firstOrFail();

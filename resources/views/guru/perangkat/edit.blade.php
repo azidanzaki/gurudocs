@@ -136,14 +136,20 @@
                     >
 
                 @elseif(in_array($section->field_type, ['textarea', 'richtext']))
+                    @php
+                        $content = $savedValues[$section->field_key] ?? '';
+                        if (empty(trim($content)) && $template->id == 3 && $section->field_key == 'isi_dokumen_cp') {
+                            $content = view('guru.perangkat.templates.cp_default')->render();
+                        }
+                    @endphp
                     <textarea
                         id="field_{{ $section->field_key }}"
                         name="{{ $section->field_key }}"
                         class="form-control {{ $section->field_type === 'richtext' ? 'richtext-field' : '' }}"
-                        rows="5"
+                        rows="{{ $section->field_type === 'richtext' ? '20' : '5' }}"
                         placeholder="{{ $section->placeholder }}"
                         {{ $section->is_required ? 'required' : '' }}
-                    >{{ $savedValues[$section->field_key] ?? '' }}</textarea>
+                    >{{ $content }}</textarea>
 
                 @else
                     <input
@@ -169,11 +175,7 @@
         <div class="d-flex align-items-center gap-2">
 
             <button type="button" id="btn-save" class="btn btn-secondary">
-                <i class="fas fa-save"></i> Simpan Draft
-            </button>
-
-            <button type="button" id="btn-submit" class="btn btn-success">
-                <i class="fas fa-paper-plane"></i> Submit
+                <i class="fas fa-save"></i> Simpan
             </button>
 
             <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
@@ -203,11 +205,24 @@
 @stop
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-const SAVE_URL   = "{{ route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
+tinymce.init({
+    selector: '.richtext-field',
+    plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons template',
+    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | table | forecolor backcolor removeformat | pagebreak | fullscreen preview print',
+    toolbar_mode: 'sliding',
+    height: 800,
+    content_style: 'body { font-family:Arial,sans-serif; font-size:12pt; padding: 2cm; max-width: 21cm; margin: 0 auto; box-shadow: 0 0 5px rgba(0,0,0,0.1); background-color: #fff; }'
+});
+
+const SAVE_URL   = "{{ route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
 const SUBMIT_URL = "{{ route('guru.perangkat.submit', [$mapel->id, $kelas->id, $template->id]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
 
 function getFormData() {
+    if (typeof tinymce !== 'undefined') {
+        tinymce.triggerSave();
+    }
     const form = document.getElementById('perangkat-form');
     return new FormData(form);
 }
@@ -226,43 +241,12 @@ document.getElementById('btn-save')?.addEventListener('click', async function ()
         });
 
         if (res.ok) {
-            // Show success briefly then hide
             indicator.innerHTML = '<i class="fas fa-check text-success"></i> Tersimpan';
             setTimeout(() => {
-                indicator.style.display = 'none';
-                indicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Menyimpan...';
-            }, 2000);
+                window.location.href = "{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}";
+            }, 1000);
         } else {
             alert('Gagal menyimpan. Silakan coba lagi.');
-        }
-    } catch (e) {
-        alert('Terjadi kesalahan jaringan.');
-    } finally {
-        this.disabled = false;
-    }
-});
-
-// Submit
-document.getElementById('btn-submit')?.addEventListener('click', async function () {
-    if (!confirm('Yakin ingin submit? Data tidak dapat diubah setelah disubmit.')) return;
-
-    this.disabled = true;
-
-    try {
-        const res = await fetch(SUBMIT_URL, {
-            method: 'POST',
-            body: getFormData(),
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        });
-
-        if (res.redirected) {
-            window.location.href = res.url;
-        } else if (res.ok) {
-            window.location.reload();
-        } else {
-            const data = await res.json();
-            const msg  = data.errors?.submit ?? 'Gagal submit. Periksa kembali isian Anda.';
-            alert(msg);
         }
     } catch (e) {
         alert('Terjadi kesalahan jaringan.');

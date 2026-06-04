@@ -153,6 +153,8 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     // kelola perangkat pembelajaran
     Route::get('/admin/kelola-perangkat', [KelolaPerangkatController::class, 'index'])->name('admin.kelolaperangkat');
+    Route::post('/admin/kelola-perangkat/update-tenggat', [KelolaPerangkatController::class, 'updateTenggat'])->name('admin.kelolaperangkat.updateTenggat');
+    Route::post('/admin/kelola-perangkat/tahun-ajaran', [KelolaPerangkatController::class, 'storeTahunAjaran'])->name('admin.kelolaperangkat.storeTahunAjaran');
 
     // kelola dokumen administratif
     Route::get('/admin/kelola-dokumen', [KelolaDokumenAdmController::class, 'index'])->name('admin.dokumenadm.index');
