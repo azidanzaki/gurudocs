@@ -25,6 +25,18 @@
         body.iframe-mode .preloader {
             display: none !important;
         }
+
+        /* Override: hapus efek slide keatas, ganti dengan fade biasa */
+        .preloader {
+            transition: opacity 300ms ease !important;
+            overflow: hidden;
+        }
+        .preloader[style*="height: 0"],
+        .preloader[style*="height:0"] {
+            opacity: 0 !important;
+            height: 100vh !important;
+            pointer-events: none;
+        }
     </style>
 
     {{-- Custom stylesheets (pre AdminLTE) --}}
