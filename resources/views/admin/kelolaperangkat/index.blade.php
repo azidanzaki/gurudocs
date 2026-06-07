@@ -13,12 +13,7 @@
 
 @section('content')
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        {{ session('success') }}
-    </div>
-@endif
+
 
 <div class="card">
     <div class="card-header">
@@ -77,15 +72,37 @@
                 @foreach($templates as $template)
                 @php
                     $tenggat = $template->tenggatWaktus->first();
-                    $tenggatDate = $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->translatedFormat('d F Y') : 'Belum diatur';
+                    if ($tenggat) {
+                        $parsed = \Carbon\Carbon::parse($tenggat->tenggat_waktu);
+                        $now = \Carbon\Carbon::now();
+                        if ($parsed->isPast()) {
+                            $sisaText = 'Sudah lewat';
+                        } else {
+                            $diff = $parsed->diff($now);
+                            $days = $diff->d;
+                            $hours = $diff->h;
+                            $minutes = $diff->i;
+                            $sisaParts = [];
+                            if ($days > 0) $sisaParts[] = $days . ' hari';
+                            if ($hours > 0) $sisaParts[] = $hours . ' jam';
+                            if ($minutes > 0) $sisaParts[] = $minutes . ' menit';
+                            $sisaText = 'sisa ' . implode(' ', $sisaParts);
+                            if(empty($sisaParts)) $sisaText = 'sisa kurang dari 1 menit';
+                        }
+                        $tenggatInfo = $parsed->translatedFormat('d - F - Y H:i') . ' | (' . $sisaText . ')';
+                        $btnClass = 'btn-success';
+                    } else {
+                        $tenggatInfo = '<span class="badge badge-danger">Belum diatur</span>';
+                        $btnClass = 'btn-warning';
+                    }
                 @endphp
                 <tr>
                     <td class="align-middle">{{ $template->nama_perangkat }}</td>
                     <td class="align-middle">
-                        {{ $tenggatDate }}
+                        {!! $tenggatInfo !!}
                     </td>
                     <td class="align-middle text-center">
-                        <button class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modalTenggat{{ $template->id }}">
+                        <button class="btn btn-sm {{ $btnClass }} mr-1" data-toggle="modal" data-target="#modalTenggat{{ $template->id }}">
                             <i class="fas fa-calendar-alt"></i> {{ $tenggat ? 'Ubah Tenggat' : 'Atur Tenggat' }}
                         </button>
                         <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#modalGuru{{ $template->id }}">
@@ -96,7 +113,7 @@
                         <div class="modal fade" id="modalTenggat{{ $template->id }}" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form action="{{ route('admin.kelolaperangkat.updateTenggat') }}" method="POST">
+                                    <form action="{{ route('admin.kelolaperangkat.updateTenggat') }}" method="POST" onsubmit="updateTenggatWaktu({{ $template->id }})">
                                         @csrf
                                         <div class="modal-header">
                                             <h5 class="modal-title">Atur Tenggat Waktu</h5>
@@ -110,8 +127,26 @@
                                                 <input type="text" class="form-control" value="{{ $template->nama_perangkat }}" readonly>
                                             </div>
                                             <div class="form-group">
-                                                <label>Tanggal Tenggat Waktu</label>
-                                                <input type="date" name="tenggat_waktu" class="form-control" value="{{ $tenggat ? $tenggat->tenggat_waktu : '' }}" required>
+                                                <label>Tenggat Waktu</label>
+                                                <input type="hidden" name="tenggat_waktu" id="tenggat_waktu_{{ $template->id }}" value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('Y-m-d H:i:s') : '' }}">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text bg-primary border-primary"><i class="fas fa-calendar-alt text-white"></i></span>
+                                                            </div>
+                                                            <input type="text" class="form-control datepicker" id="tanggal_tenggat_{{ $template->id }}" value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('Y-m-d') : date('Y-m-d') }}" placeholder="Pilih Tanggal" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text bg-warning border-warning"><i class="fas fa-clock text-white"></i></span>
+                                                            </div>
+                                                            <input type="text" class="form-control" id="jam_tenggat_{{ $template->id }}" value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('H:i') : '23:59' }}" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -229,7 +264,37 @@
 @stop
 
 @push('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.css">
 <style>
     .gap-2 { gap: 0.5rem; }
+    .clockpicker-popover { z-index: 1060; } /* Ensure it shows above modal */
 </style>
+@endpush
+
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clockpicker/0.0.7/bootstrap-clockpicker.min.js"></script>
+<script>
+    function updateTenggatWaktu(id) {
+        let tanggal = document.getElementById('tanggal_tenggat_' + id).value;
+        let jam = document.getElementById('jam_tenggat_' + id).value;
+        if(tanggal && jam) {
+            document.getElementById('tenggat_waktu_' + id).value = tanggal + ' ' + jam + ':00';
+        }
+    }
+
+    $(document).ready(function() {
+        $('.datepicker').flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            locale: "id"
+        });
+        $('.clockpicker').clockpicker({
+            donetext: 'Selesai',
+            autoclose: true
+        });
+    });
+</script>
 @endpush

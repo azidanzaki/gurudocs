@@ -74,6 +74,7 @@
 @endif
 
 {{-- Document header (read-only, admin-defined info) --}}
+@if($template->id != 3)
 <div class="doc-header">
     <div class="row">
         <div class="col-md-6">
@@ -101,6 +102,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Main form --}}
 <form id="perangkat-form" novalidate>
@@ -139,7 +141,7 @@
                     @php
                         $content = $savedValues[$section->field_key] ?? '';
                         if (empty(trim($content)) && $template->id == 3 && $section->field_key == 'isi_dokumen_cp') {
-                            $content = view('guru.perangkat.templates.cp_default')->render();
+                            $content = view('guru.perangkat.templates.cp_default', compact('mapel', 'kelas', 'perangkatGuru'))->render();
                         }
                     @endphp
                     <textarea
@@ -209,15 +211,16 @@
 <script>
 tinymce.init({
     selector: '.richtext-field',
-    plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons template',
+    plugins: 'advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking table directionality emoticons template noneditable',
     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | table | forecolor backcolor removeformat | pagebreak | fullscreen preview print',
     toolbar_mode: 'sliding',
+    noneditable_class: 'mceNonEditable',
     height: 800,
-    content_style: 'body { font-family:Arial,sans-serif; font-size:12pt; padding: 2cm; max-width: 21cm; margin: 0 auto; box-shadow: 0 0 5px rgba(0,0,0,0.1); background-color: #fff; }'
+    content_style: 'body { font-family:Arial,sans-serif; font-size:12pt; padding: 2cm; max-width: 21cm; margin: 0 auto; box-shadow: 0 0 5px rgba(0,0,0,0.1); background-color: #fff; } .mceNonEditable { opacity: 0.9; cursor: not-allowed; }'
 });
 
-const SAVE_URL   = "{{ route('guru.perangkat.save',   [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
-const SUBMIT_URL = "{{ route('guru.perangkat.submit', [$mapel->id, $kelas->id, $template->id]) }}?semester={{ $perangkatGuru->semester }}&bab={{ $perangkatGuru->bab }}";
+const SAVE_URL   = "{!! route('guru.perangkat.save',   ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'template' => $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran, 'semester' => $perangkatGuru->semester, 'bab' => $perangkatGuru->bab]) !!}";
+const SUBMIT_URL = "{!! route('guru.perangkat.submit', ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'template' => $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran, 'semester' => $perangkatGuru->semester, 'bab' => $perangkatGuru->bab]) !!}";
 
 function getFormData() {
     if (typeof tinymce !== 'undefined') {
@@ -246,10 +249,10 @@ document.getElementById('btn-save')?.addEventListener('click', async function ()
                 window.location.href = "{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}";
             }, 1000);
         } else {
-            alert('Gagal menyimpan. Silakan coba lagi.');
+            Swal.fire('Gagal', 'Gagal menyimpan. Silakan coba lagi.', 'error');
         }
     } catch (e) {
-        alert('Terjadi kesalahan jaringan.');
+        Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
     } finally {
         this.disabled = false;
     }

@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <title>{{ $perangkatGuru->template->nama_perangkat }}</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
             font-size: 12pt;
             color: #000;
             padding: 2cm;
+            max-width: 21cm;
+            margin: 0 auto;
+            line-height: 1.5;
         }
+        /* Restore basic typography margins inside wysiwyg content */
+        p { margin-bottom: 1em; }
+        h1, h2, h3, h4, h5, h6 { margin-bottom: 0.5em; margin-top: 1em; }
         .doc-title {
             text-align: center;
             font-size: 16pt;
@@ -70,7 +76,8 @@
         }
         @media print {
             .print-btn { display: none; }
-            body { padding: 1cm; }
+            body { padding: 0; }
+            .mceEditable { border: none !important; }
         }
     </style>
 </head>
@@ -78,21 +85,12 @@
 
     @if($perangkatGuru->template_id == 3)
         {{-- Custom Layout Khusus Capaian Pembelajaran (CP) - 1 WYSIWYG Besar --}}
-        <div style="font-family: Arial, sans-serif; padding-top: 20px;">
+        <div>
             @foreach($perangkatGuru->template->sections as $section)
-                <div style="line-height: 1.6;">
+                <div>
                     {!! $savedValues[$section->field_key] ?? '' !!}
                 </div>
             @endforeach
-
-            <div class="signature-area">
-                <div class="signature-box">
-                    <p>Mengetahui,</p>
-                    <div class="signature-line"></div>
-                    <strong>{{ $perangkatGuru->guru->name }}</strong><br>
-                    <small>Guru {{ $perangkatGuru->mapel->nama_mapel }}</small>
-                </div>
-            </div>
         </div>
     @else
         {{-- Generic Layout untuk Perangkat Lainnya --}}

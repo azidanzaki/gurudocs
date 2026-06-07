@@ -126,9 +126,9 @@
                                 @csrf
                                 @method('DELETE')
 
-                                <button type="submit"
+                                <button type="button"
                                         class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Hapus dokumen ini?')">
+                                        onclick="event.preventDefault(); Swal.fire({title: 'Hapus dokumen ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
 
                                     <i class="fas fa-trash"></i>
                                     Hapus

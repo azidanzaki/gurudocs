@@ -112,13 +112,13 @@
                                 @method('DELETE')
 
                                 @if($user->is_active)
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                        onclick="return confirm('{{ __('Nonaktifkan user ini?') }}')">
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        onclick="event.preventDefault(); Swal.fire({title: '{{ __('Nonaktifkan user ini?') }}', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, nonaktifkan!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
                                         <i class="fas fa-user-slash"></i> {{ __('Nonaktifkan') }}
                                     </button>
                                 @else
-                                    <button type="submit" class="btn btn-success btn-sm"
-                                        onclick="return confirm('{{ __('Aktifkan user ini?') }}')">
+                                    <button type="button" class="btn btn-success btn-sm"
+                                        onclick="event.preventDefault(); Swal.fire({title: '{{ __('Aktifkan user ini?') }}', icon: 'question', showCancelButton: true, confirmButtonColor: '#28a745', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, aktifkan!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
                                         <i class="fas fa-user-check"></i> {{ __('Aktifkan') }}
                                     </button>
                                 @endif

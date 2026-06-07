@@ -197,6 +197,49 @@
                 });
             }
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Global loading overlay on form submit
+            document.querySelectorAll('form').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    // Check if form is for GET requests (like search/filter)
+                    if (form.method.toUpperCase() === 'GET') return;
+                    
+                    // Don't show if form has target blank
+                    if (form.target === '_blank') return;
+
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                });
+            });
+
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: '{{ session('error') }}',
+                    confirmButtonText: 'Tutup'
+                });
+            @endif
+        });
     </script>
 </body>
 
