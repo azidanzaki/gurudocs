@@ -112,6 +112,9 @@
         <div class="card-body">
 
             @foreach($template->sections as $index => $section)
+    @if($template->id == 3 && in_array($section->field_key, ['fase','elemen','deskripsi']))
+        @continue
+    @endif
             <div class="form-group {{ $index > 0 ? 'mt-4' : '' }}">
 
                 <label for="field_{{ $section->field_key }}" class="font-weight-bold">
@@ -140,18 +143,23 @@
                 @elseif(in_array($section->field_type, ['textarea', 'richtext']))
                     @php
                         $content = $savedValues[$section->field_key] ?? '';
-                        if (empty(trim($content)) && $template->id == 3 && $section->field_key == 'isi_dokumen_cp') {
+                        // If no content and template is CP, load default CP view
+                        if (empty(trim($content)) && $template->nama_perangkat == 'Capaian Pembelajaran (CP)') {
                             $content = view('guru.perangkat.templates.cp_default', compact('mapel', 'kelas', 'perangkatGuru'))->render();
                         }
                     @endphp
-                    <textarea
-                        id="field_{{ $section->field_key }}"
-                        name="{{ $section->field_key }}"
-                        class="form-control {{ $section->field_type === 'richtext' ? 'richtext-field' : '' }}"
-                        rows="{{ $section->field_type === 'richtext' ? '20' : '5' }}"
-                        placeholder="{{ $section->placeholder }}"
-                        {{ $section->is_required ? 'required' : '' }}
-                    >{{ $content }}</textarea>
+                    @if($template->nama_perangkat == 'Capaian Pembelajaran (CP)')
+                        <textarea id="field_{{ $section->field_key }}" name="{{ $section->field_key }}" class="form-control richtext-field" rows="20">{{ $content }}</textarea>
+                    @else
+                        <textarea
+                            id="field_{{ $section->field_key }}"
+                            name="{{ $section->field_key }}"
+                            class="form-control {{ ($section->field_type === 'richtext') ? 'richtext-field' : '' }}"
+                            rows="{{ $section->field_type === 'richtext' ? '20' : '5' }}"
+                            placeholder="{{ $section->placeholder }}"
+                            {{ $section->is_required ? 'required' : '' }}
+                        >{{ $content }}</textarea>
+                    @endif
 
                 @else
                     <input
@@ -246,7 +254,7 @@ document.getElementById('btn-save')?.addEventListener('click', async function ()
         if (res.ok) {
             indicator.innerHTML = '<i class="fas fa-check text-success"></i> Tersimpan';
             setTimeout(() => {
-                window.location.href = "{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}";
+                //window.location.href = "{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}";
             }, 1000);
         } else {
             Swal.fire('Gagal', 'Gagal menyimpan. Silakan coba lagi.', 'error');

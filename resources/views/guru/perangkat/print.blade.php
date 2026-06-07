@@ -83,7 +83,7 @@
 </head>
 <body>
 
-    @if($perangkatGuru->template_id == 3)
+    @if($perangkatGuru->perangkat_template_id == 3)
         {{-- Custom Layout Khusus Capaian Pembelajaran (CP) - 1 WYSIWYG Besar --}}
         <div>
             @foreach($perangkatGuru->template->sections as $section)
