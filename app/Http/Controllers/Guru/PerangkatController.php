@@ -63,29 +63,25 @@ class PerangkatController extends Controller
 
     public function history(\Illuminate\Http\Request $request)
     {
-        $availableYears = PerangkatGuru::where('user_id', Auth::id())
-            ->where(function($q) {
-                $q->where('tahun', '<', now()->year)->orWhereNull('tahun');
-            })
+        $availableTahunAjarans = PerangkatGuru::where('user_id', Auth::id())
+            ->where('status', 'submitted')
+            ->whereNotNull('tahun_ajaran')
             ->distinct()
-            ->pluck('tahun')
+            ->pluck('tahun_ajaran')
             ->sortDesc();
 
-        $selectedYear = $request->get('tahun', $availableYears->first());
+        $selectedTahun = $request->get('tahun_ajaran', 'semua');
 
-        $historyItems = collect();
-        if ($selectedYear || $availableYears->contains(null)) {
-            $query = PerangkatGuru::where('user_id', Auth::id())
-                ->with(['template', 'mapel', 'kelas']);
+        $query = PerangkatGuru::where('user_id', Auth::id())
+            ->where('status', 'submitted')
+            ->with(['template', 'mapel', 'kelas']);
             
-            if ($selectedYear) {
-                $query->where('tahun', $selectedYear);
-            } else {
-                $query->whereNull('tahun');
-            }
-            $historyItems = $query->orderBy('mapel_id')->orderBy('kelas_id')->get();
+        if ($selectedTahun && $selectedTahun !== 'semua') {
+            $query->where('tahun_ajaran', $selectedTahun);
         }
+        
+        $historyItems = $query->orderBy('submitted_at', 'desc')->get();
 
-        return view('guru.perangkat.history', compact('availableYears', 'selectedYear', 'historyItems'));
+        return view('guru.perangkat.history', compact('availableTahunAjarans', 'selectedTahun', 'historyItems'));
     }
 }

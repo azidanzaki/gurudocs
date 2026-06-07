@@ -3,8 +3,13 @@
 @section('title', 'History Perangkat')
 
 @section('content_header')
-    <h1>History Perangkat Seluruh Mata Pelajaran</h1>
+    <h1>History Perangkat</h1>
 @stop
+
+@push('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap4.min.css">
+@endpush
 
 @section('content')
 
@@ -14,69 +19,86 @@
     </a>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 mt-4">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h4 class="card-title mb-0 font-weight-bold">
-            <i class="fas fa-history text-muted mr-2"></i> Pilih Tahun
-        </h4>
-    </div>
-    <div class="card-body">
+        <div>
+            <h4 class="card-title mb-0 font-weight-bold">Dokumen yang Sudah Pernah Disubmit</h4>    
+        </div>
+        
+        <div class="ml-auto">
         <form method="GET" action="{{ route('guru.perangkat.history') }}" class="form-inline">
-            <div class="form-group mr-2">
-                <select name="tahun" class="form-control" onchange="this.form.submit()">
-                    @if($availableYears->isEmpty())
-                        <option value="">Tidak ada history</option>
-                    @else
-                        @foreach($availableYears as $year)
-                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
-                                {{ $year ?? 'Sebelumnya' }}
-                            </option>
-                        @endforeach
-                    @endif
+            <div class="form-group">
+                <select name="tahun_ajaran" class="form-control" onchange="this.form.submit()">
+                    <option value="semua" {{ $selectedTahun === 'semua' ? 'selected' : '' }}>Semua Tahun Ajaran</option>
+                    @foreach($availableTahunAjarans as $tahun)
+                        <option value="{{ $tahun }}" {{ $selectedTahun === $tahun ? 'selected' : '' }}>
+                            {{ $tahun }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
             <noscript><button type="submit" class="btn btn-primary">Pilih</button></noscript>
         </form>
-    </div>
-</div>
-
-@if($selectedYear || $availableYears->contains(null))
-<div class="card shadow-sm border-0 mt-4">
-    <div class="card-header bg-light">
-        <h4 class="card-title mb-0 font-weight-bold">History Dokumen - {{ $selectedYear ?? 'Sebelumnya' }}</h4>
+        </div>
     </div>
     <div class="card-body">
-        @if($historyItems->isEmpty())
-            <div class="text-center py-4 text-muted">
-                <i class="fas fa-info-circle fa-2x mb-2 text-muted"></i>
-                <p class="mb-0">Tidak ada dokumen pada tahun ini.</p>
-            </div>
-        @else
-            <div class="row">
-                @foreach($historyItems as $item)
-                    <div class="col-md-4 mb-3">
-                        <div class="card border h-100">
-                            <div class="card-body py-3">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <h6 class="mb-0 font-weight-bold">{{ $item->template->nama_perangkat }}</h6>
-                                    <span class="badge badge-{{ $item->is_completed ? 'success' : 'secondary' }}">
-                                        {{ $item->is_completed ? 'Selesai' : 'Draft' }}
-                                    </span>
-                                </div>
-                                <p class="text-muted small mb-1">Mapel: {{ $item->mapel->nama_mapel }}</p>
-                                <p class="text-muted small mb-1">Kelas: {{ $item->kelas->nama_kelas }}</p>
-                                <p class="text-muted small mb-2">Tahun Ajaran: {{ $item->tahun_ajaran }}</p>
-                                <a href="{{ route('guru.perangkat.print', $item->id) }}" target="_blank" class="btn btn-xs btn-outline-primary">
-                                    <i class="fas fa-print"></i> Cetak / Preview
+        <div class="table-responsive">
+            <table id="historyTable" class="table table-bordered table-hover mb-0" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width: 5%">No</th>
+                        <th>Dokumen yang Disubmit</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Kelas</th>
+                        <th>Tahun Ajaran</th>
+                        <th>Tanggal Disubmit</th>
+                        <th style="width: 10%">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($historyItems as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->template->nama_perangkat }}</td>
+                            <td>{{ $item->mapel->nama_mapel }}</td>
+                            <td>{{ $item->kelas->nama_kelas }}</td>
+                            <td>{{ $item->tahun_ajaran }}</td>
+                            <td>{{ $item->submitted_at ? \Carbon\Carbon::parse($item->submitted_at)->format('d M Y, H:i') : '-' }}</td>
+                            <td class="text-center">
+                                <a href="{{ route('guru.perangkat.print', $item->id) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Lihat Dokumen">
+                                    <i class="fas fa-eye"></i> Lihat
                                 </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-@endif
 
 @stop
+
+@push('js')
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap4.min.js"></script>
+    <script>
+        $(function () {
+            $('#historyTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json",
+                    search: "Cari:",
+                }
+            });
+        });
+    </script>
+@endpush
