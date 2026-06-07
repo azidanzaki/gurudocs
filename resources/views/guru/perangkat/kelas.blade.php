@@ -133,9 +133,12 @@
                                     <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-primary {{ $pg->is_completed || $isPastDeadline ? 'd-none' : '' }}" id="btn_edit_{{ $pg->id }}">
                                         <i class="fas fa-edit"></i> {{ !$pg->isDraft() ? 'Lihat/Edit' : 'Isi' }}
                                     </a>
-                                    <button class="btn btn-secondary {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" disabled id="btn_disabled_{{ $pg->id }}" title="Perangkat telah selesai atau dikunci">
+                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-secondary {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" id="btn_edit_{{ $pg->id }}">
+                                        <i class="fas fa-eye"></i> {{ !$pg->isDraft() ? 'Lihat' : 'Isi' }}
+                                    </a>
+                                    <!-- <button class="btn btn-secondary {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" disabled id="btn_disabled_{{ $pg->id }}" title="Perangkat telah selesai atau dikunci">
                                         <i class="fas fa-lock"></i> Terkunci
-                                    </button>
+                                    </button> -->
                                     <a href="{{ route('guru.perangkat.print', $pg->id) }}" target="_blank" class="btn btn-outline-secondary" title="Cetak">
                                         <i class="fas fa-print"></i>
                                     </a>

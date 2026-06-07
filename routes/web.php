@@ -124,6 +124,10 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
     Route::post('perangkat/{mapel}/kelas/{kelas}/template/{template}/submit', [PerangkatGuruController::class, 'submit'])
         ->name('guru.perangkat.submit');
 
+    // Reset
+    Route::post('perangkat/{mapel}/kelas/{kelas}/template/{template}/reset', [PerangkatGuruController::class, 'reset'])
+        ->name('guru.perangkat.reset');
+
     // Print
     Route::get('perangkat/{perangkatGuru}/print', [PerangkatGuruController::class, 'print'])
         ->name('guru.perangkat.print');

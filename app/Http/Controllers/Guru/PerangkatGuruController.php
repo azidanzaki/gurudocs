@@ -122,6 +122,27 @@ class PerangkatGuruController extends Controller
             ->with('success', 'Perangkat berhasil disubmit!');
     }
 
+    // Step 5c: Reset
+    public function reset(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
+    {
+        $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
+
+        DB::transaction(function () use ($perangkatGuru) {
+            $perangkatGuru->filledSections()->delete();
+            $perangkatGuru->delete();
+        });
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => route('guru.perangkat.kelas', [$mapel->id, $kelas->id])
+            ]);
+        }
+
+        return redirect()->route('guru.perangkat.kelas', [$mapel->id, $kelas->id])
+            ->with('success', 'Perangkat berhasil direset.');
+    }
+
     // Step 6: Print
     public function print(PerangkatGuru $perangkatGuru)
     {

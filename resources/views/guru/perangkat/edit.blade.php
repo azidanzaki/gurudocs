@@ -40,14 +40,43 @@
 @section('content')
 
 {{-- Breadcrumb --}}
-<div class="mb-3 d-flex align-items-center gap-2">
-    <a href="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}"
-       class="btn btn-sm btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Kembali
-    </a>
-    <span class="text-muted">
-        {{ $mapel->nama_mapel }} / {{ $kelas->nama_kelas }} / {{ $template->nama_perangkat }}
-    </span>
+<div class="mb-3 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}"
+           class="btn btn btn-outline-secondary mr-2">
+            <i class="fas fa-arrow-left"></i> Kembali
+        </a>
+        <span class="text-muted mr-3">
+            {{ $mapel->nama_mapel }} / {{ $kelas->nama_kelas }} / {{ $template->nama_perangkat }}
+        </span>
+    </div>
+
+    @if(!$perangkatGuru->isSubmitted())
+    <div class="d-flex align-items-center">
+        <button type="button" id="btn-reset" class="btn btn-danger mr-2">
+            <i class="fas fa-trash"></i> Reset
+        </button>
+        <button type="button" id="btn-save-top" class="btn btn-secondary mr-2">
+            <i class="fas fa-save"></i> Simpan
+        </button>
+        <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
+           target="_blank"
+           class="btn btn-outline-dark">
+            <i class="fas fa-print"></i> Cetak
+        </a>
+        <span id="save-indicator-top" class="text-muted small ml-2" style="display:none;">
+            <i class="fas fa-circle-notch fa-spin"></i> Menyimpan...
+        </span>
+    </div>
+    @else
+    <div class="d-flex align-items-center">
+        <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
+           target="_blank"
+           class="btn btn-outline-dark">
+            <i class="fas fa-print"></i> Cetak Dokumen
+        </a>
+    </div>
+    @endif
 </div>
 
 {{-- Alerts --}}
@@ -117,12 +146,12 @@
     @endif
             <div class="form-group {{ $index > 0 ? 'mt-4' : '' }}">
 
-                <label for="field_{{ $section->field_key }}" class="font-weight-bold">
+                <!-- <label for="field_{{ $section->field_key }}" class="font-weight-bold">
                     {{ $section->label }}
                     @if($section->is_required)
                         <span class="required-star">*</span>
                     @endif
-                </label>
+                </label> -->
 
                 @if($perangkatGuru->isSubmitted())
                     {{-- Read-only after submit --}}
@@ -179,36 +208,7 @@
         </div>
     </div>
 
-    {{-- Sticky action bar --}}
-    @if(!$perangkatGuru->isSubmitted())
-    <div class="sticky-actions">
-        <div class="d-flex align-items-center gap-2">
 
-            <button type="button" id="btn-save" class="btn btn-secondary">
-                <i class="fas fa-save"></i> Simpan
-            </button>
-
-            <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
-               target="_blank"
-               class="btn btn-outline-dark">
-                <i class="fas fa-print"></i> Cetak
-            </a>
-
-            <span id="save-indicator" class="text-muted small ml-2" style="display:none;">
-                <i class="fas fa-circle-notch fa-spin"></i> Menyimpan...
-            </span>
-
-        </div>
-    </div>
-    @else
-    <div class="mt-3">
-        <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
-           target="_blank"
-           class="btn btn-outline-dark">
-            <i class="fas fa-print"></i> Cetak Dokumen
-        </a>
-    </div>
-    @endif
 
 </form>
 
@@ -224,11 +224,17 @@ tinymce.init({
     toolbar_mode: 'sliding',
     noneditable_class: 'mceNonEditable',
     height: 800,
-    content_style: 'body { font-family:Arial,sans-serif; font-size:12pt; padding: 2cm; max-width: 21cm; margin: 0 auto; box-shadow: 0 0 5px rgba(0,0,0,0.1); background-color: #fff; } .mceNonEditable { opacity: 0.9; cursor: not-allowed; }'
+    content_style: 'body { font-family:Arial,sans-serif; font-size:12pt; padding: 2cm; max-width: 21cm; margin: 0 auto; box-shadow: 0 0 5px rgba(0,0,0,0.1); background-color: #fff; } .mceNonEditable { opacity: 0.9; cursor: not-allowed; }',
+    setup: function (editor) {
+        editor.on('Change KeyUp', function () {
+            debounceAutoSave();
+        });
+    }
 });
 
 const SAVE_URL   = "{!! route('guru.perangkat.save',   ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'template' => $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran, 'semester' => $perangkatGuru->semester, 'bab' => $perangkatGuru->bab]) !!}";
 const SUBMIT_URL = "{!! route('guru.perangkat.submit', ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'template' => $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran, 'semester' => $perangkatGuru->semester, 'bab' => $perangkatGuru->bab]) !!}";
+const RESET_URL  = "{!! route('guru.perangkat.reset',  ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'template' => $template->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran, 'semester' => $perangkatGuru->semester, 'bab' => $perangkatGuru->bab]) !!}";
 
 function getFormData() {
     if (typeof tinymce !== 'undefined') {
@@ -238,11 +244,31 @@ function getFormData() {
     return new FormData(form);
 }
 
-// Save draft
-document.getElementById('btn-save')?.addEventListener('click', async function () {
-    const indicator = document.getElementById('save-indicator');
+// Auto save logic
+let autoSaveTimer;
+const debounceAutoSave = () => {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+        performSave(true);
+    }, 1500); // 1.5 second delay after typing
+};
+
+// Bind normal inputs
+document.querySelectorAll('#perangkat-form input, #perangkat-form textarea:not(.richtext-field)').forEach(el => {
+    el.addEventListener('input', debounceAutoSave);
+    el.addEventListener('change', debounceAutoSave);
+});
+
+async function performSave(isAutoSave = false) {
+    const indicator = document.getElementById('save-indicator-top');
+    const saveBtn = document.getElementById('btn-save-top');
+    
     indicator.style.display = 'inline';
-    this.disabled = true;
+    indicator.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Menyimpan...';
+    
+    if (!isAutoSave && saveBtn) {
+        saveBtn.disabled = true;
+    }
 
     try {
         const res = await fetch(SAVE_URL, {
@@ -254,16 +280,61 @@ document.getElementById('btn-save')?.addEventListener('click', async function ()
         if (res.ok) {
             indicator.innerHTML = '<i class="fas fa-check text-success"></i> Tersimpan';
             setTimeout(() => {
-                //window.location.href = "{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id, 'tahun_ajaran' => $perangkatGuru->tahun_ajaran]) }}";
-            }, 1000);
+                indicator.style.display = 'none';
+            }, 2000);
         } else {
-            Swal.fire('Gagal', 'Gagal menyimpan. Silakan coba lagi.', 'error');
+            if (!isAutoSave) Swal.fire('Gagal', 'Gagal menyimpan. Silakan coba lagi.', 'error');
+            indicator.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> Gagal menyimpan otomatis';
         }
     } catch (e) {
-        Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+        if (!isAutoSave) Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+        indicator.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Error jaringan';
     } finally {
-        this.disabled = false;
+        if (!isAutoSave && saveBtn) {
+            saveBtn.disabled = false;
+        }
     }
+}
+
+// Manual Save button click
+document.getElementById('btn-save-top')?.addEventListener('click', function () {
+    performSave(false);
+});
+
+// Reset
+document.getElementById('btn-reset')?.addEventListener('click', function () {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Template yang sudah diubah tidak akan tersimpan dan akan kembali ke status belum diisi!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Reset!',
+        cancelButtonText: 'Batal'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('input[name="_token"]').value);
+                
+                const res = await fetch(RESET_URL, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    window.location.href = data.redirect;
+                } else {
+                    Swal.fire('Gagal', 'Gagal mereset perangkat. Silakan coba lagi.', 'error');
+                }
+            } catch (e) {
+                Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
+            }
+        }
+    });
 });
 </script>
 @endpush
