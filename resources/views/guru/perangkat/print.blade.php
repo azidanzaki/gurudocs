@@ -83,13 +83,41 @@
 </head>
 <body>
 
-    @if($perangkatGuru->perangkat_template_id == 3)
-        {{-- Custom Layout Khusus Capaian Pembelajaran (CP) - 1 WYSIWYG Besar --}}
+    @php
+        $nama = $perangkatGuru->template->nama_perangkat;
+        $isTinyTemplate = str_contains($nama, 'Capaian Pembelajaran') ||
+                          str_contains($nama, 'Program Tahunan') ||
+                          str_contains($nama, 'Program Semester') ||
+                          (str_contains($nama, 'Tujuan Pembelajaran') && !str_contains($nama, 'Alur') && !str_contains($nama, 'Kriteria')) ||
+                          str_contains($nama, 'Alur Tujuan Pembelajaran') ||
+                          str_contains($nama, 'Kriteria Ketercapaian') || str_contains($nama, 'KKTP');
+    @endphp
+
+    @if($isTinyTemplate)
+        {{-- Custom Layout Khusus WYSIWYG Besar (Sudah Ada Header & Tanda Tangan Sendiri) --}}
         <div>
             @foreach($perangkatGuru->template->sections as $section)
-                <div>
-                    {!! $savedValues[$section->field_key] ?? '' !!}
-                </div>
+                @php
+                    $isSkip = false;
+                    if (str_contains($nama, 'Capaian Pembelajaran')) {
+                        if (in_array($section->field_key, ['fase','elemen','deskripsi'])) $isSkip = true;
+                    } elseif (str_contains($nama, 'Program Tahunan')) {
+                        if (in_array($section->field_key, ['tp','alokasi_waktu'])) $isSkip = true;
+                    } elseif (str_contains($nama, 'Program Semester')) {
+                        if (in_array($section->field_key, ['materi_pokok','waktu_pelaksanaan'])) $isSkip = true;
+                    } elseif (str_contains($nama, 'Tujuan Pembelajaran') && !str_contains($nama, 'Alur') && !str_contains($nama, 'Kriteria')) {
+                        if (in_array($section->field_key, ['kompetensi','konten','rumusan_tp'])) $isSkip = true;
+                    } elseif (str_contains($nama, 'Alur Tujuan Pembelajaran')) {
+                        if (in_array($section->field_key, ['alur','alokasi_waktu'])) $isSkip = true;
+                    } elseif (str_contains($nama, 'Kriteria Ketercapaian') || str_contains($nama, 'KKTP')) {
+                        if (in_array($section->field_key, ['indikator','interval'])) $isSkip = true;
+                    }
+                @endphp
+                @if(!$isSkip)
+                    <div>
+                        {!! $savedValues[$section->field_key] ?? '' !!}
+                    </div>
+                @endif
             @endforeach
         </div>
     @else

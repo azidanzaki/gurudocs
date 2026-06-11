@@ -141,9 +141,36 @@
         <div class="card-body">
 
             @foreach($template->sections as $index => $section)
-    @if($template->id == 3 && in_array($section->field_key, ['fase','elemen','deskripsi']))
-        @continue
-    @endif
+                @php
+                    $isSkip = false;
+                    $isRichtext = $section->field_type === 'richtext';
+                    $defaultView = null;
+
+                    if (str_contains($template->nama_perangkat, 'Capaian Pembelajaran')) {
+                        if (in_array($section->field_key, ['fase','elemen','deskripsi'])) $isSkip = true;
+                        if ($section->field_key == 'deskripsi_cp') { $isRichtext = true; $defaultView = 'cp_default'; }
+                    } elseif (str_contains($template->nama_perangkat, 'Program Tahunan')) {
+                        if (in_array($section->field_key, ['tp','alokasi_waktu'])) $isSkip = true;
+                        if ($section->field_key == 'cp') { $isRichtext = true; $defaultView = 'prota_default'; }
+                    } elseif (str_contains($template->nama_perangkat, 'Program Semester')) {
+                        if (in_array($section->field_key, ['materi_pokok','waktu_pelaksanaan'])) $isSkip = true;
+                        if ($section->field_key == 'tp') { $isRichtext = true; $defaultView = 'promes_default'; }
+                    } elseif (str_contains($template->nama_perangkat, 'Tujuan Pembelajaran') && !str_contains($template->nama_perangkat, 'Alur') && !str_contains($template->nama_perangkat, 'Kriteria')) {
+                        if (in_array($section->field_key, ['kompetensi','konten','rumusan_tp'])) $isSkip = true;
+                        if ($section->field_key == 'cp') { $isRichtext = true; $defaultView = 'tp_default'; }
+                    } elseif (str_contains($template->nama_perangkat, 'Alur Tujuan Pembelajaran')) {
+                        if (in_array($section->field_key, ['alur','alokasi_waktu'])) $isSkip = true;
+                        if ($section->field_key == 'tp') { $isRichtext = true; $defaultView = 'atp_default'; }
+                    } elseif (str_contains($template->nama_perangkat, 'Kriteria Ketercapaian') || str_contains($template->nama_perangkat, 'KKTP')) {
+                        if (in_array($section->field_key, ['indikator','interval'])) $isSkip = true;
+                        if ($section->field_key == 'tp') { $isRichtext = true; $defaultView = 'kktp_default'; }
+                    }
+                @endphp
+
+                @if($isSkip)
+                    @continue
+                @endif
+
             <div class="form-group {{ $index > 0 ? 'mt-4' : '' }}">
 
                 <!-- <label for="field_{{ $section->field_key }}" class="font-weight-bold">
@@ -169,22 +196,21 @@
                         {{ $section->is_required ? 'required' : '' }}
                     >
 
-                @elseif(in_array($section->field_type, ['textarea', 'richtext']))
+                @elseif(in_array($section->field_type, ['textarea', 'richtext']) || $isRichtext)
                     @php
                         $content = $savedValues[$section->field_key] ?? '';
-                        // If no content and template is CP, load default CP view
-                        if (empty(trim($content)) && $template->nama_perangkat == 'Capaian Pembelajaran (CP)') {
-                            $content = view('guru.perangkat.templates.cp_default', compact('mapel', 'kelas', 'perangkatGuru'))->render();
+                        if (empty(trim($content)) && $defaultView) {
+                            $content = view('guru.perangkat.templates.'.$defaultView, compact('mapel', 'kelas', 'perangkatGuru'))->render();
                         }
                     @endphp
-                    @if($template->nama_perangkat == 'Capaian Pembelajaran (CP)')
+                    @if($isRichtext)
                         <textarea id="field_{{ $section->field_key }}" name="{{ $section->field_key }}" class="form-control richtext-field" rows="20">{{ $content }}</textarea>
                     @else
                         <textarea
                             id="field_{{ $section->field_key }}"
                             name="{{ $section->field_key }}"
-                            class="form-control {{ ($section->field_type === 'richtext') ? 'richtext-field' : '' }}"
-                            rows="{{ $section->field_type === 'richtext' ? '20' : '5' }}"
+                            class="form-control"
+                            rows="5"
                             placeholder="{{ $section->placeholder }}"
                             {{ $section->is_required ? 'required' : '' }}
                         >{{ $content }}</textarea>
