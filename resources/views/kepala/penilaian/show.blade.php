@@ -62,16 +62,64 @@
         </div>
     </div>
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Penilaian Guru (Segera Hadir)</h3>
+        <h5 class="font-weight-bold mb-1">Rincian Penilaian Kinerja:</h5>
+        <p class="text-muted mb-4">Lakukan Penilaian Kinerja Guru, periksa kelengkapan dokumen jika diperlukan.</p>
+
+        <!-- Card 1: Penilaian Kinerja Guru (Looping per Mapel) -->
+        @forelse($mapels as $mapel)
+            <div class="card mb-3 shadow-sm border assessment-card" style="border-radius: 8px;">
+                <div class="card-body d-flex flex-row align-items-center p-3">
+                    <div class="d-flex align-items-center flex-grow-1 pr-3">
+                        @php
+                            $completed = isset($completedCounts[$mapel->id]) ? $completedCounts[$mapel->id] : 0;
+                            $percentage = ($completed / 7) * 100;
+                        @endphp
+                        <div class="position-relative d-flex justify-content-center align-items-center" style="width: 70px; height: 70px; border-radius: 50%; background: conic-gradient(#007bff {{ $percentage }}%, #dee2e6 0); flex-shrink: 0;">
+                            <div style="width: 56px; height: 56px; border-radius: 50%; background-color: white;" class="d-flex justify-content-center align-items-center">
+                                <span class="font-weight-bold text-primary" style="font-size: 1.1rem;">{{ $completed }}/7</span>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <h6 class="font-weight-bold mb-1" style="font-size: 1.1rem;">Penilaian Kinerja Guru mata pelajaran {{ $mapel->nama_mapel }}</h6>
+                            <span class="text-muted" style="font-size: 0.95rem;">Lakukan penilaian kinerja Guru untuk mata pelajaran {{ $mapel->nama_mapel }}</span>
+                        </div>
+                    </div>
+                    <div class="text-right" style="width: 120px; flex-shrink: 0;">
+                        <a href="{{ route('kepala.penilaian.pkg', ['id' => $guru->id, 'mapel_id' => $mapel->id]) }}" class="btn btn-primary font-weight-bold w-100" style="border-radius: 6px;">Nilai</a>
+                    </div>
+                </div>
             </div>
-            <div class="card-body text-center py-5">
-                <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
-                <h5>Fitur Penilaian Belum Tersedia</h5>
-                <p class="text-muted">Untuk saat ini, Anda baru bisa melihat profil guru.</p>
+        @empty
+            <div class="alert alert-info shadow-sm" style="border-radius: 8px;">
+                <i class="fas fa-info-circle mr-2"></i> Guru ini belum mengampu mata pelajaran apapun.
+            </div>
+        @endforelse
+
+        <!-- Card 3: Kelengkapan dokumen -->
+        <div class="card shadow-sm border assessment-card" style="border-radius: 8px;">
+            <div class="card-body d-flex flex-row align-items-center p-3">
+                <div class="flex-grow-1 pr-3 pl-2">
+                    <h6 class="font-weight-bold mb-1" style="font-size: 1.1rem;">Kelengkapan dokumen</h6>
+                    <span class="text-muted" style="font-size: 0.95rem;">Periksa Kelengkapan Dokumen dan Kegiatan Guru.</span>
+                </div>
+                <div class="text-right" style="width: 120px; flex-shrink: 0;">
+                    <a href="{{ route('kepala.penilaian.kelengkapan', $guru->id) }}" class="btn btn-primary font-weight-bold w-100" style="border-radius: 6px;">Periksa</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
+@stop
+
+@section('css')
+<style>
+    .assessment-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .assessment-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+        border-color: #007bff !important;
+    }
+</style>
 @stop

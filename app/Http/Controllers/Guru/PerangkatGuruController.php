@@ -146,7 +146,11 @@ class PerangkatGuruController extends Controller
     // Step 6: Print
     public function print(PerangkatGuru $perangkatGuru)
     {
-        abort_if($perangkatGuru->user_id !== Auth::id(), 403);
+        abort_if(
+            $perangkatGuru->user_id !== Auth::id() && 
+            !in_array(Auth::user()->role, ['kepala_sekolah', 'admin']), 
+            403
+        );
 
         $perangkatGuru->load([
             'mapel',

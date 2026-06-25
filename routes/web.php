@@ -190,6 +190,11 @@ Route::middleware(['auth', 'can:kepala'])->group(function () {
 
     Route::get('/kepala/penilaian', [PenilaianController::class, 'index'])->name('kepala.penilaian');
     Route::get('/kepala/penilaian/guru/{id}', [PenilaianController::class, 'showGuru'])->name('kepala.penilaian.show');
+    Route::get('/kepala/penilaian/guru/{id}/kelengkapan', [PenilaianController::class, 'kelengkapanDokumen'])->name('kepala.penilaian.kelengkapan');
+    Route::get('/kepala/penilaian/guru/{id}/pkg', [PenilaianController::class, 'pkg'])->name('kepala.penilaian.pkg');
+    Route::get('/kepala/penilaian/guru/{id}/pkg/cetak', [PenilaianController::class, 'cetakPkg'])->name('kepala.penilaian.cetakPkg');
+    Route::get('/kepala/penilaian/guru/{id}/start/{aspect}', [PenilaianController::class, 'start'])->name('kepala.penilaian.start');
+    Route::post('/kepala/penilaian/guru/{id}/store/{aspect}', [PenilaianController::class, 'store'])->name('kepala.penilaian.store');
 
     Route::get('/kepala/profil', [ProfilController::class, 'index'])->name('kepala.profil');
 });

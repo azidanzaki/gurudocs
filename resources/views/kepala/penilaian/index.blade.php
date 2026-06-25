@@ -18,6 +18,7 @@
                     <th width="5%">No</th>
                     <th>NIP</th>
                     <th>Nama Guru</th>
+                    <th>Status Penilaian</th>
                     <th width="15%">Aksi</th>
                 </tr>
             </thead>
@@ -28,14 +29,17 @@
                         <td>{{ $guru->nip }}</td>
                         <td>{{ $guru->name }}</td>
                         <td>
-                            <a href="{{ route('kepala.penilaian.show', $guru->id) }}" class="btn btn-sm btn-info">
-                                <i class="fas fa-eye"></i> Lihat Profil
+                            <span class="badge badge-secondary px-2 py-1">Belum Dinilai</span>
+                        </td>
+                        <td>
+                            <a href="{{ route('kepala.penilaian.show', $guru->id) }}" class="btn btn-sm btn-primary font-weight-bold">
+                                <i class="fas fa-edit mr-1"></i> Nilai
                             </a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center">Belum ada data guru.</td>
+                        <td colspan="5" class="text-center">Belum ada data guru.</td>
                     </tr>
                 @endforelse
             </tbody>
