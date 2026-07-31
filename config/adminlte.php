@@ -273,7 +273,7 @@ Loading<span class="dot">...</span>
     'register_url' => 'register',
     'password_reset_url' => 'password/reset',
     'password_email_url' => 'password/email',
-    'profile_url' => 'profilguru',
+    'profile_url' => 'profile',
     'disable_darkmode_routes' => false,
 
     /*
@@ -392,7 +392,7 @@ Loading<span class="dot">...</span>
             'can' => 'kepala',
         ],
         [
-            'text' => 'Kelola Dokumen Administratif',
+            'text' => 'Kelola Template Dokumen',
             'icon' => 'far fa-folder-open',
             'route' => 'admin.dokumenadm.index',
             'can' => 'admin',

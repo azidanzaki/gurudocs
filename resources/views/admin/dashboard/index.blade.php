@@ -8,118 +8,358 @@
 
 @section('content')
 
+
+<style>
+
+.dashboard-card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: .3s;
+    border:none;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+
+.icon-dashboard {
+    position:absolute;
+    right:20px;
+    top:20px;
+    font-size:65px;
+    opacity:.25;
+}
+
+
+.bg-gradient-info-custom {
+    background: linear-gradient(135deg,#17a2b8,#0dcaf0);
+}
+
+
+.bg-gradient-success-custom {
+    background: linear-gradient(135deg,#28a745,#20c997);
+}
+
+
+.bg-gradient-warning-custom {
+    background: linear-gradient(135deg,#ffc107,#fd7e14);
+}
+
+
+
+.bg-gradient-danger-custom {
+    background: linear-gradient(135deg,#dc3545,#ff6b6b);
+}
+
+
+.welcome-card {
+    border-radius:15px;
+}
+
+</style>
+
+
+
+
 <div class="row">
-    {{-- Total Guru --}}
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-info shadow-sm rounded">
-            <div class="inner">
-                <h3>{{ $totalGuru }}</h3>
-                <p>Total Guru</p>
+
+
+    {{-- Kelola User --}}
+    <div class="col-lg-4 col-md-6">
+
+
+        <div class="small-box dashboard-card bg-gradient-info-custom text-white shadow">
+
+
+            <div class="inner p-4">
+
+
+                <h2 class="font-weight-bold">
+
+                    {{ $totalGuru }}
+
+                </h2>
+
+
+                <p class="mb-0">
+
+                    Total Guru
+
+                </p>
+
+
             </div>
-            <div class="icon">
+
+
+
+            <div class="icon-dashboard">
+
                 <i class="fas fa-users"></i>
+
             </div>
-            <a href="{{ route('admin.users') }}" class="small-box-footer">
-                Kelola User <i class="fas fa-arrow-circle-right"></i>
+
+
+
+
+            <a href="{{ route('admin.users') }}"
+               class="small-box-footer">
+
+
+                Kelola User
+
+                <i class="fas fa-arrow-right ml-2"></i>
+
+
             </a>
+
+
+
         </div>
+
+
     </div>
 
-    {{-- Total Mapel --}}
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-success shadow-sm rounded">
-            <div class="inner">
-                <h3>{{ $totalMapel }}</h3>
-                <p>Total Mata Pelajaran</p>
+
+
+
+
+    {{-- Kelola Perangkat --}}
+    <div class="col-lg-4 col-md-6">
+
+
+        <div class="small-box dashboard-card bg-gradient-success-custom text-white shadow">
+
+
+            <div class="inner p-4">
+
+
+                <h2 class="font-weight-bold">
+
+                    <i class="fas fa-book"></i>
+
+                </h2>
+
+
+                <p class="mb-0">
+
+                    Kelola Perangkat
+
+                </p>
+
+
             </div>
-            <div class="icon">
-                <i class="fas fa-book"></i>
+
+
+
+
+            <div class="icon-dashboard">
+
+                <i class="fas fa-cogs"></i>
+
             </div>
-            <a href="{{ route('admin.kelolaperangkat') }}" class="small-box-footer">
-                Kelola Mapel <i class="fas fa-arrow-circle-right"></i>
+
+
+
+
+            <a href="{{ route('admin.kelolaperangkat') }}"
+               class="small-box-footer">
+
+
+                Kelola Perangkat
+
+                <i class="fas fa-arrow-right ml-2"></i>
+
+
             </a>
+
+
+
         </div>
+
+
     </div>
 
-    {{-- Total Kelas --}}
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-warning shadow-sm rounded">
-            <div class="inner">
-                <h3>{{ $totalKelas }}</h3>
-                <p>Total Kelas</p>
+
+
+
+
+
+
+    {{-- Template Dokumen --}}
+    <div class="col-lg-4 col-md-6">
+
+
+        <div class="small-box dashboard-card bg-gradient-danger-custom text-white shadow">
+
+
+            <div class="inner p-4">
+
+
+                <h2 class="font-weight-bold">
+
+                    <i class="fas fa-folder-open"></i>
+
+                </h2>
+
+
+                <p class="mb-0">
+
+                    Template Dokumen
+
+                </p>
+
+
             </div>
-            <div class="icon">
-                <i class="fas fa-chalkboard"></i>
+
+
+
+
+            <div class="icon-dashboard">
+
+                <i class="fas fa-file-alt"></i>
+
             </div>
-            <a href="{{ route('admin.kelolaperangkat') }}" class="small-box-footer text-dark">
-                Kelola Kelas <i class="fas fa-arrow-circle-right"></i>
+
+
+
+
+            <a href="{{ route('admin.dokumenadm.index') }}"
+               class="small-box-footer">
+
+
+                Kelola Template Dokumen
+
+                <i class="fas fa-arrow-right ml-2"></i>
+
+
             </a>
+
+
+
         </div>
+
+
     </div>
 
-    {{-- Total Dokumen Administratif --}}
-    <div class="col-lg-3 col-6">
-        <div class="small-box bg-danger shadow-sm rounded">
-            <div class="inner">
-                <h3>{{ $totalDokumen }}</h3>
-                <p>Dokumen Administratif</p>
-            </div>
-            <div class="icon">
-                <i class="fas fa-folder-open"></i>
-            </div>
-            <a href="{{ route('admin.dokumenadm.index') }}" class="small-box-footer">
-                Kelola Dokumen <i class="fas fa-arrow-circle-right"></i>
-            </a>
-        </div>
-    </div>
+
+
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                <h3 class="card-title font-weight-bold text-secondary">
-                    <i class="fas fa-user-plus mr-2"></i> Guru Terbaru
+
+
+
+
+
+
+{{-- Welcome Card --}}
+
+<div class="card welcome-card shadow-sm mt-4">
+
+
+    <div class="card-body p-4">
+
+
+        <div class="row align-items-center">
+
+
+            <div class="col-md-8">
+
+
+                <h3 class="font-weight-bold">
+
+                    Selamat Datang,
+                    {{ Auth::user()->name }}
+
+                    👋
+
                 </h3>
+
+
+
+                <p class="text-muted mt-3">
+
+
+                    Dashboard admin digunakan untuk mengelola
+                    pengguna, perangkat pembelajaran, serta
+                    template dokumen administrasi guru.
+
+
+                </p>
+
+
+
+
+
+                <a href="{{ route('admin.users') }}"
+                   class="btn btn-info mr-2">
+
+
+                    <i class="fas fa-users mr-2"></i>
+
+                    Kelola User
+
+
+                </a>
+
+
+
+
+                <a href="{{ route('admin.kelolaperangkat') }}"
+                   class="btn btn-success mr-2">
+
+
+                    <i class="fas fa-cogs mr-2"></i>
+
+                    Kelola Perangkat
+
+
+                </a>
+
+
+
+
+                <a href="{{ route('admin.dokumenadm.index') }}"
+                   class="btn btn-danger">
+
+
+                    <i class="fas fa-file-alt mr-2"></i>
+
+                    Template Dokumen
+
+
+                </a>
+
+
+
             </div>
-            <div class="card-body">
-                @if($recentGurus->isEmpty())
-                    <p class="text-muted text-center py-4">Belum ada data guru.</p>
-                @else
-                    <ul class="products-list product-list-in-card pl-2 pr-2">
-                        @foreach($recentGurus as $guru)
-                            <li class="item d-flex align-items-center py-3 border-bottom">
-                                <div class="product-img mr-3">
-                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white font-weight-bold" style="width:40px; height:40px;">
-                                        {{ substr($guru->name, 0, 1) }}
-                                    </div>
-                                </div>
-                                <div class="product-info flex-grow-1">
-                                    <a href="javascript:void(0)" class="product-title text-dark font-weight-bold">
-                                        {{ $guru->name }}
-                                        <span class="badge badge-info float-right">{{ $guru->created_at->diffForHumans() }}</span>
-                                    </a>
-                                    <span class="product-description text-muted small">
-                                        NIP: {{ $guru->nip ?? '-' }} | Email: {{ $guru->email ?? '-' }}
-                                    </span>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
+
+
+
+
+
+            <div class="col-md-4 text-center">
+
+
+                <i class="fas fa-user-shield text-primary"
+                   style="font-size:120px;opacity:.2">
+
+                </i>
+
+
             </div>
+
+
+
         </div>
+
+
     </div>
 
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0 bg-primary text-white h-100">
-            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-5">
-                <i class="fas fa-cogs fa-4x mb-4 text-white-50"></i>
-                <h3 class="font-weight-bold">Sistem Manajemen Perangkat</h3>
-                <p class="mt-2 mb-0 text-light">Kelola pengguna, struktur kelas, dan dokumen administrasi untuk memastikan kelancaran kegiatan belajar mengajar.</p>
-            </div>
-        </div>
-    </div>
+
 </div>
+
+
 
 @stop

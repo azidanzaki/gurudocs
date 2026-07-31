@@ -11,20 +11,32 @@ use App\Models\Kelas;
 
 class KelolaUserController extends Controller
 {
-    public function users()
-    {
-        $users = User::latest()->get();
+    public function users(Request $request)
+{
+    $query = User::query();
 
-        $mapels = Mapel::all();
+    // Search
+    if ($request->filled('search')) {
+        $search = $request->search;
 
-        $kelas = Kelas::all();
-
-        return view('admin.kelolauser.index', compact(
-            'users',
-            'mapels',
-            'kelas'
-        ));
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('nip', 'like', "%{$search}%")
+              ->orWhere('role', 'like', "%{$search}%");
+        });
     }
+
+    $users = $query->latest()->paginate(10)->withQueryString();
+
+    $mapels = Mapel::all();
+    $kelas = Kelas::all();
+
+    return view('admin.kelolauser.index', compact(
+        'users',
+        'mapels',
+        'kelas'
+    ));
+}
 
     // FORM TAMBAH USER
     public function createUser()

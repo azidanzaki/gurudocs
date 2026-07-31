@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,322 +13,313 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
-        *{
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
 
-        body{
-            margin:0;
-            padding:0;
-            background:#f4f6f9;
-            overflow:hidden;
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #16351f, #285d38, #3c7a52);
+            overflow: hidden;
+            position: relative;
         }
 
-        .login-wrapper{
-            width:100%;
-            height:100vh;
-            display:flex;
+        /* Background Blur */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            background: rgba(255, 255, 255, .12);
+            border-radius: 50%;
+            top: -120px;
+            left: -120px;
+            filter: blur(40px);
         }
 
-        /* LEFT SIDE */
-        .login-left{
-            width:50%;
-            background:#ffffff;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:40px;
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 50%;
+            bottom: -120px;
+            right: -120px;
+            filter: blur(40px);
         }
 
-        .login-card-custom{
-            width:100%;
-            max-width:430px;
-            border:none;
-            border-radius:18px;
-            box-shadow:0 10px 35px rgba(0,0,0,0.08);
-            overflow:hidden;
+        .login-card {
+            width: 420px;
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
+            position: relative;
+            z-index: 5;
+            animation: fadeUp .7s ease;
         }
 
-        .login-card-body{
-            padding:40px;
-        }
-
-        .logo-area{
-            text-align:center;
-            margin-bottom:25px;
-        }
-
-        .logo-circle{
-            width:90px;
-            height:90px;
-            border-radius:50%;
-            background:#1f331d;
-            color:white;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            margin:auto;
-            font-size:38px;
-            margin-bottom:15px;
-        }
-
-        .logo-area h2{
-            font-weight:700;
-            color:#1f331d;
-            margin-bottom:5px;
-        }
-
-        .logo-area p{
-            color:#777;
-            font-size:14px;
-        }
-
-        .input-group-text{
-            background:#1f331d;
-            color:white;
-            border:none;
-        }
-
-        .form-control{
-            height:48px;
-            border-radius:0 8px 8px 0 !important;
-        }
-
-        .input-group{
-            margin-bottom:18px;
-        }
-
-        .btn-login{
-            background:#1f331d;
-            border:none;
-            height:48px;
-            border-radius:10px;
-            font-weight:600;
-            transition:0.3s;
-        }
-
-        .btn-login:hover{
-            background:#2f4d2b;
-        }
-
-        .info-box-login{
-            margin-top:25px;
-            background:#eef5ee;
-            border-radius:12px;
-            padding:15px;
-            text-align:center;
-            color:#4c5f4a;
-            font-size:14px;
-        }
-
-        /* RIGHT SIDE */
-        .login-right{
-            width:50%;
-            background:url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1400&auto=format&fit=crop') center center;
-            background-size:cover;
-            position:relative;
-        }
-
-        .overlay{
-            position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            background:rgba(31,51,29,0.75);
-            display:flex;
-            flex-direction:column;
-            justify-content:center;
-            align-items:center;
-            color:white;
-            text-align:center;
-            padding:40px;
-        }
-
-        .overlay h1{
-            font-size:42px;
-            font-weight:700;
-            margin-bottom:15px;
-        }
-
-        .overlay p{
-            max-width:500px;
-            line-height:1.8;
-            color:#f1f1f1;
-        }
-
-        .feature-box{
-            margin-top:30px;
-            display:flex;
-            gap:20px;
-            flex-wrap:wrap;
-            justify-content:center;
-        }
-
-        .feature-item{
-            background:rgba(255,255,255,0.12);
-            padding:15px 20px;
-            border-radius:12px;
-            min-width:180px;
-            backdrop-filter:blur(5px);
-        }
-
-        .feature-item i{
-            font-size:22px;
-            margin-bottom:10px;
-        }
-
-        /* RESPONSIVE */
-        @media(max-width:992px){
-
-            .login-right{
-                display:none;
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
             }
 
-            .login-left{
-                width:100%;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            background: #eef5ee;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f331d;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group-text {
+            background: #fff;
+            border-right: none;
+            color: #1f331d;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .form-control {
+            height: 52px;
+            border-left: none;
+            border-radius: 0 12px 12px 0 !important;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus {
+            border-color: #1f331d;
+        }
+
+        .btn-login {
+            height: 52px;
+            border-radius: 12px;
+            background: #1f331d;
+            border: none;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-login:hover {
+            background: #2c4f30;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(31, 51, 29, .25);
+        }
+
+        .extra {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .extra a {
+            color: #1f331d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .extra a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .login-error {
+            background: #fdecec;
+            color: #b42318;
+            border: 1px solid #f5c2c7;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        @media(max-width:500px) {
+
+            .login-card {
+                width: 92%;
+                padding: 30px;
             }
 
-            body{
-                overflow:auto;
-            }
         }
     </style>
+
 </head>
 
 <body>
 
-<div class="login-wrapper">
+    <div class="login-card">
 
-    <!-- LEFT -->
-    <div class="login-left">
-
-        <div class="card login-card-custom">
-            <div class="card-body login-card-body">
-
-                <div class="logo-area">
-                    <div class="logo-circle">
-                        <img src="{{ asset('images/logomts.png') }}"
-                            style="width:70px; height:70px; object-fit:cover;">
-                    </div>
-
-                    <h2>GuruDocs</h2>
-                    <p>MTsN 03 Rohul</p>
-                </div>
-
-                <p class="text-muted mb-4 text-center">
-                    Silahkan login menggunakan akun anda
-                </p>
-
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
-
-                    <!-- NIP -->
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fas fa-id-card"></i>
-                            </span>
-                        </div>
-
-                        <input type="text"
-                               name="nip"
-                               class="form-control"
-                               placeholder="Masukkan NIP"
-                               required>
-                    </div>
-
-                    <!-- PASSWORD -->
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                        </div>
-
-                        <input type="password"
-                               name="password"
-                               class="form-control"
-                               placeholder="Masukkan Password"
-                               required>
-                    </div>
-
-                    <!-- REMEMBER -->
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div class="icheck-primary">
-                            <input type="checkbox" id="remember" name="remember">
-                            <label for="remember">
-                                Remember Me
-                            </label>
-                        </div>
-
-                        <a href="#" class="text-success">
-                            Lupa Password?
-                        </a>
-                    </div>
-
-                    <!-- BUTTON -->
-                    <button type="submit" class="btn btn-success btn-block btn-login">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        Login
-                    </button>
-
-                </form>
-
-                <div class="info-box-login">
-                    Sistem informasi dokumen administrasi guru berbasis web
-                    untuk mempermudah pengelolaan perangkat pembelajaran.
-                </div>
-
-            </div>
+        <div class="logo">
+            <img src="{{ asset('images/logomts.png') }}">
         </div>
 
-    </div>
+        <h2>GuruDocs</h2>
 
-    <!-- RIGHT -->
-    <div class="login-right">
+        <p class="subtitle">
+            MTsN 03 Rokan Hulu
+            <br>
+            Silakan login menggunakan akun Anda.
+        </p>
+        @if ($errors->any())
+            <div class="login-error">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                {{ $errors->first() }}
+            </div>
+        @endif
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
 
-        <div class="overlay">
+            <div class="form-group">
 
-            <h1>GuruDocs</h1>
+                <div class="input-group">
 
-            <p>
-                Platform digital untuk membantu guru dalam mengelola
-                perangkat pembelajaran, dokumen administrasi,
-                serta arsip sekolah secara mudah dan cepat.
-            </p>
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fas fa-id-card"></i>
+                        </span>
+                    </div>
 
-            <div class="feature-box">
+                    <input type="text" class="form-control" name="nip" placeholder="Masukkan NIP" required>
 
-                <div class="feature-item">
-                    <i class="fas fa-file-alt"></i>
-                    <div>Perangkat Pembelajaran</div>
-                </div>
-
-                <div class="feature-item">
-                    <i class="fas fa-book"></i>
-                    <div>Dokumen Administrasi</div>
-                </div>
-
-                <div class="feature-item">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <div>Edit, Download, Dan Upload Dokumen</div>
                 </div>
 
             </div>
 
+            <div class="form-group">
+
+                <div class="input-group">
+
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </div>
+
+                    <input type="password" class="form-control" id="password" name="password"
+                        placeholder="Masukkan Password" required>
+
+                    <div class="input-group-append">
+
+                        <span class="input-group-text" onclick="togglePassword()"
+                            style="cursor:pointer;border-radius:0 12px 12px 0;">
+
+                            <i class="fas fa-eye" id="eye"></i>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="extra">
+
+                <div>
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Remember Me</label>
+                </div>
+
+            </div>
+
+            <button class="btn btn-success btn-block btn-login">
+
+                <i class="fas fa-sign-in-alt mr-2"></i>
+
+                Login
+
+            </button>
+
+        </form>
+
+        <div class="footer-text">
+            Sistem Informasi Dokumen Administrasi Guru
+            <br>
+            © {{ date('Y') }} GuruDocs
         </div>
 
     </div>
 
-</div>
+    <script>
 
-<!-- Scripts -->
-<script src="{{ asset('vendor/adminlte/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+        function togglePassword() {
+
+            const password = document.getElementById("password");
+            const eye = document.getElementById("eye");
+
+            if (password.type === "password") {
+
+                password.type = "text";
+                eye.classList.remove("fa-eye");
+                eye.classList.add("fa-eye-slash");
+
+            } else {
+
+                password.type = "password";
+                eye.classList.remove("fa-eye-slash");
+                eye.classList.add("fa-eye");
+
+            }
+
+        }
+
+    </script>
 
 </body>
+
 </html>

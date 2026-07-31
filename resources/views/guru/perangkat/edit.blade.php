@@ -161,6 +161,12 @@
                     } elseif (str_contains($template->nama_perangkat, 'Alur Tujuan Pembelajaran')) {
                         if (in_array($section->field_key, ['alur','alokasi_waktu'])) $isSkip = true;
                         if ($section->field_key == 'tp') { $isRichtext = true; $defaultView = 'atp_default'; }
+                    } elseif (str_contains($template->nama_perangkat, 'Modul Ajar')) {
+                        $isRichtext = true;
+                        $defaultView = 'rpp_default';
+                    } elseif (str_contains($template->nama_perangkat, 'Soal Sumatif')) {
+                        $isRichtext = true;
+                        $defaultView = 'soal_default';
                     } elseif (str_contains($template->nama_perangkat, 'Kriteria Ketercapaian') || str_contains($template->nama_perangkat, 'KKTP')) {
                         if (in_array($section->field_key, ['indikator','interval'])) $isSkip = true;
                         if ($section->field_key == 'tp') { $isRichtext = true; $defaultView = 'kktp_default'; }
@@ -183,7 +189,7 @@
                 @if($perangkatGuru->isSubmitted())
                     {{-- Read-only after submit --}}
                     <div class="section-readonly">
-                        {!! nl2br(e($savedValues[$section->field_key] ?? '—')) !!}
+                        {!! html_entity_decode($savedValues[$section->field_key] ?? '—') !!}
                     </div>
 
                 @elseif($section->field_type === 'date')

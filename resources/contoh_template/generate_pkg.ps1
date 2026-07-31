@@ -15,26 +15,29 @@ New-Item -ItemType Directory -Path $tempDir | Out-Null
 
 # Copy template DOCX to temp folder
 Copy-Item -Path $templatePath -Destination (Join-Path $tempDir "template.docx") -Force
-
-# Extract DOCX (which is a zip archive)
-Expand-Archive -Path (Join-Path $tempDir "template.docx") -DestinationPath (Join-Path $tempDir "doc") -Force
-
+# Rename to zip for extraction
+Rename-Item -Path (Join-Path $tempDir "template.docx") -NewName "template.zip" -Force
+# Extract DOCX (zip) archive
+Expand-Archive -Path (Join-Path $tempDir "template.zip") -DestinationPath (Join-Path $tempDir "doc") -Force
 # Path to document.xml inside DOCX
 $xmlPath = Join-Path $tempDir "doc\word\document.xml"
 $xmlContent = Get-Content -Path $xmlPath -Raw -Encoding UTF8
+$xmlPath = Join-Path $tempDir "doc\word\document.xml"
+$xmlContent = Get-Content -Path $xmlPath -Raw -Encoding UTF8
 
+# Simple placeholder replacement – extend as needed
 # Simple placeholder replacement – extend as needed
 $placeholders = @{
     "{{guru_name}}" = $data.guru_name
     "{{guru_nip}}"  = $data.guru_nip
     "{{mapel}}"     = $data.mapel
     "{{kelas}}"     = $data.kelas
-    "{{tahun_ajaran}}" = $data.tahun_ajar
+    "{{tahun_ajaran}}" = $data.tahun_ajaran
     "{{penilai}}" = $data.penilai
 }
 foreach ($ph in $placeholders.Keys) {
     $value = $placeholders[$ph]
-    $xmlContent = $xmlContent -replace [regex]::Escape($ph), [regex]::Escape($value)
+    $xmlContent = $xmlContent -replace [regex]::Escape($ph), $value
 }
 # Additional logic could replace aspect tables here.
 
@@ -43,7 +46,9 @@ Set-Content -Path $xmlPath -Value $xmlContent -Encoding UTF8
 
 # Re-pack the DOCX
 $filledDocx = Join-Path $tempDir "filled.docx"
-Compress-Archive -Path (Join-Path $tempDir "doc\*") -DestinationPath $filledDocx -Force
+$zipPath = Join-Path $tempDir "filled.zip"
+Compress-Archive -Path (Join-Path $tempDir "doc\*") -DestinationPath $zipPath -Force
+Rename-Item -Path $zipPath -NewName "filled.docx" -Force
 
 # Convert to PDF using LibreOffice (assumes soffice is in PATH or specify full path)
 & $sofficePath --headless --convert-to pdf --outdir $tempDir $filledDocx

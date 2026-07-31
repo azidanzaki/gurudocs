@@ -33,6 +33,29 @@ Route::get('lang/{locale}', function ($locale) {
     return back();
 })->name('lang.switch');
 
+
+Route::get('/profile', function () {
+
+    $user = auth()->user();
+
+    if ($user->role == 'kepala_sekolah') {
+
+        return redirect()->route('kepala.profil');
+
+    } elseif ($user->role == 'guru') {
+
+        return redirect()->route('guru.profil');
+
+    } elseif ($user->role == 'admin') {
+
+        return redirect()->route('admin.profil');
+
+    }
+
+    abort(403);
+
+})->middleware('auth')->name('profile');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH DASHBOARD REDIRECT

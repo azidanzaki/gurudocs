@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class PerangkatGuruController extends Controller
 {
-    // Step 4: Template selected — open the editable form
     public function edit(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
         $template->load('sections');
@@ -53,7 +52,6 @@ class PerangkatGuruController extends Controller
         ));
     }
 
-    // Step 5a: Save as draft
     public function save(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
         $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
@@ -76,7 +74,6 @@ class PerangkatGuruController extends Controller
         return back()->with('success', 'Draft berhasil disimpan.');
     }
 
-    // Step 5b: Submit
     public function submit(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
         $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
@@ -122,7 +119,6 @@ class PerangkatGuruController extends Controller
             ->with('success', 'Perangkat berhasil disubmit!');
     }
 
-    // Step 5c: Reset
     public function reset(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
         $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
@@ -143,7 +139,6 @@ class PerangkatGuruController extends Controller
             ->with('success', 'Perangkat berhasil direset.');
     }
 
-    // Step 6: Print
     public function print(PerangkatGuru $perangkatGuru)
     {
         abort_if(

@@ -11,20 +11,16 @@ use Illuminate\Support\Facades\Auth;
 
 class PerangkatController extends Controller
 {
-    // Step 1: List of subjects the teacher handles
     public function index()
     {
         $mapels = Auth::user()->mapels;
         return view('guru.perangkat.index', compact('mapels'));
     }
 
-    // Step 2: "siapkan perangkat" clicked — show classes for this subject
     public function show(Mapel $mapel)
     {
-        // Only classes this teacher is assigned to for this specific mapel
         $allKelas = Auth::user()->kelasForMapel($mapel->id);
 
-        // Group by grade (e.g. VII, VIII, IX)
         $kelas = $allKelas->map(function ($k) {
             $k->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $k->nama_kelas));
             return $k;
@@ -33,7 +29,6 @@ class PerangkatController extends Controller
         return view('guru.perangkat.show', compact('mapel', 'kelas'));
     }
 
-    // Step 3: Class selected — show available perangkat templates + progress
     public function showKelas(\Illuminate\Http\Request $request, Mapel $mapel, Kelas $kelas)
     {
         $kelas->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
@@ -50,7 +45,6 @@ class PerangkatController extends Controller
 
         $currentYear = now()->year;
 
-        // Check existing progress for each template
         $progress = PerangkatGuru::where([
             'user_id'   => Auth::id(),
             'mapel_id'  => $mapel->id,

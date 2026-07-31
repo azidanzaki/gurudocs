@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'nip' => $request->nip, // atau ganti ke nip biar konsisten
+            'nip' => $request->nip, 
             'name' => $request->name,
             'password' => Hash::make($request->password),
             'role' => 'guru',

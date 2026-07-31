@@ -85,12 +85,16 @@
 
     @php
         $nama = $perangkatGuru->template->nama_perangkat;
-        $isTinyTemplate = str_contains($nama, 'Capaian Pembelajaran') ||
-                          str_contains($nama, 'Program Tahunan') ||
-                          str_contains($nama, 'Program Semester') ||
-                          (str_contains($nama, 'Tujuan Pembelajaran') && !str_contains($nama, 'Alur') && !str_contains($nama, 'Kriteria')) ||
-                          str_contains($nama, 'Alur Tujuan Pembelajaran') ||
-                          str_contains($nama, 'Kriteria Ketercapaian') || str_contains($nama, 'KKTP');
+        $isTinyTemplate = str_contains($nama, 'Capaian Pembelajaran')
+            || str_contains($nama, 'Program Tahunan')
+            || str_contains($nama, 'Program Semester')
+            || (str_contains($nama, 'Tujuan Pembelajaran') && !str_contains($nama, 'Alur') && !str_contains($nama, 'Kriteria'))
+            || str_contains($nama, 'Alur Tujuan Pembelajaran')
+            || str_contains($nama, 'Kriteria Ketercapaian')
+            || str_contains($nama, 'KKTP')
+            || str_contains($nama, 'Modul Ajar')
+            || str_contains($nama, 'Soal Sumatif')
+            || str_contains($nama, 'Soal Sumatif');
     @endphp
 
     @if($isTinyTemplate)
@@ -115,7 +119,7 @@
                 @endphp
                 @if(!$isSkip)
                     <div>
-                        {!! $savedValues[$section->field_key] ?? '' !!}
+                        {!! html_entity_decode($savedValues[$section->field_key] ?? '') !!}
                     </div>
                 @endif
             @endforeach
@@ -152,7 +156,7 @@
             <div class="section-label">{{ $section->label }}</div>
             <div class="section-value" style="{{ $section->field_type === 'richtext' ? 'border:none; padding:0;' : '' }}">
                 @if($section->field_type === 'richtext')
-                    {!! $savedValues[$section->field_key] ?? '' !!}
+                    {!! html_entity_decode($savedValues[$section->field_key] ?? '') !!}
                 @else
                     {!! nl2br(e($savedValues[$section->field_key] ?? '')) !!}
                 @endif

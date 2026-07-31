@@ -18,20 +18,38 @@
 
     <div class="card-header">
 
-        <div class="d-flex justify-content-between align-items-center w-100">
+<div class="d-flex justify-content-between align-items-center flex-wrap">
 
-            <h3 class="card-title mb-0">
-                {{ __('Data User') }}
-            </h3>
+    <form action="{{ route('admin.users') }}" method="GET" class="form-inline">
 
-            <button class="btn btn-success" data-toggle="modal" data-target="#modalTambahUser">
+        <input type="text"
+               name="search"
+               class="form-control mr-2"
+               placeholder="Cari nama, NIP atau role..."
+               value="{{ request('search') }}">
 
-                <i class="fas fa-plus"></i>
-                {{ __('Tambah User') }}
+        <button class="btn btn-primary">
+            <i class="fas fa-search"></i> Cari
+        </button>
 
-            </button>
+        @if(request('search'))
+            <a href="{{ route('admin.users') }}" class="btn btn-secondary ml-2">
+                Reset
+            </a>
+        @endif
 
-        </div>
+    </form>
+
+    <button class="btn btn-success mt-2 mt-md-0"
+            data-toggle="modal"
+            data-target="#modalTambahUser">
+
+        <i class="fas fa-plus"></i>
+        Tambah User
+
+    </button>
+
+</div>
 
     </div>
 
@@ -57,7 +75,7 @@
                 @forelse($users as $user)
 
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $users->firstItem() + $loop->index }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->nip }}</td>
 
@@ -143,7 +161,9 @@
         </table>
 
     </div>
-
+    <div class="mt-3 d-flex justify-content-center">
+    {{ $users->links('pagination::bootstrap-4') }}
+</div> 
 </div>
 <!-- MODAL TAMBAH USER -->
 <div class="modal fade" id="modalTambahUser" tabindex="-1" role="dialog">
