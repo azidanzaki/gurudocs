@@ -2,8 +2,10 @@ param(
     [Parameter(Mandatory=$true)][string]$templatePath,
     [Parameter(Mandatory=$true)][string]$outputPath,
     [Parameter(Mandatory=$true)][string]$jsonPath,
-    [Parameter(Mandatory=$false)][string]$sofficePath = "soffice"
+    [Parameter(Mandatory=$false)][string]$sofficePath = "C:\Program Files\LibreOffice\program\soffice.com"
 )
+
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 # Load data from JSON
 $data = Get-Content -Path $jsonPath -Encoding UTF8 | ConvertFrom-Json
@@ -13,55 +15,59 @@ $guid = [guid]::NewGuid().ToString()
 $tempDir = Join-Path $env:TEMP "pkg_$guid"
 New-Item -ItemType Directory -Path $tempDir | Out-Null
 
-# Copy template DOCX to temp folder
-Copy-Item -Path $templatePath -Destination (Join-Path $tempDir "template.docx") -Force
-# Rename to zip for extraction
-Rename-Item -Path (Join-Path $tempDir "template.docx") -NewName "template.zip" -Force
-# Extract DOCX (zip) archive
-Expand-Archive -Path (Join-Path $tempDir "template.zip") -DestinationPath (Join-Path $tempDir "doc") -Force
-# Path to document.xml inside DOCX
-$xmlPath = Join-Path $tempDir "doc\word\document.xml"
-$xmlContent = Get-Content -Path $xmlPath -Raw -Encoding UTF8
-$xmlPath = Join-Path $tempDir "doc\word\document.xml"
-$xmlContent = Get-Content -Path $xmlPath -Raw -Encoding UTF8
+$docDir  = Join-Path $tempDir "doc"
+$zipCopy = Join-Path $tempDir "template.zip"
 
-# Simple placeholder replacement – extend as needed
-# Simple placeholder replacement – extend as needed
+# Extract DOCX using .NET ZipFile (handles [Content_Types].xml & special filenames correctly)
+Copy-Item -Path $templatePath -Destination $zipCopy -Force
+[System.IO.Compression.ZipFile]::ExtractToDirectory($zipCopy, $docDir)
+
+# Path to document.xml inside DOCX
+$xmlPath    = Join-Path $docDir "word\document.xml"
+$xmlContent = [System.IO.File]::ReadAllText($xmlPath, [System.Text.Encoding]::UTF8)
+
+# Placeholder replacement
 $placeholders = @{
-    "{{guru_name}}" = $data.guru_name
-    "{{guru_nip}}"  = $data.guru_nip
-    "{{mapel}}"     = $data.mapel
-    "{{kelas}}"     = $data.kelas
-    "{{tahun_ajaran}}" = $data.tahun_ajaran
-    "{{penilai}}" = $data.penilai
+    "{{guru_name}}"    = [string]$data.guru_name
+    "{{guru_nip}}"     = [string]$data.guru_nip
+    "{{mapel}}"        = [string]$data.mapel
+    "{{kelas}}"        = [string]$data.kelas
+    "{{tahun_ajaran}}" = [string]$data.tahun_ajaran
+    "{{penilai}}"      = [string]$data.penilai
 }
 foreach ($ph in $placeholders.Keys) {
-    $value = $placeholders[$ph]
-    $xmlContent = $xmlContent -replace [regex]::Escape($ph), $value
+    $xmlContent = $xmlContent -replace [regex]::Escape($ph), [regex]::Escape($placeholders[$ph]) -replace [regex]::Escape([regex]::Escape($placeholders[$ph])), $placeholders[$ph]
 }
-# Additional logic could replace aspect tables here.
 
-# Save modified document.xml
-Set-Content -Path $xmlPath -Value $xmlContent -Encoding UTF8
+# Save modified document.xml (UTF-8 no BOM)
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($xmlPath, $xmlContent, $utf8NoBom)
 
-# Re-pack the DOCX
+# Re-pack the DOCX using .NET ZipFile (preserves all entries including [Content_Types].xml)
 $filledDocx = Join-Path $tempDir "filled.docx"
-$zipPath = Join-Path $tempDir "filled.zip"
-Compress-Archive -Path (Join-Path $tempDir "doc\*") -DestinationPath $zipPath -Force
-Rename-Item -Path $zipPath -NewName "filled.docx" -Force
+[System.IO.Compression.ZipFile]::CreateFromDirectory($docDir, $filledDocx)
 
-# Convert to PDF using LibreOffice (assumes soffice is in PATH or specify full path)
-& $sofficePath --headless --convert-to pdf --outdir $tempDir $filledDocx
+# Convert to PDF using LibreOffice
+$loProfileDir = "file:///" + ($env:TEMP -replace '\\', '/') + "/lo_pkg_$guid"
+& $sofficePath --headless "-env:UserInstallation=$loProfileDir" --convert-to pdf --outdir $tempDir $filledDocx 2>&1 | Out-Null
+
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "LibreOffice conversion failed"
+    Write-Error "LibreOffice conversion failed (exit $LASTEXITCODE)"
+    Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
     exit 1
 }
 
 # Move resulting PDF to the requested output location
-$generatedPdf = Join-Path $tempDir ([io.path]::GetFileNameWithoutExtension($filledDocx) + ".pdf")
+$generatedPdf = Join-Path $tempDir "filled.pdf"
+if (-not (Test-Path $generatedPdf)) {
+    Write-Error "PDF file not found after LibreOffice conversion: $generatedPdf"
+    Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
+    exit 1
+}
+
 Move-Item -Path $generatedPdf -Destination $outputPath -Force
 
-# Clean up temporary files (optional, comment out for debugging)
-Remove-Item -Recurse -Force $tempDir
+# Cleanup
+Remove-Item -Recurse -Force $tempDir -ErrorAction SilentlyContinue
 
 exit 0
