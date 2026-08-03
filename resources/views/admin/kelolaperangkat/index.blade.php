@@ -210,9 +210,17 @@
                                                         <td class="align-middle">
                                                             @foreach($pgs as $pg)
                                                                 @if($pg->status == 'submitted' || $pg->is_completed)
-                                                                    <a href="{{ route('guru.perangkat.print', $pg->id) }}" target="_blank" class="btn btn-xs btn-primary mb-1">
-                                                                        <i class="fas fa-file-pdf"></i> Lihat Dokumen
-                                                                    </a><br>
+                                                                    <div class="d-flex align-items-center mb-1">
+                                                                        <a href="{{ route('guru.perangkat.print', $pg->id) }}" target="_blank" class="btn btn-xs btn-primary mr-1">
+                                                                            <i class="fas fa-file-pdf"></i> Lihat
+                                                                        </a>
+                                                                        <form action="{{ route('admin.kelolaperangkat.reopen', $pg->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Buka kembali perangkat ini agar guru bisa merevisinya?');">
+                                                                            @csrf
+                                                                            <button type="submit" class="btn btn-xs btn-warning" title="Buka kembali untuk revisi">
+                                                                                <i class="fas fa-unlock"></i> Revisi
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
                                                                 @endif
                                                             @endforeach
                                                         </td>

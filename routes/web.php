@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\KelolaPerangkatController;
 use App\Http\Controllers\Admin\KelolaUserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\KelolaDokumenAdmController;
+use App\Http\Controllers\Admin\MapelController;
+use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Kepala\KepalaController;
 use App\Http\Controllers\Kepala\PenilaianController;
 use App\Http\Controllers\ProfilController;
@@ -182,11 +184,23 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::get('/admin/kelola-perangkat', [KelolaPerangkatController::class, 'index'])->name('admin.kelolaperangkat');
     Route::post('/admin/kelola-perangkat/update-tenggat', [KelolaPerangkatController::class, 'updateTenggat'])->name('admin.kelolaperangkat.updateTenggat');
     Route::post('/admin/kelola-perangkat/tahun-ajaran', [KelolaPerangkatController::class, 'storeTahunAjaran'])->name('admin.kelolaperangkat.storeTahunAjaran');
+    Route::post('/admin/kelola-perangkat/{id}/reopen', [KelolaPerangkatController::class, 'reopen'])->name('admin.kelolaperangkat.reopen');
 
     // kelola dokumen administratif
     Route::get('/admin/kelola-dokumen', [KelolaDokumenAdmController::class, 'index'])->name('admin.dokumenadm.index');
     Route::post('/admin/kelola-dokumen', [KelolaDokumenAdmController::class, 'store'])->name('admin.dokumenadm.store');
     Route::delete('/admin/kelola-dokumen/{id}/delete', [KelolaDokumenAdmController::class, 'delete'])->name('admin.dokumenadm.delete');
+
+    // kelola mapel & kelas
+    Route::get('/admin/mapel', [MapelController::class, 'index'])->name('admin.mapel.index');
+    Route::post('/admin/mapel/store', [MapelController::class, 'store'])->name('admin.mapel.store');
+    Route::put('/admin/mapel/{id}', [MapelController::class, 'update'])->name('admin.mapel.update');
+    Route::delete('/admin/mapel/{id}', [MapelController::class, 'destroy'])->name('admin.mapel.destroy');
+
+    Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');
+    Route::post('/admin/kelas/store', [KelasController::class, 'store'])->name('admin.kelas.store');
+    Route::put('/admin/kelas/{id}', [KelasController::class, 'update'])->name('admin.kelas.update');
+    Route::delete('/admin/kelas/{id}', [KelasController::class, 'destroy'])->name('admin.kelas.destroy');
 
     // Profil admin
     Route::get('/admin/profil', [ProfilController::class, 'index'])->name('admin.profil');
@@ -220,6 +234,16 @@ Route::middleware(['auth', 'can:kepala'])->group(function () {
     Route::post('/kepala/penilaian/guru/{id}/store/{aspect}', [PenilaianController::class, 'store'])->name('kepala.penilaian.store');
 
     Route::get('/kepala/profil', [ProfilController::class, 'index'])->name('kepala.profil');
+
+    // PKG Settings
+    Route::get('/kepala/pkg-settings', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'index'])->name('kepala.pkg_settings.index');
+    Route::post('/kepala/pkg-settings/kategori', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'storeKategori'])->name('kepala.pkg_settings.kategori.store');
+    Route::put('/kepala/pkg-settings/kategori/{id}', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'updateKategori'])->name('kepala.pkg_settings.kategori.update');
+    Route::delete('/kepala/pkg-settings/kategori/{id}', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'destroyKategori'])->name('kepala.pkg_settings.kategori.destroy');
+    
+    Route::post('/kepala/pkg-settings/indikator', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'storeIndikator'])->name('kepala.pkg_settings.indikator.store');
+    Route::put('/kepala/pkg-settings/indikator/{id}', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'updateIndikator'])->name('kepala.pkg_settings.indikator.update');
+    Route::delete('/kepala/pkg-settings/indikator/{id}', [\App\Http\Controllers\Kepala\PkgSettingController::class, 'destroyIndikator'])->name('kepala.pkg_settings.indikator.destroy');
 });
 
 /*

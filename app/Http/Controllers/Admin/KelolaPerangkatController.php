@@ -64,4 +64,17 @@ class KelolaPerangkatController extends Controller
 
         return redirect()->route('admin.kelolaperangkat', ['tahun_ajaran' => $request->nama])->with('success', 'Tahun ajaran berhasil ditambahkan.');
     }
+
+    public function reopen($id)
+    {
+        $perangkat = PerangkatGuru::findOrFail($id);
+        
+        $perangkat->update([
+            'status' => 'draft',
+            'is_completed' => false,
+            'submitted_at' => null,
+        ]);
+
+        return back()->with('success', 'Perangkat berhasil dibuka kembali agar guru dapat melakukan revisi.');
+    }
 }

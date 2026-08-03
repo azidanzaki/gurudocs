@@ -170,10 +170,7 @@ $(document).ready(function() {
         var isPastDeadline = btn.data('past-deadline');
         var isNoDeadline = btn.data('no-deadline');
 
-        if (isNoDeadline == '1') {
-            Swal.fire('Tenggat Waktu Belum Diatur', 'Anda tidak bisa mengirim perangkat ini karena Admin belum mengatur tenggat waktu.', 'info');
-            return;
-        }
+            // Allow submission even if deadline not set
 
         Swal.fire({
             title: 'Yakin ingin mensubmit?',

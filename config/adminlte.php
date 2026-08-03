@@ -346,6 +346,23 @@ Loading<span class="dot">...</span>
             'can' => 'admin',
         ],
         [
+            'text' => 'Data Master',
+            'icon' => 'fas fa-database',
+            'can'  => 'admin',
+            'submenu' => [
+                [
+                    'text' => 'Mata Pelajaran',
+                    'route'  => 'admin.mapel.index',
+                    'icon' => 'fas fa-book',
+                ],
+                [
+                    'text' => 'Kelas',
+                    'route'  => 'admin.kelas.index',
+                    'icon' => 'fas fa-chalkboard',
+                ],
+            ],
+        ],
+        [
             'header' => 'KEPALA SEKOLAH',
             'can' => 'kepala',
         ],
@@ -354,6 +371,12 @@ Loading<span class="dot">...</span>
             'text' => 'Penilaian Guru',
             'route' => 'kepala.penilaian',
             'icon' => 'fas fa-star',
+            'can' => 'kepala',
+        ],
+        [
+            'text' => 'Setting PKG',
+            'route' => 'kepala.pkg_settings.index',
+            'icon' => 'fas fa-cogs',
             'can' => 'kepala',
         ],
         [
