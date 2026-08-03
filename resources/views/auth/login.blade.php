@@ -35,30 +35,31 @@
         }
 
         /* Background Blur */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 450px;
-            height: 450px;
-            background: rgba(255, 255, 255, .12);
-            border-radius: 50%;
-            top: -120px;
-            left: -120px;
-            filter: blur(40px);
-        }
-
+        body::before,
         body::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, .08);
             border-radius: 50%;
-            bottom: -120px;
-            right: -120px;
             filter: blur(40px);
         }
 
+        body::before {
+            width: 450px;
+            height: 450px;
+            background: rgba(255, 255, 255, .12);
+            top: -120px;
+            left: -120px;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, .08);
+            bottom: -120px;
+            right: -120px;
+        }
+
+        /* Card */
         .login-card {
             width: 420px;
             background: #fff;
@@ -66,7 +67,7 @@
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
             position: relative;
-            z-index: 5;
+            z-index: 2;
             animation: fadeUp .7s ease;
         }
 
@@ -82,16 +83,16 @@
             }
         }
 
+        /* Logo */
         .logo {
             width: 90px;
             height: 90px;
-            background: #eef5ee;
+            margin: auto auto 20px;
             border-radius: 50%;
+            background: #eef5ee;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: auto;
-            margin-bottom: 20px;
         }
 
         .logo img {
@@ -114,21 +115,33 @@
             margin-bottom: 30px;
         }
 
+        /* Form */
         .form-group {
             margin-bottom: 18px;
         }
 
+        .input-group {
+            border: 2px solid #ced4da;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: .25s;
+        }
+
+        .input-group:hover {
+            transform: translateY(-2px);
+        }
+
         .input-group-text {
+            border: none;
             background: #fff;
+        }
+
+        .input-group-prepend .input-group-text {
             border-right: none;
-            color: #1f331d;
-            border-radius: 12px 0 0 12px;
         }
 
         .form-control {
-            height: 52px;
-            border-left: none;
-            border-radius: 0 12px 12px 0 !important;
+            border: none;
             box-shadow: none !important;
         }
 
@@ -136,11 +149,48 @@
             border-color: #1f331d;
         }
 
+        .input-group:focus-within {
+            border-color: #1f331d;
+            box-shadow: 0 0 0 .2rem rgba(40, 167, 69, .15);
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: #1f331d;
+            color: #2f7d46;
+        }
+
+        /* Password */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-input {
+            padding-right: 48px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #777;
+            cursor: pointer;
+            transition: .25s;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: #2f7d46;
+        }
+
+        /* Button */
         .btn-login {
             height: 52px;
+            border: none;
             border-radius: 12px;
             background: #1f331d;
-            border: none;
             font-weight: 600;
             transition: .3s;
         }
@@ -151,18 +201,19 @@
             box-shadow: 0 10px 25px rgba(31, 51, 29, .25);
         }
 
+        /* Footer */
         .extra {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
             margin-bottom: 20px;
+            font-size: 14px;
         }
 
         .extra a {
             color: #1f331d;
-            text-decoration: none;
             font-weight: 500;
+            text-decoration: none;
         }
 
         .extra a:hover {
@@ -170,31 +221,88 @@
         }
 
         .footer-text {
-            text-align: center;
             margin-top: 25px;
-            font-size: 13px;
+            text-align: center;
             color: #888;
+            font-size: 13px;
         }
 
+        /* Error */
         .login-error {
-            background: #fdecec;
-            color: #b42318;
-            border: 1px solid #f5c2c7;
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
             display: flex;
             align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            border: 1px solid #f5c2c7;
+            border-radius: 12px;
+            background: #fdecec;
+            color: #b42318;
+            font-size: 14px;
         }
 
-        @media(max-width:500px) {
+        /* Responsive */
+        @media (max-width:500px) {
 
             .login-card {
                 width: 92%;
                 padding: 30px;
             }
 
+        }
+
+        .extra {
+            margin: 20px 0;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .remember-me input {
+            display: none;
+        }
+
+        .checkmark {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d0d5dd;
+            border-radius: 8px;
+            background: #fff;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            transition: .3s;
+        }
+
+        .checkmark i {
+            color: #fff;
+            font-size: 12px;
+            transform: scale(0);
+            transition: .25s;
+        }
+
+        .remember-me:hover .checkmark {
+            border-color: #2f7d46;
+        }
+
+        .remember-me input:checked+.checkmark {
+            background: #1f331d;
+            border-color: #1f331d;
+            box-shadow: 0 8px 18px rgba(31, 51, 29, .22);
+            transform: scale(1.08);
+        }
+
+        .remember-me input:checked+.checkmark i {
+            transform: scale(1);
         }
     </style>
 
@@ -241,39 +349,43 @@
             </div>
 
             <div class="form-group">
+                <div class="password-wrapper">
 
-                <div class="input-group">
+                    <div class="input-group">
 
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                    </div>
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
 
-                    <input type="password" class="form-control" id="password" name="password"
-                        placeholder="Masukkan Password" required>
-
-                    <div class="input-group-append">
-
-                        <span class="input-group-text" onclick="togglePassword()"
-                            style="cursor:pointer;border-radius:0 12px 12px 0;">
-
-                            <i class="fas fa-eye" id="eye"></i>
-
-                        </span>
+                        <input type="password" class="form-control password-input" id="password" name="password"
+                            placeholder="Masukkan Password" required>
 
                     </div>
+
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+
+                        <i class="fas fa-eye" id="eye"></i>
+
+                    </button>
 
                 </div>
-
             </div>
 
             <div class="extra">
 
-                <div>
-                    <input type="checkbox" id="remember">
-                    <label for="remember">Remember Me</label>
-                </div>
+                <label class="remember-me">
+
+                    <input type="checkbox" id="remember" checked>
+
+                    <span class="checkmark">
+                        <i class="fas fa-check"></i>
+                    </span>
+
+                    <span>Remember Me</span>
+
+                </label>
 
             </div>
 

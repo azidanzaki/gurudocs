@@ -43,27 +43,6 @@
 
     <div class="wrapper">
 
-        <!-- NAVBAR -->
-        <nav class="main-header navbar navbar-expand-md navbar-dark" style="background:#1f331d;">
-            <div class="container">
-
-                <a href="#" class="navbar-brand">
-                    <img src="{{ asset('images/logomts.png') }}" class="brand-image img-circle" style="opacity:.8">
-                    <span class="brand-text font-weight-light">GuruDocs</span>
-                </a>
-
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a href="{{ route('login') }}" class="nav-link text-white">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('register') }}" class="nav-link text-white">Register</a>
-                    </li>
-                </ul>
-
-            </div>
-        </nav>
-
         <!-- HERO SECTION -->
         <div class="content-wrapper" style="background:#f4f6f9;">
 
@@ -73,7 +52,7 @@
                     <img src="{{ asset('images/logomts.png') }}" style="width:120px;height:120px;" class="mb-3">
 
                     <h1 class="font-weight-bold">GuruDocs</h1>
-                    <p class="text-muted">Sistem Informasi Dokumen Guru</p>
+                    <p class="text-muted">Sistem Informasi Dokumen Keperluan Guru</p>
 
                     <p class="text-secondary">
                         MTsN 03 Rokan Hulu
@@ -99,9 +78,9 @@
                     <div class="col-md-4">
                         <div class="feature-card h-100">
                             <i class="fas fa-file-alt fa-3x text-success mb-3"></i>
-                            <h5>Dokumen Guru</h5>
+                            <h5>Perangkat Pembelajaran</h5>
                             <p class="text-muted mb-0">
-                                RPP, Silabus, Prota, Promes, dan dokumen administrasi lainnya.
+                                RPP, Silabus, Prota, Promes, dan Perangkat Pembelajaran Lainnya.
                             </p>
                         </div>
                     </div>
@@ -109,9 +88,9 @@
                     <div class="col-md-4">
                         <div class="feature-card h-100">
                             <i class="fas fa-folder-open fa-3x text-warning mb-3"></i>
-                            <h5>Manajemen Dokumen</h5>
+                            <h5>Arsip Kinerja</h5>
                             <p class="text-muted mb-0">
-                                Unggah, kelola, dan arsipkan dokumen dengan mudah.
+                                Unggah, kelola, dan arsipkan kinerja guru.
                             </p>
                         </div>
                     </div>

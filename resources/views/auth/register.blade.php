@@ -117,17 +117,25 @@
             margin-bottom: 18px;
         }
 
+        .input-group {
+            border: 2px solid #ced4da;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: .25s;
+        }
+
+        .input-group:hover {
+            transform: translateY(-2px);
+        }
+
         .input-group-text {
+            border: none;
             background: #fff;
-            border-right: none;
             color: #1f331d;
-            border-radius: 12px 0 0 12px;
         }
 
         .form-control {
-            height: 52px;
-            border-left: none;
-            border-radius: 0 12px 12px 0 !important;
+            border: none;
             box-shadow: none !important;
         }
 
@@ -135,11 +143,46 @@
             border-color: #1f331d;
         }
 
+        .input-group:focus-within {
+            border-color: #1f331d;
+            box-shadow: 0 0 0 .2rem rgba(40, 167, 69, .15);
+        }
+
+        .input-group:focus-within .input-group-text {
+            color: #2f7d46;
+        }
+
+        /* Password */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-input {
+            padding-right: 48px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #777;
+            cursor: pointer;
+            transition: .25s;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: #2f7d46;
+        }
+
         .btn-register {
             height: 52px;
+            border: none;
             border-radius: 12px;
             background: #1f331d;
-            border: none;
             font-weight: 600;
             transition: .3s;
         }
@@ -219,15 +262,6 @@
         </p>
 
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0 pl-3">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        @if ($errors->any())
             <div class="register-error">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 <div>
@@ -272,50 +306,53 @@
 
             <!-- PASSWORD -->
             <div class="form-group">
-                <div class="input-group">
+                <div class="password-wrapper">
 
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fas fa-lock"></i>
-                        </span>
+                    <div class="input-group">
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+
+                        <input type="password" class="form-control password-input" id="password" name="password"
+                            placeholder="Masukkan Password" required>
+
                     </div>
 
-                    <input type="password" class="form-control" id="password" name="password"
-                        placeholder="Masukkan Password" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('password','eye1')">
 
-                    <div class="input-group-append">
-                        <span class="input-group-text" onclick="togglePassword('password','eye1')"
-                            style="cursor:pointer;border-radius:0 12px 12px 0;">
+                        <i class="fas fa-eye" id="eye1"></i>
 
-                            <i class="fas fa-eye" id="eye1"></i>
-
-                        </span>
-                    </div>
+                    </button>
 
                 </div>
             </div>
 
             <!-- CONFIRM PASSWORD -->
             <div class="form-group">
-                <div class="input-group">
+                <div class="password-wrapper">
 
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fas fa-lock"></i>
-                        </span>
+                    <div class="input-group">
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+
+                        <input type="password" class="form-control password-input" id="password_confirmation"
+                            name="password_confirmation" placeholder="Konfirmasi Password" required>
+
                     </div>
 
-                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                        placeholder="Konfirmasi Password" required>
+                    <button type="button" class="password-toggle"
+                        onclick="togglePassword('password_confirmation','eye2')">
 
-                    <div class="input-group-append">
-                        <span class="input-group-text" onclick="togglePassword('password_confirmation','eye2')"
-                            style="cursor:pointer;border-radius:0 12px 12px 0;">
+                        <i class="fas fa-eye" id="eye2"></i>
 
-                            <i class="fas fa-eye" id="eye2"></i>
-
-                        </span>
-                    </div>
+                    </button>
 
                 </div>
             </div>
