@@ -346,21 +346,10 @@ Loading<span class="dot">...</span>
             'can' => 'admin',
         ],
         [
-            'text' => 'Data Master',
+            'text' => 'Mata Pelajaran & Kelas',
+            'route' => 'admin.data_master.index',
             'icon' => 'fas fa-database',
             'can'  => 'admin',
-            'submenu' => [
-                [
-                    'text' => 'Mata Pelajaran',
-                    'route'  => 'admin.mapel.index',
-                    'icon' => 'fas fa-book',
-                ],
-                [
-                    'text' => 'Kelas',
-                    'route'  => 'admin.kelas.index',
-                    'icon' => 'fas fa-chalkboard',
-                ],
-            ],
         ],
         [
             'header' => 'KEPALA SEKOLAH',

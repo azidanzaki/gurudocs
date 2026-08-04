@@ -9,8 +9,7 @@ use App\Http\Controllers\Admin\KelolaPerangkatController;
 use App\Http\Controllers\Admin\KelolaUserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\KelolaDokumenAdmController;
-use App\Http\Controllers\Admin\MapelController;
-use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\DataMasterController;
 use App\Http\Controllers\Kepala\KepalaController;
 use App\Http\Controllers\Kepala\PenilaianController;
 use App\Http\Controllers\ProfilController;
@@ -191,16 +190,18 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::post('/admin/kelola-dokumen', [KelolaDokumenAdmController::class, 'store'])->name('admin.dokumenadm.store');
     Route::delete('/admin/kelola-dokumen/{id}/delete', [KelolaDokumenAdmController::class, 'delete'])->name('admin.dokumenadm.delete');
 
-    // kelola mapel & kelas
-    Route::get('/admin/mapel', [MapelController::class, 'index'])->name('admin.mapel.index');
-    Route::post('/admin/mapel/store', [MapelController::class, 'store'])->name('admin.mapel.store');
-    Route::put('/admin/mapel/{id}', [MapelController::class, 'update'])->name('admin.mapel.update');
-    Route::delete('/admin/mapel/{id}', [MapelController::class, 'destroy'])->name('admin.mapel.destroy');
+    // data master (mapel, kelas, penugasan guru)
+    Route::get('/admin/data-master', [DataMasterController::class, 'index'])->name('admin.data_master.index');
+    Route::post('/admin/data-master/mapel', [DataMasterController::class, 'storeMapel'])->name('admin.data_master.mapel.store');
+    Route::put('/admin/data-master/mapel/{id}', [DataMasterController::class, 'updateMapel'])->name('admin.data_master.mapel.update');
+    Route::delete('/admin/data-master/mapel/{id}', [DataMasterController::class, 'destroyMapel'])->name('admin.data_master.mapel.destroy');
+    
+    Route::post('/admin/data-master/kelas', [DataMasterController::class, 'storeKelas'])->name('admin.data_master.kelas.store');
+    Route::put('/admin/data-master/kelas/{id}', [DataMasterController::class, 'updateKelas'])->name('admin.data_master.kelas.update');
+    Route::delete('/admin/data-master/kelas/{id}', [DataMasterController::class, 'destroyKelas'])->name('admin.data_master.kelas.destroy');
 
-    Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');
-    Route::post('/admin/kelas/store', [KelasController::class, 'store'])->name('admin.kelas.store');
-    Route::put('/admin/kelas/{id}', [KelasController::class, 'update'])->name('admin.kelas.update');
-    Route::delete('/admin/kelas/{id}', [KelasController::class, 'destroy'])->name('admin.kelas.destroy');
+    Route::post('/admin/data-master/guru/{user}/penugasan', [DataMasterController::class, 'storePenugasan'])->name('admin.data_master.penugasan.store');
+    Route::delete('/admin/data-master/penugasan/{id}', [DataMasterController::class, 'destroyPenugasan'])->name('admin.data_master.penugasan.destroy');
 
     // Profil admin
     Route::get('/admin/profil', [ProfilController::class, 'index'])->name('admin.profil');
