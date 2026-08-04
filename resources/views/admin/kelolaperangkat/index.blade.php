@@ -46,7 +46,7 @@
 
             </form>
 
-            <button class="btn btn-primary"
+            <button class="btn btn-primary mt-2 mt-md-0"
                     data-toggle="modal"
                     data-target="#modalTambahTahun">
 
@@ -110,131 +110,325 @@
                         </button>
 
                         {{-- Modal Atur Tenggat --}}
-                        <div class="modal fade" id="modalTenggat{{ $template->id }}" tabindex="-1">
-                            <div class="modal-dialog">
+                        <div class="modal fade" id="modalTenggat{{ $template->id }}" tabindex="-1" role="dialog">
+
+                            <div class="modal-dialog" role="document">
+
                                 <div class="modal-content">
-                                    <form action="{{ route('admin.kelolaperangkat.updateTenggat') }}" method="POST" onsubmit="updateTenggatWaktu({{ $template->id }})">
+
+                                    {{-- HEADER --}}
+                                    <div class="modal-header bg-success">
+
+                                        <h5 class="modal-title">
+                                            Atur Tenggat Waktu
+                                        </h5>
+
+                                        <button type="button" class="close text-white" data-dismiss="modal">
+
+                                            <span>&times;</span>
+
+                                        </button>
+
+                                    </div>
+
+                                    {{-- FORM --}}
+                                    <form action="{{ route('admin.kelolaperangkat.updateTenggat') }}" method="POST"
+                                        onsubmit="updateTenggatWaktu({{ $template->id }})">
+
                                         @csrf
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Atur Tenggat Waktu</h5>
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        </div>
+
                                         <div class="modal-body">
+
                                             <input type="hidden" name="template_id" value="{{ $template->id }}">
                                             <input type="hidden" name="tahun_ajaran" value="{{ $selectedTahun }}">
+
+                                            {{-- PERANGKAT --}}
                                             <div class="form-group">
-                                                <label>Perangkat</label>
-                                                <input type="text" class="form-control" value="{{ $template->nama_perangkat }}" readonly>
+
+                                                <label>
+                                                    Perangkat
+                                                </label>
+
+                                                <input type="text" class="form-control"
+                                                    value="{{ $template->nama_perangkat }}" readonly>
+
                                             </div>
+
+                                            {{-- TENGGAT WAKTU --}}
                                             <div class="form-group">
-                                                <label>Tenggat Waktu</label>
-                                                <input type="hidden" name="tenggat_waktu" id="tenggat_waktu_{{ $template->id }}" value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('Y-m-d H:i:s') : '' }}">
+
+                                                <label>
+                                                    Tenggat Waktu
+                                                </label>
+
+                                                <input type="hidden"
+                                                    name="tenggat_waktu"
+                                                    id="tenggat_waktu_{{ $template->id }}"
+                                                    value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('Y-m-d H:i:s') : '' }}">
+
                                                 <div class="row">
+
+                                                    {{-- TANGGAL --}}
                                                     <div class="col-md-6 mb-2">
+
                                                         <div class="input-group">
+
                                                             <div class="input-group-prepend">
-                                                                <span class="input-group-text bg-primary border-primary"><i class="fas fa-calendar-alt text-white"></i></span>
+
+                                                                <span class="input-group-text bg-primary border-primary">
+                                                                    <i class="fas fa-calendar-alt text-white"></i>
+                                                                </span>
+
                                                             </div>
-                                                            <input type="text" class="form-control datepicker" id="tanggal_tenggat_{{ $template->id }}" value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('Y-m-d') : date('Y-m-d') }}" placeholder="Pilih Tanggal" required>
+
+                                                            <input
+                                                                type="text"
+                                                                class="form-control datepicker"
+                                                                id="tanggal_tenggat_{{ $template->id }}"
+                                                                value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('Y-m-d') : date('Y-m-d') }}"
+                                                                placeholder="Pilih Tanggal"
+                                                                required>
+
                                                         </div>
+
                                                     </div>
+
+                                                    {{-- JAM --}}
                                                     <div class="col-md-6 mb-2">
-                                                        <div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+
+                                                        <div class="input-group clockpicker"
+                                                            data-placement="bottom"
+                                                            data-align="top"
+                                                            data-autoclose="true">
+
                                                             <div class="input-group-prepend">
-                                                                <span class="input-group-text bg-warning border-warning"><i class="fas fa-clock text-white"></i></span>
+
+                                                                <span class="input-group-text bg-warning border-warning">
+                                                                    <i class="fas fa-clock text-white"></i>
+                                                                </span>
+
                                                             </div>
-                                                            <input type="text" class="form-control" id="jam_tenggat_{{ $template->id }}" value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('H:i') : '23:59' }}" required>
+
+                                                            <input
+                                                                type="text"
+                                                                class="form-control"
+                                                                id="jam_tenggat_{{ $template->id }}"
+                                                                value="{{ $tenggat ? \Carbon\Carbon::parse($tenggat->tenggat_waktu)->format('H:i') : '23:59' }}"
+                                                                placeholder="Pilih Jam"
+                                                                required>
+
                                                         </div>
+
                                                     </div>
+
                                                 </div>
+
+                                                <small class="text-muted d-block">
+                                                    Pilih tanggal dan jam batas akhir pengumpulan perangkat.
+                                                </small>
+
                                             </div>
+
                                         </div>
+
+                                        {{-- FOOTER --}}
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
+
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+
+                                                Batal
+
+                                            </button>
+
+                                            <button type="submit" class="btn btn-success">
+
+                                                <i class="fas fa-paper-plane"></i>
+                                                Simpan
+
+                                            </button>
+
                                         </div>
+
                                     </form>
+
                                 </div>
+
                             </div>
+
                         </div>
 
                         {{-- Modal List Guru --}}
-                        <div class="modal fade" id="modalGuru{{ $template->id }}" tabindex="-1">
-                            <div class="modal-dialog modal-lg">
+                        <div class="modal fade" id="modalGuru{{ $template->id }}" tabindex="-1" role="dialog">
+
+                            <div class="modal-dialog modal-lg" role="document">
+
                                 <div class="modal-content">
-                                    <div class="modal-header bg-info">
-                                        <h5 class="modal-title text-white">Daftar Pengumpulan: {{ $template->nama_perangkat }}</h5>
-                                        <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+
+                                    {{-- HEADER --}}
+                                    <div class="modal-header bg-success">
+
+                                        <h5 class="modal-title">
+                                            Daftar Pengumpulan: {{ $template->nama_perangkat }}
+                                        </h5>
+
+                                        <button type="button" class="close text-white" data-dismiss="modal">
+
+                                            <span>&times;</span>
+
+                                        </button>
+
                                     </div>
+
+                                    {{-- BODY --}}
                                     <div class="modal-body p-0">
+
                                         <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+
                                             <table class="table table-bordered table-hover mb-0">
+
                                                 <thead class="bg-light sticky-top">
+
                                                     <tr>
                                                         <th>Nama Guru</th>
                                                         <th>Status</th>
-                                                        <th>Aksi</th>
+                                                        <th width="170">Aksi</th>
                                                     </tr>
+
                                                 </thead>
+
                                                 <tbody>
+
                                                     @foreach($gurus as $guru)
-                                                    @php
-                                                        // Cari apakah guru ini punya perangkat untuk template ini
-                                                        $pgs = isset($perangkatGurus[$template->id]) ? $perangkatGurus[$template->id]->where('user_id', $guru->id) : collect();
-                                                    @endphp
-                                                    <tr>
-                                                        <td>{{ $guru->name }}</td>
-                                                        <td>
-                                                            @if($pgs->isEmpty())
-                                                                <span class="badge badge-secondary">Belum Dibuat</span>
-                                                            @else
-                                                                @php
-                                                                    // Kita anggap kita ambil yang pertama (karena bisa ada banyak jika banyak kelas)
-                                                                    // Tapi karena admin perlu melihat per dokumen, kita tampilkan semua kelas yang mereka ajar jika mereka buat
-                                                                    // Untuk simpelnya, kita loop di dalam
-                                                                @endphp
-                                                                @foreach($pgs as $pg)
-                                                                    <div class="mb-1">
-                                                                        <small class="text-muted">{{ $pg->mapel->nama_mapel }} / {{ $pg->kelas->nama_kelas_simple }}:</small>
-                                                                        @if($pg->status == 'submitted' || $pg->is_completed)
-                                                                            <span class="badge badge-success">Disubmit</span>
-                                                                        @elseif($pg->status == 'draft')
-                                                                            <span class="badge badge-warning">Draft</span>
-                                                                        @else
-                                                                            <span class="badge badge-secondary">{{ $pg->status }}</span>
-                                                                        @endif
-                                                                    </div>
-                                                                @endforeach
-                                                            @endif
-                                                        </td>
-                                                        <td class="align-middle">
-                                                            @foreach($pgs as $pg)
-                                                                @if($pg->status == 'submitted' || $pg->is_completed)
-                                                                    <div class="d-flex align-items-center mb-1">
-                                                                        <a href="{{ route('guru.perangkat.print', $pg->id) }}" target="_blank" class="btn btn-xs btn-primary mr-1">
-                                                                            <i class="fas fa-file-pdf"></i> Lihat
-                                                                        </a>
-                                                                        <form action="{{ route('admin.kelolaperangkat.reopen', $pg->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Buka kembali perangkat ini agar guru bisa merevisinya?');">
-                                                                            @csrf
-                                                                            <button type="submit" class="btn btn-xs btn-warning" title="Buka kembali untuk revisi">
-                                                                                <i class="fas fa-unlock"></i> Revisi
-                                                                            </button>
-                                                                        </form>
-                                                                    </div>
+
+                                                        @php
+                                                            $pgs = isset($perangkatGurus[$template->id])
+                                                                ? $perangkatGurus[$template->id]->where('user_id', $guru->id)
+                                                                : collect();
+                                                        @endphp
+
+                                                        <tr>
+
+                                                            <td class="align-middle">
+                                                                {{ $guru->name }}
+                                                            </td>
+
+                                                            <td>
+
+                                                                @if($pgs->isEmpty())
+
+                                                                    <span class="badge badge-secondary">
+                                                                        Belum Dibuat
+                                                                    </span>
+
+                                                                @else
+
+                                                                    @foreach($pgs as $pg)
+
+                                                                        <div class="mb-2">
+
+                                                                            <small class="text-muted d-block">
+                                                                                {{ $pg->mapel->nama_mapel }} /
+                                                                                {{ $pg->kelas->nama_kelas_simple }}
+                                                                            </small>
+
+                                                                            @if($pg->status == 'submitted' || $pg->is_completed)
+
+                                                                                <span class="badge badge-success">
+                                                                                    Disubmit
+                                                                                </span>
+
+                                                                            @elseif($pg->status == 'draft')
+
+                                                                                <span class="badge badge-warning">
+                                                                                    Draft
+                                                                                </span>
+
+                                                                            @else
+
+                                                                                <span class="badge badge-secondary">
+                                                                                    {{ $pg->status }}
+                                                                                </span>
+
+                                                                            @endif
+
+                                                                        </div>
+
+                                                                    @endforeach
+
                                                                 @endif
-                                                            @endforeach
-                                                        </td>
-                                                    </tr>
+
+                                                            </td>
+
+                                                            <td class="align-middle">
+
+                                                                @foreach($pgs as $pg)
+
+                                                                    @if($pg->status == 'submitted' || $pg->is_completed)
+
+                                                                        <div class="d-flex align-items-center mb-2">
+
+                                                                            <a href="{{ route('guru.perangkat.print', $pg->id) }}"
+                                                                                target="_blank"
+                                                                                class="btn btn-xs btn-primary mr-2">
+
+                                                                                <i class="fas fa-file-pdf"></i>
+                                                                                Lihat
+
+                                                                            </a>
+
+                                                                            <form action="{{ route('admin.kelolaperangkat.reopen', $pg->id) }}"
+                                                                                method="POST"
+                                                                                class="d-inline"
+                                                                                onsubmit="return confirm('Buka kembali perangkat ini agar guru bisa merevisinya?');">
+
+                                                                                @csrf
+
+                                                                                <button type="submit"
+                                                                                    class="btn btn-xs btn-warning"
+                                                                                    title="Buka kembali untuk revisi">
+
+                                                                                    <i class="fas fa-unlock"></i>
+                                                                                    Revisi
+
+                                                                                </button>
+
+                                                                            </form>
+
+                                                                        </div>
+
+                                                                    @endif
+
+                                                                @endforeach
+
+                                                            </td>
+
+                                                        </tr>
+
                                                     @endforeach
+
                                                 </tbody>
+
                                             </table>
+
                                         </div>
+
                                     </div>
+
+                                    {{-- FOOTER --}}
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+
+                                            Tutup
+
+                                        </button>
+
                                     </div>
+
                                 </div>
+
                             </div>
+
                         </div>
                     </td>
                 </tr>
@@ -245,28 +439,80 @@
 </div>
 
 {{-- Modal Tambah Tahun Ajaran --}}
-<div class="modal fade" id="modalTambahTahun" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="modalTambahTahun" tabindex="-1" role="dialog">
+
+    <div class="modal-dialog" role="document">
+
         <div class="modal-content">
+
+            {{-- HEADER --}}
+            <div class="modal-header bg-success">
+
+                <h5 class="modal-title">
+                    Tambah Tahun Ajaran
+                </h5>
+
+                <button type="button" class="close text-white" data-dismiss="modal">
+
+                    <span>&times;</span>
+
+                </button>
+
+            </div>
+
+            {{-- FORM --}}
             <form action="{{ route('admin.kelolaperangkat.storeTahunAjaran') }}" method="POST">
+
                 @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Tahun Ajaran Baru</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
+
                 <div class="modal-body">
+
                     <div class="form-group">
-                        <label>Tahun Ajaran</label>
-                        <input type="text" name="nama" class="form-control" placeholder="Contoh: 2026/2027" required>
+
+                        <label>
+                            Tahun Ajaran
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nama"
+                            class="form-control"
+                            placeholder="Contoh: 2026/2027"
+                            required
+                        >
+
+                        <small class="text-muted d-block">
+                            Masukkan tahun ajaran dengan format YYYY/YYYY.
+                        </small>
+
                     </div>
+
                 </div>
+
+                {{-- FOOTER --}}
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+
+                        Batal
+
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+
+                        <i class="fas fa-paper-plane"></i>
+                        Simpan
+
+                    </button>
+
                 </div>
+
             </form>
+
         </div>
+
     </div>
+
 </div>
 
 @stop

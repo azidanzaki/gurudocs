@@ -8,6 +8,73 @@
 
 @section('content')
 
+<style>
+/* Card Dokumen */
+.document-card{
+    background:#fff;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    transition:all .3s ease;
+    cursor:pointer;
+}
+
+.document-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 12px 28px rgba(0,0,0,.15);
+}
+
+.document-card:active{
+    transform:scale(.97);
+}
+
+/* Preview PDF / Icon */
+.document-card canvas,
+.document-card i{
+    transition:transform .35s ease;
+}
+
+.document-card:hover canvas,
+.document-card:hover i{
+    transform:scale(1.08);
+}
+
+/* Judul */
+.document-card .card-body p{
+    transition:.3s;
+}
+
+.document-card:hover .card-body p{
+    color:#198754;
+}
+
+/* Badge */
+.document-card .badge{
+    transition:.3s;
+}
+
+.document-card:hover .badge{
+    background:#198754;
+    color:#fff !important;
+}
+.document-preview{
+    height:180px;
+    overflow:hidden;
+    position:relative;
+}
+
+.document-preview canvas{
+    transition:transform .4s ease;
+}
+
+.document-card:hover .document-preview canvas{
+    transform:scale(1.06);
+}
+a.text-decoration-none{
+    display:block;
+}
+</style>
+
 <!-- 🔍 Search & Filter -->
 <form method="GET" action="{{ route('guru.dokumenadmguru.index') }}" class="mb-4">
 
@@ -83,9 +150,9 @@
 
                     <a href="{{ route('guru.dokumenadmguru.show', $item->id) }}" class="text-decoration-none text-dark">
 
-                        <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden">
+                        <div class="card document-card h-100 border-0">
 
-                            <div class="text-center p-3 d-flex align-items-center justify-content-center bg-light" style="height: 180px; overflow: hidden; position: relative;">
+                            <div class="document-preview text-center p-3 d-flex align-items-center justify-content-center bg-light" style="height: 180px; overflow: hidden; position: relative;">
 
                                 @php
                                     $wordExt = $item->file_word ? pathinfo($item->file_word, PATHINFO_EXTENSION) : '';

@@ -40,7 +40,7 @@
 
     </form>
 
-    <button class="btn btn-success mt-2 mt-md-0"
+    <button class="btn btn-primary mt-2 mt-md-0"
             data-toggle="modal"
             data-target="#modalTambahUser">
 

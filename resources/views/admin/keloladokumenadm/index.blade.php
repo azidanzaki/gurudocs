@@ -24,10 +24,10 @@
                 Data Dokumen Administratif
             </h3>
 
-            <button class="btn btn-success" data-toggle="modal" data-target="#modalUploadDokumen">
+            <button class="btn btn-primary mt-2 mt-md-0" data-toggle="modal" data-target="#modalUploadDokumen">
 
-                <i class="fas fa-upload"></i>
-                Upload Dokumen
+                <i class="fas fa-plus"></i>
+                Tambah Dokumen
 
             </button>
 
@@ -166,7 +166,7 @@
             <div class="modal-header bg-success">
 
                 <h5 class="modal-title">
-                    Upload Dokumen
+                    Tambah Dokumen
                 </h5>
 
                 <button type="button" class="close text-white" data-dismiss="modal">
@@ -265,8 +265,8 @@
 
                     <button type="submit" class="btn btn-success">
 
-                        <i class="fas fa-save"></i>
-                        Upload
+                        <i class="fas fa-paper-plane"></i>
+                        Kirim
 
                     </button>
 
