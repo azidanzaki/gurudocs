@@ -35,9 +35,16 @@ class DokumenAdmController extends Controller
             ->distinct()
             ->pluck('jenis_dokumen');
 
+        $tahunDokumen = DokumenAdm::select('tahun')
+            ->whereNotNull('tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
+
         return view('guru.dokumenadm.index', compact(
             'dokumen',
-            'jenisDokumen'
+            'jenisDokumen',
+            'tahunDokumen'
         ));
     }
     public function show($id)

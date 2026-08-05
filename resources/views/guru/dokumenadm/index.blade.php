@@ -107,7 +107,7 @@ a.text-decoration-none{
                     Semua Tahun Dokumen
                 </option>
 
-                @foreach (['2026', '2025', '2024', '2023'] as $tahun)
+                @foreach ($tahunDokumen as $tahun)
                     <option value="{{ $tahun }}" {{ request('tahun_dokumen') == $tahun ? 'selected' : '' }}>
                         Tahun {{ $tahun }}
                     </option>

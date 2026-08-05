@@ -14,7 +14,26 @@ class PerangkatController extends Controller
     public function index()
     {
         $mapels = Auth::user()->mapels;
-        return view('guru.perangkat.index', compact('mapels'));
+        $combinations = collect();
+
+        foreach ($mapels as $mapel) {
+            $allKelas = Auth::user()->kelasForMapel($mapel->id);
+
+            $kelas = $allKelas->map(function ($k) {
+                $k->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $k->nama_kelas));
+                return $k;
+            })->unique('nama_kelas_simple');
+
+            foreach ($kelas as $k) {
+                $combinations->push((object)[
+                    'mapel' => $mapel,
+                    'kelas' => $k,
+                    'label' => $mapel->nama_mapel . ' ' . $k->nama_kelas_simple
+                ]);
+            }
+        }
+
+        return view('guru.perangkat.index', compact('combinations'));
     }
 
     public function show(Mapel $mapel)

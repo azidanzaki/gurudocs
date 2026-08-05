@@ -363,7 +363,7 @@ Loading<span class="dot">...</span>
             'can' => 'kepala',
         ],
         [
-            'text' => 'Setting PKG',
+            'text' => 'Indikator Penilaian',
             'route' => 'kepala.pkg_settings.index',
             'icon' => 'fas fa-cogs',
             'can' => 'kepala',

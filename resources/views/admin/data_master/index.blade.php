@@ -3,7 +3,7 @@
 @section('title', __('Mata Pelajaran & Kelas'))
 
 @section('content_header')
-    <h1>{{ __('Data Master: Mata Pelajaran, Kelas & Guru') }}</h1>
+<h1>{{ __('Data Master: Mata Pelajaran, Kelas & Guru') }}</h1>
 @stop
 
 @section('content')
@@ -28,19 +28,19 @@
 
 @php
     $activeTab = session('tab', 'mapel');
-    
+
     // Grouping kelas
     $kelasVII = $kelas->filter(fn($k) => str_starts_with($k->nama_kelas, 'VII') && !str_starts_with($k->nama_kelas, 'VIII'));
     $kelasVIII = $kelas->filter(fn($k) => str_starts_with($k->nama_kelas, 'VIII'));
     $kelasIX = $kelas->filter(fn($k) => str_starts_with($k->nama_kelas, 'IX'));
     $kelasLain = $kelas->diff($kelasVII)->diff($kelasVIII)->diff($kelasIX);
-    
+
     $kelasGroups = [
         'Kelas VII' => $kelasVII,
         'Kelas VIII' => $kelasVIII,
         'Kelas IX' => $kelasIX,
     ];
-    if($kelasLain->count() > 0) {
+    if ($kelasLain->count() > 0) {
         $kelasGroups['Kelas Lainnya'] = $kelasLain;
     }
 @endphp
@@ -49,35 +49,44 @@
     <div class="card-header p-0 border-bottom-0">
         <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link {{ $activeTab == 'mapel' ? 'active' : '' }}" id="tab-mapel-tab" data-toggle="pill" href="#tab-mapel" role="tab" aria-controls="tab-mapel" aria-selected="{{ $activeTab == 'mapel' ? 'true' : 'false' }}">Mata Pelajaran</a>
+                <a class="nav-link {{ $activeTab == 'mapel' ? 'active' : '' }}" id="tab-mapel-tab" data-toggle="pill"
+                    href="#tab-mapel" role="tab" aria-controls="tab-mapel"
+                    aria-selected="{{ $activeTab == 'mapel' ? 'true' : 'false' }}">Mata Pelajaran</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ $activeTab == 'kelas' ? 'active' : '' }}" id="tab-kelas-tab" data-toggle="pill" href="#tab-kelas" role="tab" aria-controls="tab-kelas" aria-selected="{{ $activeTab == 'kelas' ? 'true' : 'false' }}">Kelas</a>
+                <a class="nav-link {{ $activeTab == 'kelas' ? 'active' : '' }}" id="tab-kelas-tab" data-toggle="pill"
+                    href="#tab-kelas" role="tab" aria-controls="tab-kelas"
+                    aria-selected="{{ $activeTab == 'kelas' ? 'true' : 'false' }}">Kelas</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ $activeTab == 'guru' ? 'active' : '' }}" id="tab-guru-tab" data-toggle="pill" href="#tab-guru" role="tab" aria-controls="tab-guru" aria-selected="{{ $activeTab == 'guru' ? 'true' : 'false' }}">Guru (Penugasan)</a>
+                <a class="nav-link {{ $activeTab == 'guru' ? 'active' : '' }}" id="tab-guru-tab" data-toggle="pill"
+                    href="#tab-guru" role="tab" aria-controls="tab-guru"
+                    aria-selected="{{ $activeTab == 'guru' ? 'true' : 'false' }}">Guru</a>
             </li>
         </ul>
     </div>
     <div class="card-body">
         <div class="tab-content" id="custom-tabs-four-tabContent">
-            
+
             {{-- TAB MATA PELAJARAN --}}
-            <div class="tab-pane fade {{ $activeTab == 'mapel' ? 'show active' : '' }}" id="tab-mapel" role="tabpanel" aria-labelledby="tab-mapel-tab">
+            <div class="tab-pane fade {{ $activeTab == 'mapel' ? 'show active' : '' }}" id="tab-mapel" role="tabpanel"
+                aria-labelledby="tab-mapel-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
                     <form action="{{ route('admin.data_master.index') }}" method="GET" class="form-inline mt-2">
                         <input type="hidden" name="tab" value="mapel">
-                        <input type="text" name="search_mapel" class="form-control mr-2" placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
+                        <input type="text" name="search_mapel" class="form-control mr-2"
+                            placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
                         <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
                         @if(request('search_mapel'))
-                            <a href="{{ route('admin.data_master.index') }}?tab=mapel" class="btn btn-secondary ml-2">Reset</a>
+                            <a href="{{ route('admin.data_master.index') }}?tab=mapel"
+                                class="btn btn-secondary ml-2">Reset</a>
                         @endif
                     </form>
                     <button class="btn btn-success mt-2" data-toggle="modal" data-target="#modalTambahMapel">
                         <i class="fas fa-plus"></i> Tambah Mata Pelajaran
                     </button>
                 </div>
-                
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -93,34 +102,44 @@
                                     <td>{{ $mapels->firstItem() + $loop->index }}</td>
                                     <td>{{ $mapel->nama_mapel }}</td>
                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#modalEditMapel{{ $mapel->id }}"><i class="fas fa-edit"></i> Edit</button>
-                                        <form action="{{ route('admin.data_master.mapel.destroy', $mapel->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus mata pelajaran ini?');">
+                                        <button class="btn btn-sm btn-info" data-toggle="modal"
+                                            data-target="#modalEditMapel{{ $mapel->id }}"><i class="fas fa-edit"></i>
+                                            Edit</button>
+                                        <form action="{{ route('admin.data_master.mapel.destroy', $mapel->id) }}"
+                                            method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Hapus</button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Mata Pelajaran?', text: 'Yakin ingin menghapus mata pelajaran ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i class="fas fa-trash"></i>
+                                                Hapus</button>
                                         </form>
                                         {{-- Modal Edit Mapel --}}
-                                        <div class="modal fade" id="modalEditMapel{{ $mapel->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal fade" id="modalEditMapel{{ $mapel->id }}" tabindex="-1"
+                                            role="dialog" aria-hidden="true">
                                             <div class="modal-dialog text-left">
                                                 <div class="modal-content">
-                                                    <form action="{{ route('admin.data_master.mapel.update', $mapel->id) }}" method="POST">
+                                                    <form action="{{ route('admin.data_master.mapel.update', $mapel->id) }}"
+                                                        method="POST">
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Edit Mata Pelajaran</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="form-group">
                                                                 <label>Nama Mata Pelajaran</label>
-                                                                <input type="text" name="nama_mapel" class="form-control" value="{{ $mapel->nama_mapel }}" required>
+                                                                <input type="text" name="nama_mapel" class="form-control"
+                                                                    value="{{ $mapel->nama_mapel }}" required>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn btn-primary">Simpan
+                                                                Perubahan</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -129,7 +148,9 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="text-center">Belum ada data mata pelajaran.</td></tr>
+                                <tr>
+                                    <td colspan="3" class="text-center">Belum ada data mata pelajaran.</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -140,31 +161,38 @@
             </div>
 
             {{-- TAB KELAS --}}
-            <div class="tab-pane fade {{ $activeTab == 'kelas' ? 'show active' : '' }}" id="tab-kelas" role="tabpanel" aria-labelledby="tab-kelas-tab">
+            <div class="tab-pane fade {{ $activeTab == 'kelas' ? 'show active' : '' }}" id="tab-kelas" role="tabpanel"
+                aria-labelledby="tab-kelas-tab">
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                     <form action="{{ route('admin.data_master.index') }}" method="GET" class="form-inline mt-2">
                         <input type="hidden" name="tab" value="kelas">
-                        <input type="text" name="search_kelas" class="form-control mr-2" placeholder="Cari kelas..." value="{{ request('search_kelas') }}">
+                        <input type="text" name="search_kelas" class="form-control mr-2" placeholder="Cari kelas..."
+                            value="{{ request('search_kelas') }}">
                         <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
                         @if(request('search_kelas'))
-                            <a href="{{ route('admin.data_master.index') }}?tab=kelas" class="btn btn-secondary ml-2">Reset</a>
+                            <a href="{{ route('admin.data_master.index') }}?tab=kelas"
+                                class="btn btn-secondary ml-2">Reset</a>
                         @endif
                     </form>
                 </div>
-                
+
                 <div class="row">
                     @foreach($kelasGroups as $groupName => $kelasItems)
                         <div class="col-md-4 mb-4">
                             <div class="card shadow-sm h-100">
-                                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                <div class="card-header bg-info text-white d-flex align-items-center">
                                     <h5 class="card-title mb-0">{{ $groupName }}</h5>
+
                                     @if(in_array($groupName, ['Kelas VII', 'Kelas VIII', 'Kelas IX']))
                                         @php $prefix = str_replace('Kelas ', '', $groupName); @endphp
-                                        <form action="{{ route('admin.data_master.kelas.store') }}" method="POST" class="m-0">
+
+                                        <form action="{{ route('admin.data_master.kelas.store') }}" method="POST"
+                                            class="ml-auto mb-0">
                                             @csrf
                                             <input type="hidden" name="prefix" value="{{ $prefix }}">
-                                            <button type="submit" class="btn btn-sm btn-light text-info" title="Tambah {{ $groupName }} otomatis">
-                                                <i class="fas fa-plus"></i>
+
+                                            <button type="submit" class="btn btn-sm btn-light text-info">
+                                                <i class="fas fa-plus mr-1"></i> Tambah Kelas
                                             </button>
                                         </form>
                                     @endif
@@ -182,44 +210,19 @@
                                                 <tr>
                                                     <td class="align-middle">{{ $k->nama_kelas }}</td>
                                                     <td class="text-center align-middle">
-                                                        <button class="btn btn-xs btn-info" data-toggle="modal" data-target="#modalEditKelas{{ $k->id }}"><i class="fas fa-edit"></i></button>
-                                                        <form action="{{ route('admin.data_master.kelas.destroy', $k->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus kelas ini?');">
+                                                        <form action="{{ route('admin.data_master.kelas.destroy', $k->id) }}"
+                                                            method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i></button>
+                                                            <button type="button" class="btn btn-sm btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Kelas?', text: 'Yakin ingin menghapus kelas ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i
+                                                                    class="fas fa-trash"></i>Hapus</button>
                                                         </form>
-                                                        
-                                                        {{-- Modal Edit Kelas --}}
-                                                        <div class="modal fade" id="modalEditKelas{{ $k->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                                            <div class="modal-dialog text-left">
-                                                                <div class="modal-content">
-                                                                    <form action="{{ route('admin.data_master.kelas.update', $k->id) }}" method="POST">
-                                                                        @csrf
-                                                                        @method('PUT')
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title">Edit Kelas</h5>
-                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                <span aria-hidden="true">&times;</span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <div class="form-group">
-                                                                                <label>Nama Kelas</label>
-                                                                                <input type="text" name="nama_kelas" class="form-control" value="{{ $k->nama_kelas }}" required>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
                                                     </td>
                                                 </tr>
                                             @empty
-                                                <tr><td colspan="2" class="text-center text-muted">Belum ada data</td></tr>
+                                                <tr>
+                                                    <td colspan="2" class="text-center text-muted">Belum ada data</td>
+                                                </tr>
                                             @endforelse
                                         </tbody>
                                     </table>
@@ -231,18 +234,21 @@
             </div>
 
             {{-- TAB GURU --}}
-            <div class="tab-pane fade {{ $activeTab == 'guru' ? 'show active' : '' }}" id="tab-guru" role="tabpanel" aria-labelledby="tab-guru-tab">
+            <div class="tab-pane fade {{ $activeTab == 'guru' ? 'show active' : '' }}" id="tab-guru" role="tabpanel"
+                aria-labelledby="tab-guru-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
                     <form action="{{ route('admin.data_master.index') }}" method="GET" class="form-inline mt-2">
                         <input type="hidden" name="tab" value="guru">
-                        <input type="text" name="search_guru" class="form-control mr-2" placeholder="Cari nama atau NIP..." value="{{ request('search_guru') }}">
+                        <input type="text" name="search_guru" class="form-control mr-2"
+                            placeholder="Cari nama atau NIP..." value="{{ request('search_guru') }}">
                         <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
                         @if(request('search_guru'))
-                            <a href="{{ route('admin.data_master.index') }}?tab=guru" class="btn btn-secondary ml-2">Reset</a>
+                            <a href="{{ route('admin.data_master.index') }}?tab=guru"
+                                class="btn btn-secondary ml-2">Reset</a>
                         @endif
                     </form>
                 </div>
-                
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -250,8 +256,8 @@
                                 <th width="50">No</th>
                                 <th>Nama Guru</th>
                                 <th>NIP</th>
-                                <th>Mata Pelajaran yang Diampu</th>
-                                <th>Kelas yang Diampu</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Kelas</th>
                                 <th width="150" class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -284,22 +290,25 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalPenugasan{{ $guru->id }}">
-                                            <i class="fas fa-tasks"></i> Kelola Penugasan
+                                        <button class="btn btn-sm btn-primary" data-toggle="modal"
+                                            data-target="#modalPenugasan{{ $guru->id }}">
+                                            <i class="fas fa-tasks"></i> Kelola Mapel dan Kelas
                                         </button>
-                                        
+
                                         {{-- Modal Kelola Penugasan --}}
-                                        <div class="modal fade" id="modalPenugasan{{ $guru->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal fade" id="modalPenugasan{{ $guru->id }}" tabindex="-1"
+                                            role="dialog" aria-hidden="true">
                                             <div class="modal-dialog modal-lg text-left">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-primary text-white">
                                                         <h5 class="modal-title">Kelola Penugasan: {{ $guru->name }}</h5>
-                                                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                        <button type="button" class="close text-white" data-dismiss="modal"
+                                                            aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        
+
                                                         <h6 class="font-weight-bold">Daftar Penugasan Saat Ini</h6>
                                                         <table class="table table-sm table-bordered mt-2 mb-4">
                                                             <thead class="bg-light">
@@ -323,15 +332,22 @@
                                                                         <td>{{ $p->nama_mapel }}</td>
                                                                         <td>{{ $p->nama_kelas }}</td>
                                                                         <td class="text-center">
-                                                                            <form action="{{ route('admin.data_master.penugasan.destroy', $p->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus penugasan ini?');">
+                                                                            <form
+                                                                                action="{{ route('admin.data_master.penugasan.destroy', $p->id) }}"
+                                                                                method="POST" class="d-inline">
                                                                                 @csrf
                                                                                 @method('DELETE')
-                                                                                <button type="submit" class="btn btn-xs btn-danger"><i class="fas fa-times"></i> Hapus</button>
+                                                                                <button type="button"
+                                                                                    class="btn btn-xs btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Penugasan?', text: 'Hapus penugasan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i
+                                                                                        class="fas fa-times"></i> Hapus</button>
                                                                             </form>
                                                                         </td>
                                                                     </tr>
                                                                 @empty
-                                                                    <tr><td colspan="3" class="text-center text-muted">Belum ada penugasan</td></tr>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-center text-muted">Belum ada
+                                                                            penugasan</td>
+                                                                    </tr>
                                                                 @endforelse
                                                             </tbody>
                                                         </table>
@@ -339,51 +355,71 @@
                                                         <hr>
 
                                                         <h6 class="font-weight-bold">Tambah Penugasan Baru</h6>
-                                                        <p class="text-muted small">Anda bisa menambahkan beberapa mata pelajaran dan beberapa kelas sekaligus.</p>
-                                                        
-                                                        <form action="{{ route('admin.data_master.penugasan.store', $guru->id) }}" method="POST">
+                                                        <p class="text-muted small">Anda bisa menambahkan beberapa mata
+                                                            pelajaran dan beberapa kelas sekaligus.</p>
+
+                                                        <form
+                                                            action="{{ route('admin.data_master.penugasan.store', $guru->id) }}"
+                                                            method="POST">
                                                             @csrf
                                                             <div id="dynamic-penugasan-container-{{ $guru->id }}">
                                                                 <div class="row penugasan-row mb-3 pb-3 border-bottom">
                                                                     <div class="col-md-5">
                                                                         <div class="form-group">
-                                                                            <label>Mata Pelajaran <span class="text-danger">*</span></label>
-                                                                            <select name="penugasans[0][mapel_id]" class="form-control" required>
-                                                                                <option value="">-- Pilih Mata Pelajaran --</option>
+                                                                            <label>Mata Pelajaran <span
+                                                                                    class="text-danger">*</span></label>
+                                                                            <select name="penugasans[0][mapel_id]"
+                                                                                class="form-control" required>
+                                                                                <option value="">-- Pilih Mata Pelajaran --
+                                                                                </option>
                                                                                 @foreach($allMapels as $m)
-                                                                                    <option value="{{ $m->id }}">{{ $m->nama_mapel }}</option>
+                                                                                    <option value="{{ $m->id }}">
+                                                                                        {{ $m->nama_mapel }}</option>
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-7">
                                                                         <div class="form-group">
-                                                                            <label>Kelas (Bisa pilih lebih dari satu) <span class="text-danger">*</span></label>
-                                                                            <select name="penugasans[0][kelas_ids][]" class="select2bs4" multiple="multiple" data-placeholder="Pilih kelas..." style="width: 100%;" required>
+                                                                            <label>Kelas (Bisa pilih lebih dari satu) <span
+                                                                                    class="text-danger">*</span></label>
+                                                                            <select name="penugasans[0][kelas_ids][]"
+                                                                                class="select2bs4" multiple="multiple"
+                                                                                data-placeholder="Pilih kelas..."
+                                                                                style="width: 100%;" required>
                                                                                 @foreach($allKelas as $k)
-                                                                                    <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+                                                                                    <option value="{{ $k->id }}">
+                                                                                        {{ $k->nama_kelas }}</option>
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
                                                                     </div>
                                                                     <div class="col-md-1 d-flex align-items-center">
-                                                                        <button type="button" class="btn btn-danger btn-sm btn-remove-row" style="display:none;" title="Hapus Baris"><i class="fas fa-trash"></i></button>
+                                                                        <button type="button"
+                                                                            class="btn btn-danger btn-sm btn-remove-row"
+                                                                            style="display:none;" title="Hapus Baris"><i
+                                                                                class="fas fa-trash"></i></button>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div class="mb-3">
-                                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add-row" data-guru="{{ $guru->id }}"><i class="fas fa-plus"></i> Tambah Mapel & Kelas Lain</button>
+                                                                <button type="button"
+                                                                    class="btn btn-outline-primary btn-sm btn-add-row"
+                                                                    data-guru="{{ $guru->id }}"><i class="fas fa-plus"></i>
+                                                                    Tambah Mapel & Kelas Lain</button>
                                                             </div>
-                                                            
-                                                            <div class="form-group mt-4">
-                                                                <button type="submit" class="btn btn-success btn-block"><i class="fas fa-save"></i> Simpan Penugasan Baru</button>
+
+                                                            <div class="form-group">
+                                                                <button type="submit" class="btn btn-success btn-block"><i
+                                                                        class="fas fa-save"></i> Simpan</button>
                                                             </div>
                                                         </form>
 
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Tutup</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -391,7 +427,9 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="text-center">Belum ada data guru.</td></tr>
+                                <tr>
+                                    <td colspan="6" class="text-center">Belum ada data guru.</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -437,77 +475,88 @@
 @stop
 
 @section('css')
-    <!-- Select2 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.0.4/select2-bootstrap4.min.css">
-    <style>
-        /* Fix missing borders and sizing when Select2 is used in AdminLTE/Bootstrap 4 without form-control */
-        .select2-container--bootstrap4 .select2-selection {
-            border: 1px solid #ced4da !important;
-            border-radius: 0.25rem !important;
-            min-height: calc(2.25rem + 2px) !important;
-        }
-        /* Ensure multiple choice tags are sized properly and look like cards */
-        .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
-            background-color: #007bff !important;
-            border-color: #006fe6 !important;
-            color: #fff !important;
-            padding: 3px 8px !important;
-            margin-top: 5px !important;
-            margin-right: 5px !important;
-            border-radius: 4px !important;
-            line-height: 1.5;
-            font-size: 0.9rem;
-        }
-        /* Style the 'x' remove button on the tags */
-        .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
-            color: rgba(255,255,255,.8) !important;
-            margin-right: 5px !important;
-            font-weight: bold;
-        }
-        .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove:hover {
-            color: #fff !important;
-        }
-        /* Fix placeholder text getting cut off */
-        .select2-container--bootstrap4 .select2-search--inline .select2-search__field {
-            min-width: 150px !important;
-        }
-        /* Fix dropdown going behind modal or getting cut off */
-        .select2-container--open {
-            z-index: 1059 !important; /* higher than Bootstrap modal (1050) */
-        }
-        /* Make the dropdown menu scrollable */
-        .select2-results__options {
-            max-height: 200px !important;
-            overflow-y: auto !important;
-        }
-        /* Show selected options in dropdown instead of hiding them */
-        .select2-container--bootstrap4 .select2-results__option[aria-selected="true"] {
-            display: block !important;
-            background-color: #f8f9fa !important;
-            color: #6c757d !important;
-        }
-        /* Add a checkmark to selected options */
-        .select2-container--bootstrap4 .select2-results__option[aria-selected="true"]::after {
-            content: " ✓";
-            float: right;
-            color: #28a745;
-            font-weight: bold;
-        }
-        /* Fix container width collapsing */
-        .select2-container {
-            width: 100% !important;
-        }
-    </style>
+<!-- Select2 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap4-theme/1.0.4/select2-bootstrap4.min.css">
+<style>
+    /* Fix missing borders and sizing when Select2 is used in AdminLTE/Bootstrap 4 without form-control */
+    .select2-container--bootstrap4 .select2-selection {
+        border: 1px solid #ced4da !important;
+        border-radius: 0.25rem !important;
+        min-height: calc(2.25rem + 2px) !important;
+    }
+
+    /* Ensure multiple choice tags are sized properly and look like cards */
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice {
+        background-color: #007bff !important;
+        border-color: #006fe6 !important;
+        color: #fff !important;
+        padding: 3px 8px !important;
+        margin-top: 5px !important;
+        margin-right: 5px !important;
+        border-radius: 4px !important;
+        line-height: 1.5;
+        font-size: 0.9rem;
+    }
+
+    /* Style the 'x' remove button on the tags */
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
+        color: rgba(255, 255, 255, .8) !important;
+        margin-right: 5px !important;
+        font-weight: bold;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fff !important;
+    }
+
+    /* Fix placeholder text getting cut off */
+    .select2-container--bootstrap4 .select2-search--inline .select2-search__field {
+        min-width: 150px !important;
+    }
+
+    /* Fix dropdown going behind modal or getting cut off */
+    .select2-container--open {
+        z-index: 1059 !important;
+        /* higher than Bootstrap modal (1050) */
+    }
+
+    /* Make the dropdown menu scrollable */
+    .select2-results__options {
+        max-height: 200px !important;
+        overflow-y: auto !important;
+    }
+
+    /* Show selected options in dropdown instead of hiding them */
+    .select2-container--bootstrap4 .select2-results__option[aria-selected="true"] {
+        display: block !important;
+        background-color: #f8f9fa !important;
+        color: #6c757d !important;
+    }
+
+    /* Add a checkmark to selected options */
+    .select2-container--bootstrap4 .select2-results__option[aria-selected="true"]::after {
+        content: " ✓";
+        float: right;
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    /* Fix container width collapsing */
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
 @stop
 
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         function initSelect2(context) {
             var ctx = context || $(document);
-            ctx.find('.select2bs4').each(function() {
+            ctx.find('.select2bs4').each(function () {
                 var $this = $(this);
                 $this.select2({
                     theme: 'bootstrap4',
@@ -516,26 +565,26 @@
                 });
             });
         }
-        
+
         // Initial setup
         initSelect2();
 
         // Handle dynamic rows for Penugasan Guru
-        $('.btn-add-row').click(function() {
+        $('.btn-add-row').click(function () {
             var guruId = $(this).data('guru');
             var container = $('#dynamic-penugasan-container-' + guruId);
             var newIndex = new Date().getTime(); // unique index
-            
+
             // Get the first row to clone
             var firstRow = container.find('.penugasan-row').first();
-            
+
             // Destroy select2 on the original element temporarily to cleanly clone it
             firstRow.find('.select2bs4').select2('destroy');
-            
+
             var newRow = firstRow.clone();
-            
+
             // Update names with new index
-            newRow.find('select, input').each(function() {
+            newRow.find('select, input').each(function () {
                 var name = $(this).attr('name');
                 if (name) {
                     name = name.replace(/\[\d+\]/, '[' + newIndex + ']');
@@ -547,27 +596,27 @@
                     $(this).val(''); // reset input
                 }
             });
-            
+
             // Show remove button
             newRow.find('.btn-remove-row').show();
-            
+
             // Append the new row
             container.append(newRow);
-            
+
             // Re-initialize select2 on both the original and the new row
             initSelect2(firstRow);
             initSelect2(newRow);
         });
 
         // Handle remove row
-        $(document).on('click', '.btn-remove-row', function() {
+        $(document).on('click', '.btn-remove-row', function () {
             $(this).closest('.penugasan-row').remove();
         });
-        
+
         // Fix Select2 width when modal opens
         $('.modal').on('shown.bs.modal', function () {
             // Re-initialize Select2 inside the opened modal to fix 0px width bug
-            $(this).find('.select2bs4').each(function() {
+            $(this).find('.select2bs4').each(function () {
                 if ($(this).data('select2')) {
                     $(this).select2('destroy');
                 }

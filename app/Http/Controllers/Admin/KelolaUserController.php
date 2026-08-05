@@ -63,26 +63,6 @@ class KelolaUserController extends Controller
             'default_password' => $defaultPassword,
         ]);
 
-        // RELASI
-        $mapels = $request->mapels ?? [];
-        $kelas = $request->kelas ?? [];
-        $inserts = [];
-        foreach ($mapels as $i => $mapel_id) {
-            if (!empty($mapel_id) && !empty($kelas[$i])) {
-                $inserts[] = [
-                    'user_id' => $user->id,
-                    'mapel_id' => $mapel_id,
-                    'kelas_id' => $kelas[$i],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        if (!empty($inserts)) {
-            \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')->insert($inserts);
-        }
-
-        $user->waliKelas()->sync($request->wali_kelas ?? []);
 
         return redirect()
             ->route('admin.users')
@@ -91,26 +71,6 @@ class KelolaUserController extends Controller
     public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')->where('user_id', $user->id)->delete();
-        $mapels = $request->mapels ?? [];
-        $kelas = $request->kelas ?? [];
-        $inserts = [];
-        foreach ($mapels as $i => $mapel_id) {
-            if (!empty($mapel_id) && !empty($kelas[$i])) {
-                $inserts[] = [
-                    'user_id' => $user->id,
-                    'mapel_id' => $mapel_id,
-                    'kelas_id' => $kelas[$i],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        if (!empty($inserts)) {
-            \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')->insert($inserts);
-        }
-
-        $user->waliKelas()->sync($request->wali_kelas ?? []);
 
         $request->validate([
             'name' => 'required',

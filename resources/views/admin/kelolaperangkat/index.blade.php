@@ -378,14 +378,13 @@
 
                                                                             <form action="{{ route('admin.kelolaperangkat.reopen', $pg->id) }}"
                                                                                 method="POST"
-                                                                                class="d-inline"
-                                                                                onsubmit="return confirm('Buka kembali perangkat ini agar guru bisa merevisinya?');">
+                                                                                class="d-inline">
 
                                                                                 @csrf
 
-                                                                                <button type="submit"
+                                                                                <button type="button"
                                                                                     class="btn btn-xs btn-warning"
-                                                                                    title="Buka kembali untuk revisi">
+                                                                                    title="Buka kembali untuk revisi" onclick="event.preventDefault(); Swal.fire({title: 'Buka kembali?', text: 'Buka kembali perangkat ini agar guru bisa merevisinya?', icon: 'question', showCancelButton: true, confirmButtonColor: '#ffc107', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, buka kembali!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
 
                                                                                     <i class="fas fa-unlock"></i>
                                                                                     Revisi

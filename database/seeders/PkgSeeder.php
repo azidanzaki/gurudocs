@@ -14,19 +14,18 @@ class PkgSeeder extends Seeder
     {
         $aspects = [
             1 => [
-                'Tujuan Pembelajaran' => [
+                'A. Tujuan Pembelajaran' => [
                     'Standar Kompetensi',
-                    'Indikator',
                     'Ranah Tujuan (komprehenship)',
                     'Sesuai dengan Kurikulum'
                 ],
-                'Bahan Belajar/Materi Pelajaran' => [
+                'B. Bahan Belajar/Materi Pelajaran' => [
                     'Bahan belajar mengacu/sesuai dengan tujuan',
                     'Bahan belajar disusun secara sistematis',
                     'Menggunakan bahan belajar sesuai dengan kurikulum',
                     'Memberi Pengayaan'
                 ],
-                'Strategi/Metode Pembelajaran' => [
+                'C. Strategi/Metode Pembelajaran' => [
                     'Pemilihan metode disesuaikan dengan tujuan',
                     'Pemilihan metode disesuaikan dengan materi',
                     'Penentuan langkah-langkah proses pembelajaran berdasarkan metode yang digunakan',
@@ -34,7 +33,7 @@ class PkgSeeder extends Seeder
                     'Penetapan metode berdasarkan pertimbangan kemampuan siswa.',
                     'Memberi pengayaan'
                 ],
-                'Media Pembelajaran' => [
+                'D. Media Pembelajaran' => [
                     'Media disesuaikan dengan tujuan pembelajaran',
                     'Media disesuaikan dengan materi pembelajaran',
                     'Media disesuaikan dengan kondisi kelas',
@@ -42,7 +41,7 @@ class PkgSeeder extends Seeder
                     'Media disesuaikan dengan kemampuan guru',
                     'Media disesuaikan dengan kebutuhan dan perkembangan siswa'
                 ],
-                'Evaluasi' => [
+                'E. Evaluasi' => [
                     'Evaluasi mengacu pada tujuan',
                     'Mencantumkan teknik evaluasi',
                     'Mencantumkan bentuk evaluasi',
@@ -51,63 +50,63 @@ class PkgSeeder extends Seeder
                 ]
             ],
             2 => [
-                'Kemampuan Membuka Pelajaran' => [
+                'A. Kemampuan Membuka Pelajaran' => [
                     'Memperhatikan sikap dan tempat duduk siswa',
                     'Memberikan motivasi awal',
                     'Memberikan apersepsi (kaitan materi sebelumnya dengan materi yang akan disampaikan)',
                     'Menyampaikan indikator/tujuan pembelajaran yang akan diberikan',
                     'Memberikan acuan bahan belajar yang akan diberikan'
                 ],
-                'Sikap Guru dalam Proses Pembelajaran' => [
+                'B. Sikap Guru dalam Proses Pembelajaran' => [
                     'Kejelasan artikulasi suara',
                     'Variasi Gerakan badan tidak mengganggu perhatian siswa',
                     'Antusiasme dalam penampilan',
                     'Mobilitas posisi mengajar'
                 ],
-                'Penguasaan Bahan Belajar (Materi Pelajaran)' => [
+                'C. Penguasaan Bahan Belajar (Materi Pelajaran)' => [
                     'Bahan belajar disajikan sesuai dengan langkah-langkah yang direncanakan dalam RPP',
                     'Kejelasan dalam menjelaskan bahan belajar (materi)',
                     'Kejelasan dalam memberikan contoh',
                     'Memiliki wawasan yang luas dalam menyampaikan bahan belajar'
                 ],
-                'Kegiatan Belajar Mengajar (Proses Pembelajaran)' => [
+                'D. Kegiatan Belajar Mengajar (Proses Pembelajaran)' => [
                     'Kesesuaian metode dengan bahan belajar yang disampaikan',
                     'Penyajian bahan belajaran sesuai dengan tujuan/indikator yang telah ditetapkan',
                     'Memiliki keterampilan dalam menanggapi dan merespon pertanyaan siswa.',
                     'Ketepatan dalam penggunaan alokasi waktu yang disediakan'
                 ],
-                'Kemampuan Menggunakan Media Pembelajaran' => [
+                'E. Kemampuan Menggunakan Media Pembelajaran' => [
                     'Memperhatikan prinsip-prinsip penggunaan media',
                     'Ketepatan/kesesuaian penggunaan media dengan materi yang disampaikan',
                     'Memiliki keterampilan dalam penggunaan media pembelajaran',
                     'Membantu meningkatkan perhatian siswa dalam kegiatan pembelajaran'
                 ],
-                'Evaluasi Pembelajaran' => [
+                'F. Evaluasi Pembelajaran' => [
                     'Penilaian relevan dengan tujuan yang telah ditetapkan',
                     'Menggunakan bentuk dan jenis ragam penilaian',
                     'Penilaian yang diberikan sesuai dengan RPP',
                     'Menganalisis ketuntasan pembelajaran'
                 ],
-                'Kemampuan Menutup Kegiatan Pembelajaran' => [
+                'G. Kemampuan Menutup Kegiatan Pembelajaran' => [
                     'Meninjau kembali materi yang telah diberikan [kesimpulan materi]',
                     'Memberi kesempatan untuk bertanya dan menjawab pertanyaan.',
                     'Memberikan kesimpulan kegiatan pembelajaran [refleksi]'
                 ],
-                'Tindak Lanjut/Follow up' => [
+                'H. Tindak Lanjut/Follow up' => [
                     'Memberikan tugas kepada siswa baik secara individu maupun kelompok',
                     'Menginformasikan materi/bahan belajar yang akan dipelajari berikunya.',
                     'Memberikan motivasi untuk selalu terus belajar'
                 ]
             ],
             3 => [
-                'Kegiatan Membuka Pembelajaran' => [
+                'A. Kegiatan Membuka Pembelajaran' => [
                     'Memperhatikan sikap dan tempat duduk siswa',
                     'Memulai pembelajaran setelah siswa siap untuk belajar',
                     'Menjelaskan pentingnya materi pelajaran yang akan dipelajari',
                     'Melakukan Appersepsi (mengkaitkan materi yang disajikan dengan materi yang telah dipelajari sehingga terjadi kesinambungan)',
                     'Kejelasan hubungan antara pendahuluan dengan inti pelajaran dilakukan semenarik mungkin'
                 ],
-                'Kegiatan Menutup Pembelajaran' => [
+                'B. Kegiatan Menutup Pembelajaran' => [
                     'Kemampuan menyimpulkan KBM dengan tepat',
                     'Kemampuan menggunakan kata-kata yang memebesarkan hati siswa',
                     'Kemampuan memberikan evaluasi lisan maupun tulisan',
@@ -115,7 +114,7 @@ class PkgSeeder extends Seeder
                 ]
             ],
             4 => [
-                'Kegiatan Variasi Pembelajaran' => [
+                'A. Kegiatan Variasi Pembelajaran' => [
                     'Gerak bebas guru',
                     'Isyarat guru (tangan, badan, wajah)',
                     'Suara guru (variasi kecepatan/besar kecil/intonasi)',
@@ -126,7 +125,7 @@ class PkgSeeder extends Seeder
                 ]
             ],
             5 => [
-                'Keterampilan Bertanya' => [
+                'A. Keterampilan Bertanya' => [
                     'Kejelasan pertanyaan yang disampaikan guru.',
                     'Kejelasan hubungan antara pertanyaan guru dengan masalah yang dibicarakan.',
                     'Pertanyaan ditujukan ke seluruh kelas lebih dahulu, baru menunjuk salah satu siswa.',
@@ -149,7 +148,7 @@ class PkgSeeder extends Seeder
                 ]
             ],
             7 => [
-                'Kegiatan Menutup Pembelajaran' => [
+                'A. Kegiatan Menutup Pembelajaran' => [
                     'Kemampuan menyimpulkan KBM dengan tepat',
                     'Kemampuan menggunakan kata-kata yang memebesarkan hati siswa',
                     'Kemampuan memberikan evaluasi lisan maupun tulisan',

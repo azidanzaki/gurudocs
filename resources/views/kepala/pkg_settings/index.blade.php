@@ -5,12 +5,46 @@
 @section('content_header')
     <div class="d-flex justify-content-between align-items-center">
         <h1 class="m-0 text-dark">
-            <i class="fas fa-cogs mr-2 text-primary"></i> Setting Indikator PKG
+            <i class="fas fa-cogs mr-2 text-primary"></i> Indikator Penilaian Kinerja Guru
         </h1>
     </div>
 @stop
 
 @section('content')
+
+@php
+$aspekData = [
+    1 => [
+        'title' => 'Perencanaan Pembelajaran',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Perencanaan Pembelajaran'
+    ],
+    2 => [
+        'title' => 'Pelaksanaan Pembelajaran',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Pelaksanaan Pembelajaran'
+    ],
+    3 => [
+        'title' => 'Membuka dan Menutup Pembelajaran',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Membuka dan Menutup Pembelajaran'
+    ],
+    4 => [
+        'title' => 'Pelaksanaan Variasi Stimulus Pembelajaran',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Pelaksanaan Variasi Stimulus Pembelajaran'
+    ],
+    5 => [
+        'title' => 'Pelaksanaan Keterampilan Bertanya',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Pelaksanaan Keterampilan Bertanya'
+    ],
+    6 => [
+        'title' => 'Pelaksanaan Memberikan Penguatan',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Pelaksanaan Memberikan Penguatan'
+    ],
+    7 => [
+        'title' => 'Pelaksanaan Menguatkan Kesimpulan Peserta Didik',
+        'desc'  => 'Formulir penilaian kinerja guru untuk Pelaksanaan Menguatkan Kesimpulan Peserta Didik'
+    ],
+];
+@endphp
+
 <div class="container-fluid pb-4">
 
     @if(session('success'))
@@ -43,9 +77,12 @@
                     <div class="tab-pane fade {{ $i == 1 ? 'show active' : '' }}" id="aspek-{{ $i }}" role="tabpanel">
                         
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="m-0 font-weight-bold text-secondary">
-                                <i class="fas fa-list-ul mr-2"></i> Kategori Aspek {{ $i }}
-                            </h5>
+                            <div>
+                                <h5 class="m-0 font-weight-bold text-secondary">
+                                    <i class="fas fa-list-ul mr-2"></i> {{ $aspekData[$i]['title'] }}
+                                </h5>
+                                <p class="text-muted small mt-1 mb-0">{{ $aspekData[$i]['desc'] }}</p>
+                            </div>
                             <button type="button" class="btn btn-primary btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddKategori-{{ $i }}">
                                 <i class="fas fa-plus mr-1"></i> Tambah Kategori
                             </button>
@@ -93,15 +130,15 @@
                                                 </span>
                                             </div>
                                             
-                                            <div class="btn-group flex-shrink-0 ml-3">
-                                                <button class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#modalEditKategori-{{ $kategori->id }}" title="Edit Kategori">
-                                                    <i class="fas fa-edit"></i>
+                                            <div class="d-flex flex-shrink-0 ml-3">
+                                                <button class="btn btn-sm btn-outline-primary mr-2" data-toggle="modal" data-target="#modalEditKategori-{{ $kategori->id }}" title="Edit Kategori">
+                                                    <i class="fas fa-edit"></i> Edit
                                                 </button>
-                                                <form action="{{ route('kepala.pkg_settings.kategori.destroy', $kategori->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Peringatan!\nMenghapus kategori ini juga akan menghapus SEMUA indikator di dalamnya.\n\nLanjutkan?');">
+                                                <form action="{{ route('kepala.pkg_settings.kategori.destroy', $kategori->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Kategori">
-                                                        <i class="fas fa-trash"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Kategori" onclick="event.preventDefault(); Swal.fire({title: 'Peringatan!', text: 'Menghapus kategori ini juga akan menghapus SEMUA indikator di dalamnya. Lanjutkan?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
+                                                        <i class="fas fa-trash"></i> Hapus Kategori
                                                     </button>
                                                 </form>
                                             </div>
@@ -181,15 +218,15 @@
                                                                     <span class="badge badge-secondary mr-3 mt-1">{{ $index + 1 }}</span>
                                                                     <span>{{ $indikator->nama }}</span>
                                                                 </div>
-                                                                <div class="btn-group flex-shrink-0 ml-3">
-                                                                    <button class="btn btn-xs btn-outline-info" data-toggle="modal" data-target="#modalEditIndikator-{{ $indikator->id }}" title="Edit Indikator">
-                                                                        <i class="fas fa-pencil-alt"></i>
+                                                                <div class="d-flex flex-shrink-0 ml-3">
+                                                                    <button class="btn btn-sm btn-outline-info mr-2" data-toggle="modal" data-target="#modalEditIndikator-{{ $indikator->id }}" title="Edit Indikator">
+                                                                        <i class="fas fa-edit"></i>
                                                                     </button>
-                                                                    <form action="{{ route('kepala.pkg_settings.indikator.destroy', $indikator->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus indikator ini?');">
+                                                                    <form action="{{ route('kepala.pkg_settings.indikator.destroy', $indikator->id) }}" method="POST" class="d-inline">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" class="btn btn-xs btn-outline-danger" title="Hapus Indikator">
-                                                                            <i class="fas fa-times"></i>
+                                                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Indikator" onclick="event.preventDefault(); Swal.fire({title: 'Yakin ingin menghapus indikator ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
+                                                                            <i class="fas fa-trash"></i>
                                                                         </button>
                                                                     </form>
                                                                 </div>
