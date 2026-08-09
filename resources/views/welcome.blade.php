@@ -7,34 +7,63 @@
 
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
-        <style>
-        .feature-card{
+    <style>
+        .feature-card {
             background: #fff;
             border-radius: 15px;
             padding: 35px 25px;
-            box-shadow: 0 6px 18px rgba(0,0,0,.08);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
             transition: all .3s ease;
             cursor: pointer;
             user-select: none;
         }
 
-        .feature-card:hover{
+        .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 28px rgba(0,0,0,.15);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .15);
         }
 
-        .feature-card:active{
+        .feature-card:active {
             transform: scale(.97);
         }
 
-        .feature-card h5{
+        .feature-card h5 {
             font-weight: 600;
             margin-bottom: 12px;
         }
 
-        .feature-card p{
+        .feature-card p {
             font-size: 15px;
             line-height: 1.6;
+        }
+        /* Button */
+        .btn-login {
+            height: 52px;
+            border: none;
+            border-radius: 12px;
+            background: #478541ff;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-login:hover {
+            background: #2c4f30;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(31, 51, 29, .25);
+        }
+        .btn-daftar {
+            height: 52px;
+            border: none;
+            border-radius: 12px;
+            background: #478541ff;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-daftar:hover {
+            background: #2c4f30;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(31, 51, 29, .25);
         }
     </style>
 </head>
@@ -59,11 +88,12 @@
                     </p>
 
                     <div class="mt-4">
-                        <a href="{{ route('login') }}" class="btn btn-success btn-lg mr-2">
+
+                        <a href="{{ route('login') }}" class="btn btn-success btn-lg mr-2 btn-login">
                             Login
                         </a>
 
-                        <a href="{{ route('register') }}" class="btn btn-outline-success btn-lg">
+                        <a href="{{ route('register') }}" class="btn btn-success btn-lg mr-2 btn-daftar">
                             Daftar
                         </a>
                     </div>

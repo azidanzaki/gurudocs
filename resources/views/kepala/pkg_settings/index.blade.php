@@ -5,7 +5,7 @@
 @section('content_header')
     <div class="d-flex justify-content-between align-items-center">
         <h1 class="m-0 text-dark">
-            <i class="fas fa-cogs mr-2 text-primary"></i> Indikator Penilaian Kinerja Guru
+            Indikator Penilaian Kinerja Guru
         </h1>
     </div>
 @stop

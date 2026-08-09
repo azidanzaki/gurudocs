@@ -6,7 +6,6 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1 class="font-weight-bold text-dark">
-                <i class="fas fa-home mr-2 text-primary"></i>
                 Dashboard Guru
             </h1>
             <p class="text-muted mb-0">

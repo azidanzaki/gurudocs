@@ -8,12 +8,11 @@
 <div>
 
     <h1 class="font-weight-bold text-dark">
-        <i class="fas fa-university mr-2 text-primary"></i>
         Dashboard Kepala Sekolah
     </h1>
 
     <p class="text-muted mb-0">
-        Ringkasan penilaian kinerja guru dan administrasi pembelajaran
+        penilaian kinerja guru dan Dokumen Administrasi 
     </p>
 
 </div>
