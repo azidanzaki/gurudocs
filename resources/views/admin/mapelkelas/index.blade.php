@@ -3,7 +3,22 @@
 @section('title', __('Mata Pelajaran & Kelas'))
 
 @section('content_header')
-<h1>{{ __('Data Master: Mata Pelajaran, Kelas & Guru') }}</h1>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <h1>{{ __('Mapelkelas: Mata Pelajaran, Kelas & Guru') }}</h1>
+    <div class="form-inline mt-2 mt-md-0">
+        <label for="tahun_ajaran" class="mr-2">Tahun Ajaran:</label>
+        <select id="tahun_ajaran_selector" class="form-control" onchange="window.location.href='?tahun_ajaran='+this.value+'&tab={{ request('tab', session('tab', 'mapel')) }}'">
+            @foreach($tahunAjarans as $ta)
+                <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>{{ $ta->nama }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+@if(!$isLatestYear)
+<div class="alert alert-info mt-3">
+    <i class="fas fa-info-circle"></i> Data Tahun Ajaran {{ $selectedTahun }}.
+</div>
+@endif
 @stop
 
 @section('content')
@@ -27,7 +42,7 @@
 @endif
 
 @php
-    $activeTab = session('tab', 'mapel');
+    $activeTab = request('tab', session('tab', 'mapel'));
 
     // Grouping kelas
     $kelasVII = $kelas->filter(fn($k) => str_starts_with($k->nama_kelas, 'VII') && !str_starts_with($k->nama_kelas, 'VIII'));
@@ -72,19 +87,21 @@
             <div class="tab-pane fade {{ $activeTab == 'mapel' ? 'show active' : '' }}" id="tab-mapel" role="tabpanel"
                 aria-labelledby="tab-mapel-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                    <form action="{{ route('admin.data_master.index') }}" method="GET" class="form-inline mt-2">
+                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2">
                         <input type="hidden" name="tab" value="mapel">
                         <input type="text" name="search_mapel" class="form-control mr-2"
                             placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
                         <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
                         @if(request('search_mapel'))
-                            <a href="{{ route('admin.data_master.index') }}?tab=mapel"
+                            <a href="{{ route('admin.mapelkelas.index') }}?tab=mapel&tahun_ajaran={{ $selectedTahun }}"
                                 class="btn btn-secondary ml-2">Reset</a>
                         @endif
                     </form>
+                    @if($isLatestYear)
                     <button class="btn btn-success mt-2" data-toggle="modal" data-target="#modalTambahMapel">
                         <i class="fas fa-plus"></i> Tambah Mata Pelajaran
                     </button>
+                    @endif
                 </div>
 
                 <div class="table-responsive">
@@ -93,7 +110,9 @@
                             <tr class="bg-light">
                                 <th width="50">No</th>
                                 <th>Nama Mata Pelajaran</th>
+                                @if($isLatestYear)
                                 <th width="200" class="text-center">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -101,11 +120,12 @@
                                 <tr>
                                     <td>{{ $mapels->firstItem() + $loop->index }}</td>
                                     <td>{{ $mapel->nama_mapel }}</td>
-                                    <td class="text-center">
+                                     @if($isLatestYear)
+                                     <td class="text-center">
                                         <button class="btn btn-sm btn-info" data-toggle="modal"
                                             data-target="#modalEditMapel{{ $mapel->id }}"><i class="fas fa-edit"></i>
                                             Edit</button>
-                                        <form action="{{ route('admin.data_master.mapel.destroy', $mapel->id) }}"
+                                        <form action="{{ route('admin.mapelkelas.mapel.destroy', $mapel->id) }}"
                                             method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
@@ -117,7 +137,7 @@
                                             role="dialog" aria-hidden="true">
                                             <div class="modal-dialog text-left">
                                                 <div class="modal-content">
-                                                    <form action="{{ route('admin.data_master.mapel.update', $mapel->id) }}"
+                                                    <form action="{{ route('admin.mapelkelas.mapel.update', $mapel->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
@@ -146,10 +166,11 @@
                                             </div>
                                         </div>
                                     </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center">Belum ada data mata pelajaran.</td>
+                                    <td colspan="{{ $isLatestYear ? 3 : 2 }}" class="text-center">Belum ada data mata pelajaran.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -164,13 +185,13 @@
             <div class="tab-pane fade {{ $activeTab == 'kelas' ? 'show active' : '' }}" id="tab-kelas" role="tabpanel"
                 aria-labelledby="tab-kelas-tab">
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-                    <form action="{{ route('admin.data_master.index') }}" method="GET" class="form-inline mt-2">
+                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2">
                         <input type="hidden" name="tab" value="kelas">
                         <input type="text" name="search_kelas" class="form-control mr-2" placeholder="Cari kelas..."
                             value="{{ request('search_kelas') }}">
                         <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
                         @if(request('search_kelas'))
-                            <a href="{{ route('admin.data_master.index') }}?tab=kelas"
+                            <a href="{{ route('admin.mapelkelas.index') }}?tab=kelas&tahun_ajaran={{ $selectedTahun }}"
                                 class="btn btn-secondary ml-2">Reset</a>
                         @endif
                     </form>
@@ -183,10 +204,10 @@
                                 <div class="card-header bg-info text-white d-flex align-items-center">
                                     <h5 class="card-title mb-0">{{ $groupName }}</h5>
 
-                                    @if(in_array($groupName, ['Kelas VII', 'Kelas VIII', 'Kelas IX']))
+                                    @if(in_array($groupName, ['Kelas VII', 'Kelas VIII', 'Kelas IX']) && $isLatestYear)
                                         @php $prefix = str_replace('Kelas ', '', $groupName); @endphp
 
-                                        <form action="{{ route('admin.data_master.kelas.store') }}" method="POST"
+                                        <form action="{{ route('admin.mapelkelas.kelas.store') }}" method="POST"
                                             class="ml-auto mb-0">
                                             @csrf
                                             <input type="hidden" name="prefix" value="{{ $prefix }}">
@@ -202,15 +223,18 @@
                                         <thead>
                                             <tr>
                                                 <th>Nama Kelas</th>
+                                                @if($isLatestYear)
                                                 <th width="120" class="text-center">Aksi</th>
+                                                @endif
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @forelse($kelasItems as $k)
                                                 <tr>
                                                     <td class="align-middle">{{ $k->nama_kelas }}</td>
-                                                    <td class="text-center align-middle">
-                                                        <form action="{{ route('admin.data_master.kelas.destroy', $k->id) }}"
+                                                     @if($isLatestYear)
+                                                     <td class="text-center align-middle">
+                                                        <form action="{{ route('admin.mapelkelas.kelas.destroy', $k->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
@@ -218,10 +242,11 @@
                                                                     class="fas fa-trash"></i>Hapus</button>
                                                         </form>
                                                     </td>
+                                                    @endif
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="2" class="text-center text-muted">Belum ada data</td>
+                                                    <td colspan="{{ $isLatestYear ? 2 : 1 }}" class="text-center text-muted">Belum ada data</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>
@@ -237,13 +262,13 @@
             <div class="tab-pane fade {{ $activeTab == 'guru' ? 'show active' : '' }}" id="tab-guru" role="tabpanel"
                 aria-labelledby="tab-guru-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                    <form action="{{ route('admin.data_master.index') }}" method="GET" class="form-inline mt-2">
+                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2">
                         <input type="hidden" name="tab" value="guru">
                         <input type="text" name="search_guru" class="form-control mr-2"
                             placeholder="Cari nama atau NIP..." value="{{ request('search_guru') }}">
                         <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
                         @if(request('search_guru'))
-                            <a href="{{ route('admin.data_master.index') }}?tab=guru"
+                            <a href="{{ route('admin.mapelkelas.index') }}?tab=guru&tahun_ajaran={{ $selectedTahun }}"
                                 class="btn btn-secondary ml-2">Reset</a>
                         @endif
                     </form>
@@ -289,10 +314,14 @@
                                             <span class="text-muted">Belum ada</span>
                                         @endif
                                     </td>
-                                    <td class="text-center">
+                                     <td class="text-center">
                                         <button class="btn btn-sm btn-primary" data-toggle="modal"
                                             data-target="#modalPenugasan{{ $guru->id }}">
+                                            @if($isLatestYear)
                                             <i class="fas fa-tasks"></i> Kelola Mapel dan Kelas
+                                            @else
+                                            <i class="fas fa-eye"></i> Lihat Penugasan
+                                            @endif
                                         </button>
 
                                         {{-- Modal Kelola Penugasan --}}
@@ -319,11 +348,12 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @php
+                                                                 @php
                                                                     $penugasans = \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')
                                                                         ->join('mapels', 'guru_mapel_kelas.mapel_id', '=', 'mapels.id')
                                                                         ->join('kelas', 'guru_mapel_kelas.kelas_id', '=', 'kelas.id')
                                                                         ->where('guru_mapel_kelas.user_id', $guru->id)
+                                                                        ->where('guru_mapel_kelas.tahun_ajaran', $selectedTahun)
                                                                         ->select('guru_mapel_kelas.id', 'mapels.nama_mapel', 'kelas.nama_kelas')
                                                                         ->get();
                                                                 @endphp
@@ -331,9 +361,10 @@
                                                                     <tr>
                                                                         <td>{{ $p->nama_mapel }}</td>
                                                                         <td>{{ $p->nama_kelas }}</td>
-                                                                        <td class="text-center">
+                                                                         <td class="text-center">
+                                                                            @if($isLatestYear)
                                                                             <form
-                                                                                action="{{ route('admin.data_master.penugasan.destroy', $p->id) }}"
+                                                                                action="{{ route('admin.mapelkelas.penugasan.destroy', $p->id) }}"
                                                                                 method="POST" class="d-inline">
                                                                                 @csrf
                                                                                 @method('DELETE')
@@ -341,6 +372,9 @@
                                                                                     class="btn btn-xs btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Penugasan?', text: 'Hapus penugasan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i
                                                                                         class="fas fa-times"></i> Hapus</button>
                                                                             </form>
+                                                                            @else
+                                                                            <span class="text-muted">-</span>
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                 @empty
@@ -352,6 +386,7 @@
                                                             </tbody>
                                                         </table>
 
+                                                         @if($isLatestYear)
                                                         <hr>
 
                                                         <h6 class="font-weight-bold">Tambah Penugasan Baru</h6>
@@ -359,7 +394,7 @@
                                                             pelajaran dan beberapa kelas sekaligus.</p>
 
                                                         <form
-                                                            action="{{ route('admin.data_master.penugasan.store', $guru->id) }}"
+                                                            action="{{ route('admin.mapelkelas.penugasan.store', $guru->id) }}"
                                                             method="POST">
                                                             @csrf
                                                             <div id="dynamic-penugasan-container-{{ $guru->id }}">
@@ -415,6 +450,7 @@
                                                                         class="fas fa-save"></i> Simpan</button>
                                                             </div>
                                                         </form>
+                                                        @endif
 
                                                     </div>
                                                     <div class="modal-footer">
@@ -447,7 +483,7 @@
 <div class="modal fade" id="modalTambahMapel" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('admin.data_master.mapel.store') }}" method="POST">
+            <form action="{{ route('admin.mapelkelas.mapel.store') }}" method="POST">
                 @csrf
                 <div class="modal-header bg-success text-white">
                     <h5 class="modal-title">Tambah Mata Pelajaran</h5>
@@ -622,6 +658,21 @@
                 }
             });
             initSelect2($(this));
+        });
+
+        // Update URL on tab change to persist active tab
+        $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr("href").replace('#tab-', '');
+            var url = new URL(window.location.href);
+            url.searchParams.set('tab', target);
+            window.history.replaceState({}, '', url);
+
+            // Update all pagination links to include the current tab
+            $('.pagination a').each(function() {
+                var linkUrl = new URL(this.href);
+                linkUrl.searchParams.set('tab', target);
+                this.href = linkUrl.toString();
+            });
         });
     });
 </script>

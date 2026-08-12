@@ -9,7 +9,7 @@
 @section('content')
 
 <div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{{ route('guru.perangkat.show', $mapel->id) }}" class="btn btn-sm btn-outline-secondary">
+    <a href="{{ route('guru.perangkat.index') }}" class="btn btn-sm btn-outline-secondary">
         <i class="fas fa-arrow-left"></i> Kembali
     </a>
     <form action="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}" method="GET" class="d-flex">

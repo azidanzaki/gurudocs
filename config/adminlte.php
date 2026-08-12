@@ -346,8 +346,8 @@ Loading<span class="dot">...</span>
             'can' => 'admin',
         ],
         [
-            'text' => 'Mata Pelajaran & Kelas',
-            'route' => 'admin.data_master.index',
+            'text' => 'Mapelkelas',
+            'route' => 'admin.mapelkelas.index',
             'icon' => 'fas fa-database',
             'can'  => 'admin',
         ],

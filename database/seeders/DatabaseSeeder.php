@@ -326,73 +326,87 @@ class DatabaseSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | KELAS
+        | TAHUN AJARAN & KELAS, MAPEL, GURU ASSIGNMENTS
         |--------------------------------------------------------------------------
         */
 
-        // VII 1 - VII 9
-        for ($i = 1; $i <= 9; $i++) {
-            Kelas::create([
-                'nama_kelas' => 'VII ' . $i,
-            ]);
-        }
-
-        // VIII 1 - VIII 9
-        for ($i = 1; $i <= 9; $i++) {
-            Kelas::create([
-                'nama_kelas' => 'VIII ' . $i,
-            ]);
-        }
-
-        // IX 1 - IX 9
-        for ($i = 1; $i <= 9; $i++) {
-            Kelas::create([
-                'nama_kelas' => 'IX ' . $i,
-            ]);
-        }
-
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | MAPEL MTs
-        |--------------------------------------------------------------------------
-        */
-
-        $mapels = [
-
-            // KEAGAMAAN
-            'Al-Qur\'an Hadits',
-            'Akidah Akhlak',
-            'Fikih',
-            'SKI',
-            'Bahasa Arab',
-
-            // UMUM
-            'Bahasa Indonesia',
-            'Matematika',
-            'IPA',
-            'IPS',
-            'PPKn',
-            'Bahasa Inggris',
-
-            // TAMBAHAN
-            'Seni Budaya',
-            'PJOK',
-            'Informatika',
-            'Prakarya',
-
-            // MUATAN / LOKAL
-            'Tahfidz',
-            'Kaligrafi',
-
+        $tahunAjarans = [
+            '2020/2021',
+            '2021/2022',
+            '2022/2023',
+            '2023/2024',
+            '2024/2025',
+            '2025/2026',
         ];
 
-        foreach ($mapels as $mapel) {
+        // All Gurus
+        $gurus = User::where('role', 'guru')->get();
 
-            Mapel::create([
-                'nama_mapel' => $mapel,
-            ]);
+        foreach ($tahunAjarans as $ta) {
+            \App\Models\TahunAjaran::firstOrCreate(
+                ['nama' => $ta],
+                ['is_active' => ($ta === '2025/2026') ? 1 : 0]
+            );
+
+            // KELAS
+            $kelasIds = [];
+            // VII 1 - VII 9
+            for ($i = 1; $i <= 9; $i++) {
+                $k = Kelas::create(['nama_kelas' => 'VII ' . $i, 'tahun_ajaran' => $ta]);
+                $kelasIds[] = $k->id;
+            }
+            // VIII 1 - VIII 9
+            for ($i = 1; $i <= 9; $i++) {
+                $k = Kelas::create(['nama_kelas' => 'VIII ' . $i, 'tahun_ajaran' => $ta]);
+                $kelasIds[] = $k->id;
+            }
+            // IX 1 - IX 9
+            for ($i = 1; $i <= 9; $i++) {
+                $k = Kelas::create(['nama_kelas' => 'IX ' . $i, 'tahun_ajaran' => $ta]);
+                $kelasIds[] = $k->id;
+            }
+
+            // MAPEL MTs
+            $mapelNames = [
+                'Al-Qur\'an Hadits', 'Akidah Akhlak', 'Fikih', 'SKI', 'Bahasa Arab',
+                'Bahasa Indonesia', 'Matematika', 'IPA', 'IPS', 'PPKn', 'Bahasa Inggris',
+                'Seni Budaya', 'PJOK', 'Informatika', 'Prakarya',
+                'Tahfidz', 'Kaligrafi'
+            ];
+            $mapelIds = [];
+            foreach ($mapelNames as $mapel) {
+                $m = Mapel::create(['nama_mapel' => $mapel, 'tahun_ajaran' => $ta]);
+                $mapelIds[] = $m->id;
+            }
+
+            // GURU ASSIGNMENTS (DUMMY DATA)
+            if (count($kelasIds) > 0 && count($mapelIds) > 0) {
+                foreach ($gurus as $index => $guru) {
+                    // Assign 1 mapel and 2 random kelas (deterministic by index)
+                    $assignedMapel = $mapelIds[$index % count($mapelIds)];
+                    $assignedKelas1 = $kelasIds[($index * 2) % count($kelasIds)];
+                    $assignedKelas2 = $kelasIds[($index * 2 + 1) % count($kelasIds)];
+
+                    \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')->insert([
+                        [
+                            'user_id' => $guru->id,
+                            'mapel_id' => $assignedMapel,
+                            'kelas_id' => $assignedKelas1,
+                            'tahun_ajaran' => $ta,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ],
+                        [
+                            'user_id' => $guru->id,
+                            'mapel_id' => $assignedMapel,
+                            'kelas_id' => $assignedKelas2,
+                            'tahun_ajaran' => $ta,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]
+                    ]);
+                }
+            }
         }
 
         $this->call([
