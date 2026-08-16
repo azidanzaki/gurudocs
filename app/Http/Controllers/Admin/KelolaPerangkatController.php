@@ -111,7 +111,8 @@ class KelolaPerangkatController extends Controller
             }
         }
 
-        return redirect()->route('admin.kelolaperangkat', ['tahun_ajaran' => $request->nama])->with('success', 'Tahun ajaran berhasil ditambahkan.');
+        $redirectTo = $request->input('redirect_to', 'admin.kelolaperangkat');
+        return redirect()->route($redirectTo, ['tahun_ajaran' => $request->nama])->with('success', 'Tahun ajaran berhasil ditambahkan.');
     }
 
     public function reopen($id)

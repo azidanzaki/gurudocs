@@ -5,13 +5,23 @@
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center flex-wrap">
     <h1>{{ __('Mapelkelas: Mata Pelajaran, Kelas & Guru') }}</h1>
-    <div class="form-inline mt-2 mt-md-0">
+    <div class="form-inline mt-2 mt-md-0 d-flex align-items-center">
         <label for="tahun_ajaran" class="mr-2">Tahun Ajaran:</label>
-        <select id="tahun_ajaran_selector" class="form-control" onchange="window.location.href='?tahun_ajaran='+this.value+'&tab={{ request('tab', session('tab', 'mapel')) }}'">
+        <select id="tahun_ajaran_selector" class="form-control mr-2" onchange="changeTahunAjaran(this.value)">
             @foreach($tahunAjarans as $ta)
                 <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>{{ $ta->nama }}</option>
             @endforeach
         </select>
+        @if($nextTahunAjaran)
+        <form action="{{ route('admin.kelolaperangkat.storeTahunAjaran') }}" method="POST" class="m-0">
+            @csrf
+            <input type="hidden" name="nama" value="{{ $nextTahunAjaran }}">
+            <input type="hidden" name="redirect_to" value="admin.mapelkelas.index">
+            <button type="button" class="btn btn-success" onclick="Swal.fire({title: 'Tambah Tahun Ajaran?', text: 'Tambahkan tahun ajaran {{ $nextTahunAjaran }}?', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, tambahkan!', cancelButtonText: 'Batal'}).then((result) => { if(result.isConfirmed) this.closest('form').submit(); })" title="Tambah Tahun Ajaran Baru">
+                <i class="fas fa-plus"></i>
+            </button>
+        </form>
+        @endif
     </div>
 </div>
 @if(!$isLatestYear)
@@ -87,15 +97,19 @@
             <div class="tab-pane fade {{ $activeTab == 'mapel' ? 'show active' : '' }}" id="tab-mapel" role="tabpanel"
                 aria-labelledby="tab-mapel-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2">
+                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2" id="form-search-mapel">
                         <input type="hidden" name="tab" value="mapel">
-                        <input type="text" name="search_mapel" class="form-control mr-2"
-                            placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
-                        <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
-                        @if(request('search_mapel'))
-                            <a href="{{ route('admin.mapelkelas.index') }}?tab=mapel&tahun_ajaran={{ $selectedTahun }}"
-                                class="btn btn-secondary ml-2">Reset</a>
-                        @endif
+                        <input type="hidden" name="tahun_ajaran" value="{{ $selectedTahun }}">
+                        <div class="input-group">
+                            <input type="text" name="search_mapel" class="form-control auto-search"
+                                placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
+                            @if(request('search_mapel'))
+                            <div class="input-group-append">
+                                <a href="{{ route('admin.mapelkelas.index') }}?tab=mapel&tahun_ajaran={{ $selectedTahun }}"
+                                    class="btn btn-secondary">Reset</a>
+                            </div>
+                            @endif
+                        </div>
                     </form>
                     @if($isLatestYear)
                     <button class="btn btn-success mt-2" data-toggle="modal" data-target="#modalTambahMapel">
@@ -104,7 +118,7 @@
                     @endif
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive" id="table-container-mapel">
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr class="bg-light">
@@ -158,8 +172,7 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
                                                                 data-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-primary">Simpan
-                                                                Perubahan</button>
+                                                            <button type="submit" class="btn btn-primary">Simpan</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -176,7 +189,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3 d-flex justify-content-center">
+                <div class="mt-3 d-flex justify-content-center" id="pagination-container-mapel">
                     {{ $mapels->appends(request()->except('mapel_page'))->links('pagination::bootstrap-4') }}
                 </div>
             </div>
@@ -185,16 +198,7 @@
             <div class="tab-pane fade {{ $activeTab == 'kelas' ? 'show active' : '' }}" id="tab-kelas" role="tabpanel"
                 aria-labelledby="tab-kelas-tab">
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2">
-                        <input type="hidden" name="tab" value="kelas">
-                        <input type="text" name="search_kelas" class="form-control mr-2" placeholder="Cari kelas..."
-                            value="{{ request('search_kelas') }}">
-                        <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
-                        @if(request('search_kelas'))
-                            <a href="{{ route('admin.mapelkelas.index') }}?tab=kelas&tahun_ajaran={{ $selectedTahun }}"
-                                class="btn btn-secondary ml-2">Reset</a>
-                        @endif
-                    </form>
+                    <!-- Pencarian Kelas dinonaktifkan -->
                 </div>
 
                 <div class="row">
@@ -262,19 +266,23 @@
             <div class="tab-pane fade {{ $activeTab == 'guru' ? 'show active' : '' }}" id="tab-guru" role="tabpanel"
                 aria-labelledby="tab-guru-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2">
+                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2" id="form-search-guru">
                         <input type="hidden" name="tab" value="guru">
-                        <input type="text" name="search_guru" class="form-control mr-2"
-                            placeholder="Cari nama atau NIP..." value="{{ request('search_guru') }}">
-                        <button class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
-                        @if(request('search_guru'))
-                            <a href="{{ route('admin.mapelkelas.index') }}?tab=guru&tahun_ajaran={{ $selectedTahun }}"
-                                class="btn btn-secondary ml-2">Reset</a>
-                        @endif
+                        <input type="hidden" name="tahun_ajaran" value="{{ $selectedTahun }}">
+                        <div class="input-group">
+                            <input type="text" name="search_guru" class="form-control auto-search"
+                                placeholder="Cari nama atau NIP..." value="{{ request('search_guru') }}">
+                            @if(request('search_guru'))
+                            <div class="input-group-append">
+                                <a href="{{ route('admin.mapelkelas.index') }}?tab=guru&tahun_ajaran={{ $selectedTahun }}"
+                                    class="btn btn-secondary">Reset</a>
+                            </div>
+                            @endif
+                        </div>
                     </form>
                 </div>
 
-                <div class="table-responsive">
+                <div class="table-responsive" id="table-container-guru">
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr class="bg-light">
@@ -470,7 +478,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3 d-flex justify-content-center">
+                <div class="mt-3 d-flex justify-content-center" id="pagination-container-guru">
                     {{ $gurus->appends(request()->except('guru_page'))->links('pagination::bootstrap-4') }}
                 </div>
             </div>
@@ -589,6 +597,33 @@
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
 <script>
+    function changeTahunAjaran(value) {
+        try {
+            var currentTab = 'mapel';
+            var activeLink = document.querySelector('.nav-tabs .nav-link.active');
+            if (activeLink) {
+                var href = activeLink.getAttribute('href');
+                if (href) {
+                    currentTab = href.replace('#tab-', '');
+                }
+            }
+            
+            var url = new URL(window.location.href);
+            url.searchParams.set('tahun_ajaran', value);
+            url.searchParams.set('tab', currentTab);
+            
+            // Delete mapel_page and guru_page from URL so it goes back to page 1 on year change
+            url.searchParams.delete('mapel_page');
+            url.searchParams.delete('guru_page');
+            
+            window.location.href = url.toString();
+        } catch (e) {
+            console.error('Error changing tahun ajaran:', e);
+            // Fallback
+            window.location.href = '?tahun_ajaran=' + encodeURIComponent(value) + '&tab=mapel';
+        }
+    }
+
     $(document).ready(function () {
         function initSelect2(context) {
             var ctx = context || $(document);
@@ -674,6 +709,28 @@
                 this.href = linkUrl.toString();
             });
         });
+
+        // Real-time AJAX search with debounce
+        let searchTimeout = null;
+        $('.auto-search').on('input', function() {
+            clearTimeout(searchTimeout);
+            let form = $(this).closest('form');
+            let tab = form.find('input[name="tab"]').val(); // 'mapel' or 'guru'
+            searchTimeout = setTimeout(function() {
+                let url = form.attr('action') + '?' + form.serialize();
+                $.get(url, function(data) {
+                    let newTable = $(data).find('#table-container-' + tab).html();
+                    let newPagination = $(data).find('#pagination-container-' + tab).html();
+                    $('#table-container-' + tab).html(newTable);
+                    $('#pagination-container-' + tab).html(newPagination);
+                });
+            }, 500);
+        });
+
+        // Open modal guru if returning from delete assignment
+        @if(session('open_modal_guru'))
+            $('#modalPenugasan{{ session("open_modal_guru") }}').modal('show');
+        @endif
     });
 </script>
 @stop

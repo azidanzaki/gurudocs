@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 
 class KelolaDokumenAdmController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $dokumen = DokumenAdm::latest()->get();
+        $query = DokumenAdm::query();
+
+        if ($request->filled('search')) {
+            $query->where('judul', 'like', "%{$request->search}%")
+                  ->orWhere('jenis_dokumen', 'like', "%{$request->search}%")
+                  ->orWhere('tahun', 'like', "%{$request->search}%");
+        }
+
+        $dokumen = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.keloladokumenadm.index', compact('dokumen'));
     }

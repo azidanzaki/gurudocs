@@ -57,7 +57,11 @@ class DataMasterController extends Controller
         $allMapels = Mapel::where('tahun_ajaran', $activeTahun)->orderBy('nama_mapel')->get();
         $allKelas = Kelas::where('tahun_ajaran', $activeTahun)->orderBy('nama_kelas')->get();
 
-        return view('admin.mapelkelas.index', compact('mapels', 'kelas', 'gurus', 'allMapels', 'allKelas', 'tahunAjarans', 'selectedTahun', 'isLatestYear'));
+        $latestTa = $tahunAjarans->first()->nama ?? '2025/2026';
+        $parts = explode('/', $latestTa);
+        $nextTahunAjaran = count($parts) == 2 ? ($parts[0] + 1) . '/' . ($parts[1] + 1) : null;
+
+        return view('admin.mapelkelas.index', compact('mapels', 'kelas', 'gurus', 'allMapels', 'allKelas', 'tahunAjarans', 'selectedTahun', 'isLatestYear', 'nextTahunAjaran'));
     }
 
     // --- MATA PELAJARAN ---
@@ -220,8 +224,9 @@ class DataMasterController extends Controller
             return redirect()->route('admin.mapelkelas.index')->with('error', 'Penugasan tidak ditemukan')->with('tab', 'guru');
         }
 
+        $guruId = $assignment->user_id;
         DB::table('guru_mapel_kelas')->where('id', $id)->delete();
 
-        return redirect()->route('admin.mapelkelas.index')->with('success', 'Penugasan guru berhasil dihapus')->with('tab', 'guru');
+        return redirect()->route('admin.mapelkelas.index')->with('success', 'Penugasan guru berhasil dihapus')->with('tab', 'guru')->with('open_modal_guru', $guruId);
     }
 }

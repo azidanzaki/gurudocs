@@ -346,7 +346,7 @@ Loading<span class="dot">...</span>
             'can' => 'admin',
         ],
         [
-            'text' => 'Mapelkelas',
+            'text' => 'Mata Pelajaran & Kelas',
             'route' => 'admin.mapelkelas.index',
             'icon' => 'fas fa-database',
             'can'  => 'admin',
@@ -404,7 +404,7 @@ Loading<span class="dot">...</span>
             'can' => 'kepala',
         ],
         [
-            'text' => 'Kelola Template Dokumen',
+            'text' => 'Kelola Dokumen',
             'icon' => 'far fa-folder-open',
             'route' => 'admin.dokumenadm.index',
             'can' => 'admin',

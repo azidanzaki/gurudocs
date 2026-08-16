@@ -229,7 +229,7 @@
                class="small-box-footer">
 
 
-                Kelola Template Dokumen
+                Kelola Dokumen
 
                 <i class="fas fa-arrow-right ml-2"></i>
 
