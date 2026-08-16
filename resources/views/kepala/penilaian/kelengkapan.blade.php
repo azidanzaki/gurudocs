@@ -87,10 +87,10 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     @if($dokumen->status == 'submitted')
-                                        <form action="{{ route('kepala.dokumen.updateStatus', $dokumen->id) }}" method="POST" class="d-inline">
+                                        <form id="formTerima_{{ $dokumen->id }}" action="{{ route('kepala.dokumen.updateStatus', $dokumen->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             <input type="hidden" name="action" value="terima">
-                                            <button type="submit" class="btn btn-sm btn-success font-weight-bold" style="border-radius: 6px;" title="Terima">
+                                            <button type="button" onclick="confirmTerima({{ $dokumen->id }})" class="btn btn-sm btn-success font-weight-bold" style="border-radius: 6px;" title="Terima">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                         </form>
@@ -280,6 +280,23 @@
         let actionUrl = "{{ url('/kepala/dokumen') }}/" + dokumenId + "/update-status";
         $('#revisiForm').attr('action', actionUrl);
         $('#revisiModal').modal('show');
+    }
+
+    function confirmTerima(id) {
+        Swal.fire({
+            title: 'Terima Dokumen?',
+            text: "Dokumen ini akan disetujui secara permanen.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Terima!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#formTerima_' + id).submit();
+            }
+        });
     }
 </script>
 @stop

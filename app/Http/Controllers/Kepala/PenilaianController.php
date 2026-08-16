@@ -43,7 +43,7 @@ class PenilaianController extends Controller
         })->values();
 
         $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
-        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
         
         $selectedTahunId = request()->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
 
@@ -95,7 +95,7 @@ class PenilaianController extends Controller
         })->values();
 
         $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
-        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
 
         $selectedMapelKelas = $request->query('mapel_kelas');
         $selectedTahun = $request->query('tahun_ajaran', $activeTahun ? $activeTahun->nama : null);
@@ -162,7 +162,7 @@ class PenilaianController extends Controller
         }
         
         $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
-        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
         $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
         $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
 
@@ -188,7 +188,7 @@ class PenilaianController extends Controller
         }
         
         $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
-        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
         $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
         $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
 
@@ -268,7 +268,7 @@ class PenilaianController extends Controller
             $kelas->nama_kelas = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
         }
         $tahunAjaranId = $request->query('tahun_ajaran_id');
-        $tahunAjaran = $tahunAjaranId ? \App\Models\TahunAjaran::find($tahunAjaranId) : \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $tahunAjaran = $tahunAjaranId ? \App\Models\TahunAjaran::find($tahunAjaranId) : (\App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? \App\Models\TahunAjaran::orderBy('nama', 'desc')->first());
 
         $penilaians = PenilaianKinerja::where('guru_id', $guruId)
             ->where('mapel_id', $mapelId)
@@ -277,11 +277,7 @@ class PenilaianController extends Controller
             ->get()
             ->keyBy('aspek');
 
-        $indikatorPenilaian = \App\Models\IndikatorPenilaian::all()->groupBy('kategori');
 
-        $tanggalCetak = now()->locale('id')->isoFormat('D MMMM Y');
-
-        $html = view('kepala.penilaian.cetak_pkg', compact('guru', 'mapel', 'kelas', 'tahunAjaran', 'penilaians', 'indikatorPenilaian', 'tanggalCetak'))->render();
 
         $requiredAspects = range(1, 7);
         foreach ($requiredAspects as $aspect) {
