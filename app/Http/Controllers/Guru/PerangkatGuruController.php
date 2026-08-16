@@ -55,7 +55,7 @@ class PerangkatGuruController extends Controller
     public function save(Request $request, Mapel $mapel, Kelas $kelas, PerangkatTemplate $template)
     {
         $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
-        abort_if($perangkatGuru->isSubmitted(), 403);
+        abort_if($perangkatGuru->is_completed, 403, 'Perangkat sudah dikunci.');
 
         DB::transaction(function () use ($request, $perangkatGuru, $template) {
             $template->load('sections');
@@ -78,7 +78,7 @@ class PerangkatGuruController extends Controller
     {
         $perangkatGuru = $this->resolvePerangkatGuru($request, $mapel, $kelas, $template);
 
-        abort_if($perangkatGuru->isSubmitted(), 403, 'Perangkat sudah disubmit.');
+        abort_if($perangkatGuru->is_completed, 403, 'Perangkat sudah dikunci.');
 
         $template->load('sections');
 

@@ -18,7 +18,7 @@
         <h4 class="mb-2 font-weight-bold text-primary">
             Penilaian: {{ $guru->name }}
         </h4>
-        <p class="text-muted mb-0">Mata Pelajaran: {{ $mapel ? $mapel->nama_mapel : 'Semua Mapel' }} | Tahun Ajaran: {{ $tahunAjaran ? $tahunAjaran->nama : '-' }}</p>
+        <p class="text-muted mb-0">Mata Pelajaran: {{ $mapel ? $mapel->nama_mapel : 'Semua Mapel' }} ({{ $kelas ? $kelas->nama_kelas : 'Semua Kelas' }}) | Tahun Ajaran: {{ $selectedTahunObj ? $selectedTahunObj->nama : '-' }}</p>
     </div>
     
     <div class="card-body bg-light p-4">
@@ -36,7 +36,8 @@
         <form id="penilaianForm" action="{{ route('kepala.penilaian.store', ['id' => $guru->id, 'aspect' => $aspect]) }}" method="POST">
             @csrf
             <input type="hidden" name="mapel_id" value="{{ $mapel ? $mapel->id : '' }}">
-            <input type="hidden" name="tahun_ajaran_id" value="{{ $tahunAjaran ? $tahunAjaran->id : '' }}">
+            <input type="hidden" name="kelas_id" value="{{ $kelas ? $kelas->id : '' }}">
+            <input type="hidden" name="tahun_ajaran_id" value="{{ $selectedTahunId }}">
             <input type="hidden" name="action" id="formAction" value="draft">
 
             @php

@@ -9,7 +9,7 @@ class PerangkatGuru extends Model
     protected $fillable = [
         'user_id', 'mapel_id', 'kelas_id', 'perangkat_template_id',
         'tahun_ajaran', 'semester', 'status', 'submitted_at',
-        'tahun', 'is_completed',
+        'tahun', 'is_completed', 'catatan_revisi',
     ];
 
     protected $casts = [
@@ -51,6 +51,7 @@ class PerangkatGuru extends Model
     public function isSubmitted(): bool  { return $this->status === 'submitted'; }
     public function isApproved(): bool   { return $this->status === 'approved'; }
     public function isRejected(): bool   { return $this->status === 'rejected'; }
+    public function isRevisi(): bool     { return $this->status === 'revisi'; }
 
     public function statusBadgeClass(): string
     {
@@ -58,6 +59,7 @@ class PerangkatGuru extends Model
             'submitted' => 'warning',
             'approved'  => 'success',
             'rejected'  => 'danger',
+            'revisi'    => 'info',
             default     => 'secondary',
         };
     }

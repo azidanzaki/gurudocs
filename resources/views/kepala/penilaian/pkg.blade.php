@@ -36,18 +36,29 @@
     <div>
         <h4 class="mb-0 font-weight-bold text-primary">
             <i class="fas fa-star-half-alt mr-2"></i>
-            Penilaian Kinerja Guru - {{ $mapel ? $mapel->nama_mapel : 'Semua Mapel' }} - Tahun Ajaran {{ $tahunAjaran ? $tahunAjaran->nama : '' }}
+            Penilaian Kinerja Guru - {{ $mapel ? $mapel->nama_mapel : 'Semua Mapel' }} ({{ $kelas ? $kelas->nama_kelas : 'Semua Kelas' }}) - Tahun Ajaran {{ $selectedTahunObj ? $selectedTahunObj->nama : '' }}
         </h4>
         <p class="text-muted mb-0 mt-1">
-            Pilih aspek di bawah ini untuk mulai mengisi formulir penilaian kinerja untuk guru mata pelajaran {{ $mapel->nama_mapel }}.
+            Pilih aspek di bawah ini untuk mulai mengisi formulir penilaian kinerja untuk guru mata pelajaran {{ $mapel ? $mapel->nama_mapel : '' }} kelas {{ $kelas ? $kelas->nama_kelas : '' }}.
         </p>
     </div>
 
-    <a href="{{ route('kepala.penilaian.cetakPkg', ['id' => $guru->id, 'mapel_id' => $mapel ? $mapel->id : null]) }}"
+    @php
+        $allSubmitted = true;
+        for ($i = 1; $i <= 7; $i++) {
+            if (!isset($penilaians[$i]) || $penilaians[$i]->status !== 'submitted') {
+                $allSubmitted = false;
+                break;
+            }
+        }
+    @endphp
+    @if($allSubmitted)
+    <a href="{{ route('kepala.penilaian.cetakPkg', ['id' => $guru->id, 'mapel_id' => $mapel ? $mapel->id : null, 'kelas_id' => $kelas ? $kelas->id : null, 'tahun_ajaran_id' => $selectedTahunId]) }}"
        class="btn btn-primary ml-auto"
-       style="border-radius: 6px;">
+       style="border-radius: 6px;" target="_blank">
         <i class="fas fa-print mr-1"></i> Cetak Hasil Penilaian
     </a>
+    @endif
 </div>
     <div class="card-body p-0">
         <ul class="list-group list-group-flush">
@@ -90,7 +101,7 @@
                                 $icon = 'fa-edit';
                             }
                         @endphp
-                        <a href="{{ route('kepala.penilaian.start', [$guru->id, $i, 'mapel_id' => $mapel ? $mapel->id : '']) }}" class="btn {{ $btnClass }} font-weight-bold px-4" style="border-radius: 6px;">
+                        <a href="{{ route('kepala.penilaian.start', [$guru->id, $i, 'mapel_id' => $mapel ? $mapel->id : '', 'kelas_id' => $kelas ? $kelas->id : '', 'tahun_ajaran_id' => $selectedTahunId]) }}" class="btn {{ $btnClass }} font-weight-bold px-4" style="border-radius: 6px;">
                             <i class="fas {{ $icon }} mr-1"></i> {{ $btnText }}
                         </a>
                     </div>

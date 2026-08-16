@@ -57,6 +57,10 @@
         if ($origStatus === 'rejected') {
             return '<span class="badge badge-danger" id="badge_'.$id.'" data-original-status="'.$origStatus.'">Ditolak</span>';
         }
+        if ($origStatus === 'revisi') {
+            $catatanBtn = '<button class="btn btn-sm btn-info ml-1" data-toggle="modal" data-target="#catatanModal_'.$id.'" title="Lihat Catatan Revisi"><i class="fas fa-comment-dots"></i></button>';
+            return '<div class="d-flex justify-content-center align-items-center"><span class="badge badge-info" id="badge_'.$id.'" data-original-status="'.$origStatus.'">Revisi</span>' . $catatanBtn . '</div>';
+        }
         return '<span class="badge badge-secondary" id="badge_'.$id.'" data-original-status="'.$origStatus.'">'.ucfirst($origStatus).'</span>';
     }
     $no = 1;
@@ -152,6 +156,28 @@
                                 @endif
                             </td>
                         </tr>
+
+                        <!-- Modal Catatan Revisi -->
+                        @if($pg && $pg->status === 'revisi')
+                        <div class="modal fade" id="catatanModal_{{ $pg->id }}" tabindex="-1" role="dialog" aria-labelledby="catatanModalLabel_{{ $pg->id }}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="catatanModalLabel_{{ $pg->id }}">Catatan Revisi - {{ $template->nama_perangkat }}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {!! nl2br(e($pg->catatan_revisi ?? 'Tidak ada catatan.')) !!}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

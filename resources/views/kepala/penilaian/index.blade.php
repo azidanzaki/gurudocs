@@ -12,7 +12,7 @@
         <h3 class="card-title">Pilih Guru untuk Dilihat Profil/Penilaiannya</h3>
     </div>
     <div class="card-body">
-        <table class="table table-bordered table-hover">
+        <table id="guruTable" class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th width="5%">No</th>
@@ -46,4 +46,27 @@
         </table>
     </div>
 </div>
+@stop
+
+@section('js')
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/responsive.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#guruTable').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Indonesian.json"
+            }
+        });
+    });
+</script>
+@stop
+
+@section('css')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.bootstrap4.min.css">
 @stop

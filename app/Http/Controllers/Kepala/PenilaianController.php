@@ -25,19 +25,38 @@ class PenilaianController extends Controller
             abort(404);
         }
 
-        $mengajarAssignments = $guru->mengajar();
-        $mapelIds = collect($mengajarAssignments)->pluck('mapel_id')->unique();
-        $mapels = \App\Models\Mapel::whereIn('id', $mapelIds)->get();
+        $mengajarRaw = $guru->mengajar();
+        $mapelIds = collect($mengajarRaw)->pluck('mapel_id')->unique();
+        $kelasIds = collect($mengajarRaw)->pluck('kelas_id')->unique();
+        $mapels = \App\Models\Mapel::whereIn('id', $mapelIds)->get()->keyBy('id');
+        $kelases = \App\Models\Kelas::whereIn('id', $kelasIds)->get()->keyBy('id');
 
-        $tahunAjaran = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $mengajarAssignments = collect($mengajarRaw)->map(function ($assignment) use ($kelases) {
+            $kelas = $kelases->get($assignment->kelas_id);
+            if ($kelas) {
+                $assignment->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+                $kelas->nama_kelas = $assignment->nama_kelas_simple; // Override for view
+            }
+            return $assignment;
+        })->unique(function ($assignment) {
+            return $assignment->mapel_id . '-' . ($assignment->nama_kelas_simple ?? $assignment->kelas_id);
+        })->values();
+
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        
+        $selectedTahunId = request()->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
+
         $completedCounts = \App\Models\PenilaianKinerja::where('guru_id', $id)
-            ->where('tahun_ajaran_id', $tahunAjaran ? $tahunAjaran->id : null)
+            ->where('tahun_ajaran_id', $selectedTahunId)
             ->where('status', 'submitted')
             ->get()
-            ->groupBy('mapel_id')
+            ->groupBy(function($item) {
+                return $item->mapel_id . '-' . $item->kelas_id;
+            })
             ->map->count();
 
-        return view('kepala.penilaian.show', compact('guru', 'mapels', 'completedCounts'));
+        return view('kepala.penilaian.show', compact('guru', 'mengajarAssignments', 'mapels', 'kelases', 'completedCounts', 'tahunAjarans', 'selectedTahunId', 'activeTahun'));
     }
 
     public function kelengkapanDokumen(Request $request, $id)
@@ -57,25 +76,39 @@ class PenilaianController extends Controller
 
         // Templates and teaching assignments
         $templates = \App\Models\PerangkatTemplate::where('is_active', true)->orderBy('urutan')->get();
-        $mengajarAssignments = $guru->mengajar(); 
+        $mengajarRaw = $guru->mengajar(); 
         
-        $mapelIds = collect($mengajarAssignments)->pluck('mapel_id')->unique();
-        $kelasIds = collect($mengajarAssignments)->pluck('kelas_id')->unique();
+        $mapelIds = collect($mengajarRaw)->pluck('mapel_id')->unique();
+        $kelasIds = collect($mengajarRaw)->pluck('kelas_id')->unique();
         $semuaMapels = \App\Models\Mapel::whereIn('id', $mapelIds)->get()->keyBy('id');
         $kelases = \App\Models\Kelas::whereIn('id', $kelasIds)->get()->keyBy('id');
-        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        
+        $mengajarAssignments = collect($mengajarRaw)->map(function ($assignment) use ($kelases) {
+            $kelas = $kelases->get($assignment->kelas_id);
+            if ($kelas) {
+                $assignment->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+                $kelas->nama_kelas = $assignment->nama_kelas_simple; // Override for view
+            }
+            return $assignment;
+        })->unique(function ($assignment) {
+            return $assignment->mapel_id . '-' . ($assignment->nama_kelas_simple ?? $assignment->kelas_id);
+        })->values();
 
-        $selectedMapelId = $request->query('mapel_id');
-        $selectedTahun = $request->query('tahun_ajaran');
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+
+        $selectedMapelKelas = $request->query('mapel_kelas');
+        $selectedTahun = $request->query('tahun_ajaran', $activeTahun ? $activeTahun->nama : null);
 
         $dokumens = collect();
 
         foreach ($mengajarAssignments as $assignment) {
             $mapelId = $assignment->mapel_id;
             $kelasId = $assignment->kelas_id;
+            $mapelKelasStr = $mapelId . '-' . $kelasId;
             
-            // Terapkan filter mapel jika dipilih
-            if ($selectedMapelId && $mapelId != $selectedMapelId) continue;
+            // Terapkan filter mapel_kelas jika dipilih
+            if ($selectedMapelKelas && $mapelKelasStr != $selectedMapelKelas) continue;
             
             $mapel = $semuaMapels->get($mapelId);
             $kelas = $kelases->get($kelasId);
@@ -94,7 +127,7 @@ class PenilaianController extends Controller
                 } else {
                     // Jika difilter berdasar tahun ajaran tertentu, yang 'belum dibuat' mungkin tak relevan
                     // jika dianggap tahun ajaran mengikat pada dokumennya. Namun untuk list, kita munculkan saja.
-                    if ($selectedTahun) continue; // Atau bisa dihilangkan baris ini jika tetap ingin muncul
+                    if ($selectedTahun && $selectedTahun != ($activeTahun ? $activeTahun->nama : null)) continue;
                     
                     // Create a dummy object representing "Belum Dibuat"
                     $dummy = new \stdClass();
@@ -114,49 +147,70 @@ class PenilaianController extends Controller
         }
         $kegiatans = $kegiatansQuery->get();
 
-        return view('kepala.penilaian.kelengkapan', compact('guru', 'dokumens', 'kegiatans', 'semuaMapels', 'tahunAjarans', 'selectedMapelId', 'selectedTahun'));
+        return view('kepala.penilaian.kelengkapan', compact('guru', 'dokumens', 'kegiatans', 'mengajarAssignments', 'semuaMapels', 'kelases', 'tahunAjarans', 'selectedMapelKelas', 'selectedTahun'));
     }
 
     public function pkg(Request $request, $guruId)
     {
         $guru = User::findOrFail($guruId);
         $mapelId = $request->query('mapel_id');
+        $kelasId = $request->query('kelas_id');
         $mapel = $mapelId ? \App\Models\Mapel::find($mapelId) : null;
-        $tahunAjaran = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $kelas = $kelasId ? \App\Models\Kelas::find($kelasId) : null;
+        if ($kelas) {
+            $kelas->nama_kelas = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+        }
+        
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
+        $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
 
         $penilaians = PenilaianKinerja::where('guru_id', $guruId)
             ->where('mapel_id', $mapelId)
-            ->where('tahun_ajaran_id', $tahunAjaran ? $tahunAjaran->id : null)
+            ->where('kelas_id', $kelasId)
+            ->where('tahun_ajaran_id', $selectedTahunId)
             ->get()
             ->keyBy('aspek');
 
-        return view('kepala.penilaian.pkg', compact('guru', 'mapel', 'tahunAjaran', 'penilaians'));
+        return view('kepala.penilaian.pkg', compact('guru', 'mapel', 'kelas', 'penilaians', 'tahunAjarans', 'selectedTahunId', 'selectedTahunObj'));
     }
 
     public function start(Request $request, $guruId, $aspect)
     {
         $guru = User::findOrFail($guruId);
         $mapelId = $request->query('mapel_id');
+        $kelasId = $request->query('kelas_id');
         $mapel = $mapelId ? \App\Models\Mapel::find($mapelId) : null;
-        $tahunAjaran = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $kelas = $kelasId ? \App\Models\Kelas::find($kelasId) : null;
+        if ($kelas) {
+            $kelas->nama_kelas = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+        }
+        
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
+        $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
 
         // Check for existing penilaian
         $penilaian = PenilaianKinerja::where('guru_id', $guruId)
             ->where('mapel_id', $mapelId)
-            ->where('tahun_ajaran_id', $tahunAjaran ? $tahunAjaran->id : null)
+            ->where('kelas_id', $kelasId)
+            ->where('tahun_ajaran_id', $selectedTahunId)
             ->where('aspek', $aspect)
             ->first();
 
-        // Aspek 1 structure
+        // Aspek structure
         $indicators = $this->getIndicators($aspect);
 
-        return view('kepala.penilaian.form', compact('guru', 'mapel', 'tahunAjaran', 'aspect', 'penilaian', 'indicators'));
+        return view('kepala.penilaian.form', compact('guru', 'mapel', 'kelas', 'tahunAjarans', 'selectedTahunId', 'selectedTahunObj', 'aspect', 'penilaian', 'indicators'));
     }
 
     public function store(Request $request, $guruId, $aspect)
     {
         $guru = User::findOrFail($guruId);
         $mapelId = $request->input('mapel_id');
+        $kelasId = $request->input('kelas_id');
         $tahunAjaranId = $request->input('tahun_ajaran_id');
         
         $dataPenilaian = $request->input('penilaian', []);
@@ -181,6 +235,7 @@ class PenilaianController extends Controller
             [
                 'guru_id' => $guruId,
                 'mapel_id' => $mapelId,
+                'kelas_id' => $kelasId,
                 'tahun_ajaran_id' => $tahunAjaranId,
                 'aspek' => $aspect,
             ],
@@ -195,7 +250,7 @@ class PenilaianController extends Controller
         );
 
         if ($status === 'submitted') {
-            return redirect()->route('kepala.penilaian.pkg', ['id' => $guruId, 'mapel_id' => $mapelId])
+            return redirect()->route('kepala.penilaian.pkg', ['id' => $guruId, 'mapel_id' => $mapelId, 'kelas_id' => $kelasId, 'tahun_ajaran_id' => $tahunAjaranId])
                 ->with('success', 'Penilaian Kinerja Guru berhasil disimpan secara final.');
         }
 
@@ -206,14 +261,27 @@ class PenilaianController extends Controller
     {
         $guru = User::findOrFail($guruId);
         $mapelId = $request->query('mapel_id');
+        $kelasId = $request->query('kelas_id');
         $mapel = $mapelId ? \App\Models\Mapel::find($mapelId) : null;
-        $tahunAjaran = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        $kelas = $kelasId ? \App\Models\Kelas::find($kelasId) : null;
+        if ($kelas) {
+            $kelas->nama_kelas = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+        }
+        $tahunAjaranId = $request->query('tahun_ajaran_id');
+        $tahunAjaran = $tahunAjaranId ? \App\Models\TahunAjaran::find($tahunAjaranId) : \App\Models\TahunAjaran::where('is_active', 1)->first();
 
         $penilaians = PenilaianKinerja::where('guru_id', $guruId)
             ->where('mapel_id', $mapelId)
+            ->where('kelas_id', $kelasId)
             ->where('tahun_ajaran_id', $tahunAjaran ? $tahunAjaran->id : null)
             ->get()
             ->keyBy('aspek');
+
+        $indikatorPenilaian = \App\Models\IndikatorPenilaian::all()->groupBy('kategori');
+
+        $tanggalCetak = now()->locale('id')->isoFormat('D MMMM Y');
+
+        $html = view('kepala.penilaian.cetak_pkg', compact('guru', 'mapel', 'kelas', 'tahunAjaran', 'penilaians', 'indikatorPenilaian', 'tanggalCetak'))->render();
 
         $requiredAspects = range(1, 7);
         foreach ($requiredAspects as $aspect) {
@@ -255,5 +323,28 @@ class PenilaianController extends Controller
             $indicators[$kategori->nama] = $kategori->indikators->pluck('nama')->toArray();
         }
         return $indicators;
+    }
+
+    public function updateDokumenStatus(Request $request, $id)
+    {
+        $dokumen = PerangkatGuru::findOrFail($id);
+        
+        $request->validate([
+            'action' => 'required|in:terima,revisi',
+            'catatan_revisi' => 'nullable|string',
+        ]);
+
+        if ($request->action === 'terima') {
+            $dokumen->status = 'approved';
+            $dokumen->catatan_revisi = null;
+        } elseif ($request->action === 'revisi') {
+            $dokumen->status = 'revisi';
+            $dokumen->is_completed = false;
+            $dokumen->catatan_revisi = $request->catatan_revisi;
+        }
+
+        $dokumen->save();
+
+        return redirect()->back()->with('success', 'Status dokumen berhasil diperbarui.');
     }
 }

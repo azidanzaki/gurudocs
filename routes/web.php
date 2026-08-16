@@ -233,6 +233,7 @@ Route::middleware(['auth', 'can:kepala'])->group(function () {
     Route::get('/kepala/penilaian/guru/{id}/pkg/cetak', [PenilaianController::class, 'cetakPkg'])->name('kepala.penilaian.cetakPkg');
     Route::get('/kepala/penilaian/guru/{id}/start/{aspect}', [PenilaianController::class, 'start'])->name('kepala.penilaian.start');
     Route::post('/kepala/penilaian/guru/{id}/store/{aspect}', [PenilaianController::class, 'store'])->name('kepala.penilaian.store');
+    Route::post('/kepala/dokumen/{id}/update-status', [PenilaianController::class, 'updateDokumenStatus'])->name('kepala.dokumen.updateStatus');
 
     Route::get('/kepala/profil', [ProfilController::class, 'index'])->name('kepala.profil');
 

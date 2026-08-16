@@ -17,10 +17,17 @@
     <div class="card-header border-0 d-flex align-items-center">
         <h3 class="card-title font-weight-bold m-0"><i class="fas fa-file-alt mr-2 text-primary"></i> Dokumen Administrasi / Perangkat Pembelajaran</h3>
         <form action="{{ route('kepala.penilaian.kelengkapan', $guru->id) }}" method="GET" class="d-flex ml-auto" id="filterForm">
-            <select name="mapel_id" class="form-control form-control-sm mr-2" onchange="document.getElementById('filterForm').submit();" style="width: 200px; border-radius: 6px;">
+            <select name="mapel_kelas" class="form-control form-control-sm mr-2" onchange="document.getElementById('filterForm').submit();" style="width: 250px; border-radius: 6px;">
                 <option value="">Semua Mata Pelajaran</option>
-                @foreach($semuaMapels as $mapel)
-                    <option value="{{ $mapel->id }}" {{ $selectedMapelId == $mapel->id ? 'selected' : '' }}>{{ $mapel->nama_mapel }}</option>
+                @foreach($mengajarAssignments as $assignment)
+                    @php
+                        $m = $semuaMapels->get($assignment->mapel_id);
+                        $k = $kelases->get($assignment->kelas_id);
+                        $val = $assignment->mapel_id . '-' . $assignment->kelas_id;
+                    @endphp
+                    @if($m && $k)
+                        <option value="{{ $val }}" {{ $selectedMapelKelas == $val ? 'selected' : '' }}>{{ $m->nama_mapel }} ({{ $k->nama_kelas }})</option>
+                    @endif
                 @endforeach
             </select>
             <select name="tahun_ajaran" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();" style="width: 180px; border-radius: 6px;">
@@ -32,8 +39,8 @@
         </form>
     </div>
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover m-0 align-middle">
+        <div class="table-responsive p-3">
+            <table id="dokumenTable" class="table table-hover m-0 align-middle">
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 50px;">No</th>
@@ -64,6 +71,9 @@
                                     } elseif ($dokumen->status == 'rejected') {
                                         $badgeClass = 'danger';
                                         $statusText = 'Ditolak';
+                                    } elseif ($dokumen->status == 'revisi') {
+                                        $badgeClass = 'warning';
+                                        $statusText = 'Revisi';
                                     } elseif ($dokumen->status == 'draft') {
                                         $badgeClass = 'warning';
                                         $statusText = 'Diproses (Draft)';
@@ -73,9 +83,21 @@
                             </td>
                             <td class="text-center align-middle">
                                 @if($dokumen->id)
-                                    <a href="{{ route('guru.perangkat.print', $dokumen->id) }}" target="_blank" class="btn btn-sm btn-primary font-weight-bold" style="border-radius: 6px;">
-                                        <i class="fas fa-eye mr-1"></i> Lihat Dokumen
-                                    </a>
+                                    <button onclick="viewDocument('{{ route('guru.perangkat.print', $dokumen->id) }}')" class="btn btn-sm btn-primary font-weight-bold" style="border-radius: 6px;" title="Lihat Dokumen">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    @if($dokumen->status == 'submitted')
+                                        <form action="{{ route('kepala.dokumen.updateStatus', $dokumen->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="action" value="terima">
+                                            <button type="submit" class="btn btn-sm btn-success font-weight-bold" style="border-radius: 6px;" title="Terima">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <button onclick="openRevisiModal({{ $dokumen->id }})" class="btn btn-sm btn-warning text-dark font-weight-bold" style="border-radius: 6px;" title="Revisi">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    @endif
                                 @else
                                     <button class="btn btn-sm btn-secondary font-weight-bold" style="border-radius: 6px;" disabled>
                                         <i class="fas fa-eye-slash mr-1"></i> Belum Ada
@@ -103,8 +125,8 @@
         <h3 class="card-title font-weight-bold"><i class="fas fa-running mr-2 text-info"></i> Riwayat Kegiatan Guru</h3>
     </div>
     <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover m-0 align-middle">
+        <div class="table-responsive p-3">
+            <table id="kegiatanTable" class="table table-hover m-0 align-middle">
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 50px;">No</th>
@@ -154,9 +176,58 @@
         </div>
     </div>
 </div>
+</div>
+
+<!-- Modal Document Viewer -->
+<div class="modal fade" id="documentModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Lihat Dokumen</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-0" style="height: 80vh;">
+        <iframe id="documentIframe" src="" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Revisi -->
+<div class="modal fade" id="revisiModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="revisiForm" method="POST">
+      @csrf
+      <input type="hidden" name="action" value="revisi">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Catatan Revisi</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Masukkan catatan perbaikan:</label>
+            <textarea name="catatan_revisi" class="form-control" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-warning text-dark font-weight-bold">Kirim Revisi</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 @stop
 
 @section('css')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.bootstrap4.min.css">
 <style>
     .table thead th {
         background-color: #f8f9fa;
@@ -174,4 +245,41 @@
         vertical-align: middle !important;
     }
 </style>
+@stop
+
+@section('js')
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/responsive.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#dokumenTable').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Indonesian.json"
+            }
+        });
+
+        $('#kegiatanTable').DataTable({
+            "responsive": true,
+            "autoWidth": false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Indonesian.json"
+            }
+        });
+    });
+
+    function viewDocument(url) {
+        $('#documentIframe').attr('src', url);
+        $('#documentModal').modal('show');
+    }
+
+    function openRevisiModal(dokumenId) {
+        let actionUrl = "{{ url('/kepala/dokumen') }}/" + dokumenId + "/update-status";
+        $('#revisiForm').attr('action', actionUrl);
+        $('#revisiModal').modal('show');
+    }
+</script>
 @stop

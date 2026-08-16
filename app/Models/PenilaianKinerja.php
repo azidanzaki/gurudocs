@@ -14,4 +14,9 @@ class PenilaianKinerja extends Model
     protected $casts = [
         'data_penilaian' => 'array',
     ];
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
 }

@@ -51,8 +51,13 @@
         </span>
     </div>
 
-    @if(!$perangkatGuru->isSubmitted())
+    @if(!$perangkatGuru->is_completed)
     <div class="d-flex align-items-center">
+        @if($perangkatGuru->status === 'revisi')
+        <button type="button" class="btn btn-info mr-2" data-toggle="modal" data-target="#catatanModal">
+            <i class="fas fa-comment-dots"></i> Catatan Revisi
+        </button>
+        @endif
         <button type="button" id="btn-reset" class="btn btn-danger mr-2">
             <i class="fas fa-trash"></i> Reset
         </button>
@@ -70,6 +75,11 @@
     </div>
     @else
     <div class="d-flex align-items-center">
+        @if($perangkatGuru->status === 'revisi')
+        <button type="button" class="btn btn-info mr-2" data-toggle="modal" data-target="#catatanModal">
+            <i class="fas fa-comment-dots"></i> Catatan Revisi
+        </button>
+        @endif
         <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
            target="_blank"
            class="btn btn-outline-dark">
@@ -94,10 +104,10 @@
     </div>
 @endif
 
-@if($perangkatGuru->isSubmitted())
+@if($perangkatGuru->is_completed)
     <div class="alert alert-info">
         <i class="fas fa-info-circle"></i>
-        Perangkat ini sudah disubmit pada {{ $perangkatGuru->submitted_at->format('d M Y H:i') }}.
+        Perangkat ini sudah dikunci pada {{ $perangkatGuru->submitted_at ? $perangkatGuru->submitted_at->format('d M Y H:i') : 'waktu yang lalu' }}.
         Anda tidak dapat mengubah isinya.
     </div>
 @endif
@@ -186,7 +196,7 @@
                     @endif
                 </label> -->
 
-                @if($perangkatGuru->isSubmitted())
+                @if($perangkatGuru->is_completed)
                     {{-- Read-only after submit --}}
                     <div class="section-readonly">
                         {!! html_entity_decode($savedValues[$section->field_key] ?? '—') !!}
