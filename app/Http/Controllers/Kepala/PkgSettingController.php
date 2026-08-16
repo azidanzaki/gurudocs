@@ -7,12 +7,26 @@ use Illuminate\Http\Request;
 
 class PkgSettingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kategoris = \App\Models\PkgKategori::with('indikators')->orderBy('aspek')->orderBy('id')->get();
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('id', 'desc')->first() ?? $tahunAjarans->first();
+        
+        $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
+        $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
+        
+        $isEditable = false;
+        if ($activeTahun && $selectedTahunId == $activeTahun->id) {
+            $isEditable = true;
+        }
+
+        $kategoris = \App\Models\PkgKategori::with('indikators')
+            ->where('tahun_ajaran_id', $selectedTahunId)
+            ->orderBy('aspek')->orderBy('id')->get();
+            
         $groupedKategoris = $kategoris->groupBy('aspek');
 
-        return view('kepala.pkg_settings.index', compact('groupedKategoris'));
+        return view('kepala.pkg_settings.index', compact('groupedKategoris', 'tahunAjarans', 'selectedTahunId', 'selectedTahunObj', 'isEditable'));
     }
 
     public function storeKategori(Request $request)
@@ -20,11 +34,13 @@ class PkgSettingController extends Controller
         $request->validate([
             'aspek' => 'required|integer|min:1|max:7',
             'nama' => 'required|string|max:255',
+            'tahun_ajaran_id' => 'required|exists:tahun_ajarans,id',
         ]);
 
         \App\Models\PkgKategori::create([
             'aspek' => $request->aspek,
             'nama' => $request->nama,
+            'tahun_ajaran_id' => $request->tahun_ajaran_id,
         ]);
 
         return redirect()->back()->with('success', 'Kategori (Judul) berhasil ditambahkan.');

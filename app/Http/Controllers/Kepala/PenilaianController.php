@@ -201,7 +201,7 @@ class PenilaianController extends Controller
             ->first();
 
         // Aspek structure
-        $indicators = $this->getIndicators($aspect);
+        $indicators = $this->getIndicators($aspect, $selectedTahunId);
 
         return view('kepala.penilaian.form', compact('guru', 'mapel', 'kelas', 'tahunAjarans', 'selectedTahunId', 'selectedTahunObj', 'aspect', 'penilaian', 'indicators'));
     }
@@ -292,7 +292,7 @@ class PenilaianController extends Controller
         foreach ($requiredAspects as $aspect) {
             $aspectsData[$aspect] = [
                 'penilaian' => $penilaians[$aspect],
-                'indicators' => $this->getIndicators($aspect)
+                'indicators' => $this->getIndicators($aspect, $tahunAjaran ? $tahunAjaran->id : null)
             ];
         }
 
@@ -311,9 +311,13 @@ class PenilaianController extends Controller
         return $pdf->download('PKG_' . str_replace(' ', '_', $guru->name) . '_' . date('Ymd') . '.pdf');
     }
 
-    private function getIndicators($aspect)
+    private function getIndicators($aspect, $tahunAjaranId = null)
     {
-        $kategoris = \App\Models\PkgKategori::with('indikators')->where('aspek', $aspect)->get();
+        $query = \App\Models\PkgKategori::with('indikators')->where('aspek', $aspect);
+        if ($tahunAjaranId) {
+            $query->where('tahun_ajaran_id', $tahunAjaranId);
+        }
+        $kategoris = $query->get();
         $indicators = [];
         foreach ($kategoris as $kategori) {
             $indicators[$kategori->nama] = $kategori->indikators->pluck('nama')->toArray();

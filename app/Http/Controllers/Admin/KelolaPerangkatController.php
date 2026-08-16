@@ -60,7 +60,7 @@ class KelolaPerangkatController extends Controller
         $oldActive = TahunAjaran::orderBy('created_at', 'desc')->first();
         $oldYear = $oldActive ? $oldActive->nama : null;
 
-        TahunAjaran::create([
+        $newTahunAjaran = TahunAjaran::create([
             'nama' => $request->nama,
             'is_active' => true,
         ]);
@@ -104,6 +104,34 @@ class KelolaPerangkatController extends Controller
                         'mapel_id' => $mapelIdMapping[$assignment->mapel_id],
                         'kelas_id' => $kelasIdMapping[$assignment->kelas_id],
                         'tahun_ajaran' => $request->nama,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            // Duplicate PKG Kategoris and Indikators
+            $oldKategoris = \Illuminate\Support\Facades\DB::table('pkg_kategoris')
+                ->where('tahun_ajaran_id', $oldActive->id)
+                ->get();
+            
+            foreach ($oldKategoris as $kat) {
+                $newKatId = \Illuminate\Support\Facades\DB::table('pkg_kategoris')->insertGetId([
+                    'aspek' => $kat->aspek,
+                    'nama' => $kat->nama,
+                    'tahun_ajaran_id' => $newTahunAjaran->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $oldIndikators = \Illuminate\Support\Facades\DB::table('pkg_indikators')
+                    ->where('kategori_id', $kat->id)
+                    ->get();
+                
+                foreach ($oldIndikators as $ind) {
+                    \Illuminate\Support\Facades\DB::table('pkg_indikators')->insert([
+                        'kategori_id' => $newKatId,
+                        'nama' => $ind->nama,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);

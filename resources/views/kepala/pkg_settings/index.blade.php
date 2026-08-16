@@ -7,6 +7,21 @@
         <h1 class="m-0 text-dark">
             Indikator Penilaian Kinerja Guru
         </h1>
+        <div>
+            <form action="{{ route('kepala.pkg_settings.index') }}" method="GET" class="form-inline mb-0">
+                @if(!$isEditable)
+                    <span class="badge badge-warning mr-3 mt-1"><i class="fas fa-lock mr-1"></i> Mode View-Only</span>
+                @endif
+                <label for="tahun_ajaran_id" class="mr-2 mb-0 font-weight-bold">Tahun Ajaran:</label>
+                <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-control form-control-sm" onchange="this.form.submit()">
+                    @foreach($tahunAjarans as $ta)
+                        <option value="{{ $ta->id }}" {{ $selectedTahunId == $ta->id ? 'selected' : '' }}>
+                            {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
     </div>
 @stop
 
@@ -56,6 +71,8 @@ $aspekData = [
         </div>
     @endif
 
+
+
     <div class="card card-primary card-outline shadow-sm">
         <div class="card-header p-0 border-bottom-0">
             <ul class="nav nav-tabs" id="aspekTabs" role="tablist">
@@ -83,9 +100,11 @@ $aspekData = [
                                 </h5>
                                 <p class="text-muted small mt-1 mb-0">{{ $aspekData[$i]['desc'] }}</p>
                             </div>
+                            @if($isEditable)
                             <button type="button" class="btn btn-primary btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddKategori-{{ $i }}">
                                 <i class="fas fa-plus mr-1"></i> Tambah Kategori
                             </button>
+                            @endif
                         </div>
 
                         <!-- Modal Add Kategori -->
@@ -102,6 +121,7 @@ $aspekData = [
                                         </div>
                                         <div class="modal-body">
                                             <input type="hidden" name="aspek" value="{{ $i }}">
+                                            <input type="hidden" name="tahun_ajaran_id" value="{{ $selectedTahunId }}">
                                             <div class="form-group">
                                                 <label>Nama Kategori <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" name="nama" placeholder="Masukkan judul kategori..." required>
@@ -130,6 +150,7 @@ $aspekData = [
                                                 </span>
                                             </div>
                                             
+                                            @if($isEditable)
                                             <div class="d-flex flex-shrink-0 ml-3">
                                                 <button class="btn btn-sm btn-outline-primary mr-2" data-toggle="modal" data-target="#modalEditKategori-{{ $kategori->id }}" title="Edit Kategori">
                                                     <i class="fas fa-edit"></i> Edit
@@ -142,6 +163,7 @@ $aspekData = [
                                                     </button>
                                                 </form>
                                             </div>
+                                            @endif
                                         </div>
 
                                         <!-- Modal Edit Kategori -->
@@ -177,9 +199,11 @@ $aspekData = [
                                                 
                                                 <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
                                                     <span class="text-muted text-sm"><i class="fas fa-info-circle"></i> Daftar pertanyaan/indikator untuk kategori ini.</span>
+                                                    @if($isEditable)
                                                     <button class="btn btn-success btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddIndikator-{{ $kategori->id }}">
                                                         <i class="fas fa-plus mr-1"></i> Tambah Indikator
                                                     </button>
+                                                    @endif
                                                 </div>
 
                                                 <!-- Modal Add Indikator -->
@@ -218,6 +242,7 @@ $aspekData = [
                                                                     <span class="badge badge-secondary mr-3 mt-1">{{ $index + 1 }}</span>
                                                                     <span>{{ $indikator->nama }}</span>
                                                                 </div>
+                                                                @if($isEditable)
                                                                 <div class="d-flex flex-shrink-0 ml-3">
                                                                     <button class="btn btn-sm btn-outline-info mr-2" data-toggle="modal" data-target="#modalEditIndikator-{{ $indikator->id }}" title="Edit Indikator">
                                                                         <i class="fas fa-edit"></i>
@@ -230,6 +255,7 @@ $aspekData = [
                                                                         </button>
                                                                     </form>
                                                                 </div>
+                                                                @endif
                                                             </li>
 
                                                             <!-- Modal Edit Indikator -->
