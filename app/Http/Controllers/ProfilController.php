@@ -6,13 +6,59 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\PerangkatGuru;
+use App\Models\Repository;
 
 class ProfilController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        
+        // Fetch recent activities
+        $activities = collect();
+        
+        // 1. Get PerangkatGuru activities
+        if ($user->role === 'guru') {
+            $perangkats = PerangkatGuru::where('user_id', $user->id)
+                ->with('template', 'mapel', 'kelas')
+                ->orderBy('updated_at', 'desc')
+                ->take(10)
+                ->get();
+                
+            foreach ($perangkats as $p) {
+                $status = $p->is_completed ? 'menyelesaikan' : 'menyimpan draf';
+                $keterangan = "Telah $status perangkat <b>" . ($p->template->nama_perangkat ?? 'Perangkat') . "</b> untuk mapel " . ($p->mapel->nama_mapel ?? '') . " kelas " . ($p->kelas->nama_kelas ?? '') . ".";
+                
+                $activities->push([
+                    'type' => 'perangkat',
+                    'icon' => $p->is_completed ? 'fas fa-check-circle bg-success' : 'fas fa-edit bg-warning',
+                    'description' => $keterangan,
+                    'time' => $p->updated_at
+                ]);
+            }
+            
+            // 2. Get Repository activities
+            $repos = Repository::where('user_id', $user->id)
+                ->orderBy('updated_at', 'desc')
+                ->take(10)
+                ->get();
+                
+            foreach ($repos as $r) {
+                $activities->push([
+                    'type' => 'repository',
+                    'icon' => 'fas fa-images bg-info',
+                    'description' => "Telah mengunggah/mengedit kegiatan repository <b>" . $r->nama_kegiatan . "</b>.",
+                    'time' => $r->updated_at
+                ]);
+            }
+        }
+
+        // Sort all activities by time desc and take top 15
+        $activities = $activities->sortByDesc('time')->take(15);
+
         // View yang sama digunakan oleh Admin, Guru, dan Kepsek
-        return view('guru.profil.index');
+        return view('guru.profil.index', compact('activities'));
     }
 
     public function update(Request $request)

@@ -58,17 +58,20 @@
             <i class="fas fa-comment-dots"></i> Catatan Revisi
         </button>
         @endif
+        <button type="button" class="btn btn-success btn-submit-doc mr-2" data-id="{{ $perangkatGuru->id }}">
+            <i class="fas fa-paper-plane"></i> Kirim Perangkat
+        </button>
         <button type="button" id="btn-reset" class="btn btn-danger mr-2">
             <i class="fas fa-trash"></i> Reset
         </button>
         <button type="button" id="btn-save-top" class="btn btn-secondary mr-2">
             <i class="fas fa-save"></i> Simpan
         </button>
-        <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
-           target="_blank"
-           class="btn btn-outline-dark">
+        @if($perangkatGuru->status !== 'revisi')
+        <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#cetakModal">
             <i class="fas fa-print"></i> Cetak
-        </a>
+        </button>
+        @endif
         <span id="save-indicator-top" class="text-muted small ml-2" style="display:none;">
             <i class="fas fa-circle-notch fa-spin"></i> Menyimpan...
         </span>
@@ -80,14 +83,53 @@
             <i class="fas fa-comment-dots"></i> Catatan Revisi
         </button>
         @endif
-        <a href="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"
-           target="_blank"
-           class="btn btn-outline-dark">
+        @if($perangkatGuru->status !== 'revisi')
+        <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#cetakModal">
             <i class="fas fa-print"></i> Cetak Dokumen
-        </a>
+        </button>
+        @endif
     </div>
     @endif
 </div>
+
+<!-- Modal Cetak PDF -->
+<div class="modal fade" id="cetakModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content" style="height: 90vh;">
+            <div class="modal-header">
+                <h5 class="modal-title">Cetak Dokumen - {{ $template->nama_perangkat }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe src="{{ route('guru.perangkat.print', $perangkatGuru->id) }}" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Catatan Revisi -->
+@if($perangkatGuru->status === 'revisi')
+<div class="modal fade" id="catatanModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Catatan Revisi - {{ $template->nama_perangkat }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {!! nl2br(e($perangkatGuru->catatan_revisi ?? 'Tidak ada catatan.')) !!}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
 
 {{-- Alerts --}}
 @if(session('success'))
@@ -375,6 +417,46 @@ document.getElementById('btn-reset')?.addEventListener('click', function () {
             } catch (e) {
                 Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error');
             }
+        }
+    });
+});
+
+// Kirim Perangkat
+$('.btn-submit-doc').click(function() {
+    var btn = $(this);
+    var pgId = btn.data('id');
+
+    Swal.fire({
+        title: 'Yakin ingin mensubmit?',
+        text: 'Kalau sudah submit tidak bisa edit lagi dan otomatis terkirim.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Submit!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            btn.prop('disabled', true).html('<i class="fas fa-circle-notch fa-spin"></i>');
+
+            $.ajax({
+                url: '/guru/perangkat/' + pgId + '/toggle-complete',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    force_complete: true
+                },
+                success: function(response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        Swal.fire('Gagal', 'Gagal submit perangkat.', 'error');
+                        btn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Kirim Perangkat');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'Gagal mensubmit status perangkat.', 'error');
+                    btn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Kirim Perangkat');
+                }
+            });
         }
     });
 });

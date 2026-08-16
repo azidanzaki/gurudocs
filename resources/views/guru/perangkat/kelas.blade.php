@@ -58,8 +58,7 @@
             return '<span class="badge badge-danger" id="badge_'.$id.'" data-original-status="'.$origStatus.'">Ditolak</span>';
         }
         if ($origStatus === 'revisi') {
-            $catatanBtn = '<button class="btn btn-sm btn-info ml-1" data-toggle="modal" data-target="#catatanModal_'.$id.'" title="Lihat Catatan Revisi"><i class="fas fa-comment-dots"></i></button>';
-            return '<div class="d-flex justify-content-center align-items-center"><span class="badge badge-info" id="badge_'.$id.'" data-original-status="'.$origStatus.'">Revisi</span>' . $catatanBtn . '</div>';
+            return '<div class="d-flex justify-content-center align-items-center"><span class="badge badge-info" id="badge_'.$id.'" data-original-status="'.$origStatus.'">Revisi</span></div>';
         }
         return '<span class="badge badge-secondary" id="badge_'.$id.'" data-original-status="'.$origStatus.'">'.ucfirst($origStatus).'</span>';
     }
@@ -143,9 +142,11 @@
                                     <!-- <button class="btn btn-secondary {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" disabled id="btn_disabled_{{ $pg->id }}" title="Perangkat telah selesai atau dikunci">
                                         <i class="fas fa-lock"></i> Terkunci
                                     </button> -->
+                                    @if($pg->status !== 'revisi')
                                     <a href="{{ route('guru.perangkat.print', $pg->id) }}" target="_blank" class="btn btn-outline-secondary" title="Cetak">
                                         <i class="fas fa-print"></i>
                                     </a>
+                                    @endif
                                 @else
                                     <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-primary {{ $isPastDeadline ? 'd-none' : '' }}">
                                         <i class="fas fa-edit"></i> Isi

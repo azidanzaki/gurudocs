@@ -13,12 +13,33 @@ class KelolaDokumenAdmController extends Controller
         $query = DokumenAdm::query();
 
         if ($request->filled('search')) {
-            $query->where('judul', 'like', "%{$request->search}%")
-                  ->orWhere('jenis_dokumen', 'like', "%{$request->search}%")
-                  ->orWhere('tahun', 'like', "%{$request->search}%");
+            $query->where(function($q) use ($request) {
+                $q->where('judul', 'like', "%{$request->search}%")
+                  ->orWhere('jenis_dokumen', 'like', "%{$request->search}%");
+            });
+        }
+        
+        if ($request->filled('tahun')) {
+            $query->where('tahun', $request->tahun);
         }
 
-        $dokumen = $query->latest()->paginate(10)->withQueryString();
+        // Sorting
+        $sortColumn = $request->input('sort', 'created_at');
+        $sortDirection = $request->input('direction', 'desc');
+        
+        // Ensure only valid columns can be sorted
+        $allowedSorts = ['judul', 'jenis_dokumen', 'tahun', 'created_at'];
+        if (in_array($sortColumn, $allowedSorts)) {
+            $query->orderBy($sortColumn, $sortDirection);
+        } else {
+            $query->latest();
+        }
+
+        $dokumen = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return view('admin.keloladokumenadm._table', compact('dokumen'))->render();
+        }
 
         return view('admin.keloladokumenadm.index', compact('dokumen'));
     }
@@ -33,129 +54,62 @@ class KelolaDokumenAdmController extends Controller
         ]);
 
         $file = $request->file('file');
-
-        // EXTENSION FILE
         $ext = strtolower($file->getClientOriginalExtension());
-
-        // NAMA FILE RAPI
         $judulSlug = str()->slug($request->judul);
-
         $namaFile = time() . '-' . $judulSlug . '.' . $ext;
 
-        // SIMPAN FILE ASLI
-        $storedPath = $file->storeAs(
-            'dokumenadm',
-            $namaFile,
-            'public'
-        );
+        $storedPath = $file->storeAs('dokumenadm', $namaFile, 'public');
 
         $wordPath = null;
         $pdfPath = null;
 
-        // =========================
-        // JIKA FILE PDF
-        // =========================
-
         if ($ext == 'pdf') {
-
             $pdfPath = $storedPath;
-        }
-
-        // =========================
-        // JIKA FILE WORD
-        // =========================
-        else {
-
+        } else {
             $wordPath = $storedPath;
+            $fullPath = storage_path('app/public/' . $storedPath);
+            $outputDir = storage_path('app/public/dokumenadm/pdf');
 
-            $fullPath = storage_path(
-                'app/public/' . $storedPath
-            );
-
-            $outputDir = storage_path(
-                'app/public/dokumenadm/pdf'
-            );
-
-            // PASTIKAN FOLDER PDF ADA
             if (!file_exists($outputDir)) {
-
                 mkdir($outputDir, 0777, true);
             }
 
-            // CONVERT WORD -> PDF
-            shell_exec(
-                '"C:\Program Files\LibreOffice\program\soffice.exe" ' .
-                '--headless --convert-to pdf "' .
-                $fullPath .
-                '" --outdir "' .
-                $outputDir .
-                '"'
-            );
+            shell_exec('"C:\Program Files\LibreOffice\program\soffice.exe" --headless --convert-to pdf "' . $fullPath . '" --outdir "' . $outputDir . '"');
 
-            // NAMA PDF
-            $pdfFileName =
-                pathinfo($namaFile, PATHINFO_FILENAME) . '.pdf';
+            $pdfFileName = pathinfo($namaFile, PATHINFO_FILENAME) . '.pdf';
+            $pdfFullPath = $outputDir . '/' . $pdfFileName;
 
-            // PATH PDF
-            $pdfFullPath =
-                $outputDir . '/' . $pdfFileName;
-
-            // CEK PDF BERHASIL DIBUAT
             if (file_exists($pdfFullPath)) {
-
                 $pdfPath = 'dokumenadm/pdf/' . $pdfFileName;
             }
         }
 
-        // SIMPAN DATABASE
         DokumenAdm::create([
-
             'judul' => $request->judul,
-
             'jenis_dokumen' => $request->jenis_dokumen,
-
             'tahun' => $request->tahun,
-
             'file_word' => $wordPath,
-
             'file_pdf' => $pdfPath,
-
             'created_by' => auth()->id(),
-
         ]);
 
-        return back()->with(
-            'success',
-            'Dokumen berhasil diupload'
-        );
+        return back()->with('success', 'Dokumen berhasil diupload');
     }
+    
     public function delete($id)
     {
         $dokumen = DokumenAdm::findOrFail($id);
 
-        // HAPUS FILE WORD
-        if (
-            $dokumen->file_word &&
-            \Storage::disk('public')->exists($dokumen->file_word)
-        ) {
-
+        if ($dokumen->file_word && \Storage::disk('public')->exists($dokumen->file_word)) {
             \Storage::disk('public')->delete($dokumen->file_word);
         }
 
-        // HAPUS FILE PDF
-        if (
-            $dokumen->file_pdf &&
-            \Storage::disk('public')->exists($dokumen->file_pdf)
-        ) {
-
+        if ($dokumen->file_pdf && \Storage::disk('public')->exists($dokumen->file_pdf)) {
             \Storage::disk('public')->delete($dokumen->file_pdf);
         }
 
         $dokumen->delete();
 
-        return back()->with(
-            'success',
-            'Dokumen berhasil dihapus'
-        );
+        return back()->with('success', 'Dokumen berhasil dihapus');
     }
 }

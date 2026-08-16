@@ -14,13 +14,11 @@ class DokumenAdmController extends Controller
 
         // SEARCH
         if ($request->search) {
-
             $query->where('judul', 'like', '%' . $request->search . '%');
         }
 
         // FILTER JENIS
         if ($request->jenis_dokumen) {
-
             $query->where('jenis_dokumen', $request->jenis_dokumen);
         }
 
@@ -30,6 +28,10 @@ class DokumenAdmController extends Controller
         }
 
         $dokumen = $query->latest()->get();
+
+        if ($request->ajax()) {
+            return view('guru.dokumenadm._grid', compact('dokumen'))->render();
+        }
 
         $jenisDokumen = DokumenAdm::select('jenis_dokumen')
             ->distinct()
@@ -47,6 +49,7 @@ class DokumenAdmController extends Controller
             'tahunDokumen'
         ));
     }
+    
     public function show($id)
     {
         $dokumen = DokumenAdm::findOrFail($id);

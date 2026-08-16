@@ -85,4 +85,20 @@ class User extends Authenticatable
             'is_active' => 'boolean',
         ];
     }
+
+    public function adminlte_image()
+    {
+        // Modern UI avatars generator
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=random&color=fff';
+    }
+
+    public function adminlte_desc()
+    {
+        return 'Role: ' . ucfirst($this->role);
+    }
+
+    public function adminlte_profile_url()
+    {
+        return route('profile');
+    }
 }

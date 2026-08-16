@@ -1,305 +1,236 @@
 @extends('adminlte::page')
 
-@section('title', 'Kelola Dokumen Administratif')
+@section('title', 'Kelola Dokumen')
 
 @section('content_header')
-<h1>Kelola Dokumen Administratif</h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="font-weight-bold text-dark"><i class="fas fa-folder-open text-primary mr-2"></i>Kelola Dokumen Admin</h1>
+            <p class="text-muted mb-0">Kelola semua template dokumen administrasi untuk diunduh oleh guru.</p>
+        </div>
+    </div>
 @stop
 
 @section('content')
+<style>
+.custom-radio-btn input[type="radio"] {
+    display: none;
+}
+.custom-radio-btn label {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #ced4da;
+    background-color: #fff;
+    color: #495057;
+    transition: all 0.2s ease-in-out;
+}
+.custom-radio-btn input[type="radio"]:checked + label {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+}
+.custom-radio-btn label:first-of-type {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.custom-radio-btn label:last-of-type {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+</style>
 
-@if(session('success'))
-    <div id="success-alert" class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
-<div class="card">
-
-    <div class="card-header">
-
-        <div class="d-flex justify-content-between align-items-center w-100 flex-wrap">
-
-            <h3 class="card-title mb-0 mr-3">
-                Data Dokumen Administratif
-            </h3>
-
-            <form action="{{ route('admin.dokumenadm.index') }}" method="GET" class="form-inline flex-grow-1 justify-content-end mr-3 mt-2 mt-md-0">
-                <input type="text" name="search" class="form-control mr-2" placeholder="Cari dokumen, jenis, tahun..." value="{{ request('search') }}">
-                <button type="submit" class="btn btn-primary mr-2"><i class="fas fa-search"></i> Cari</button>
-                @if(request('search'))
-                    <a href="{{ route('admin.dokumenadm.index') }}" class="btn btn-secondary mr-2">Reset</a>
-                @endif
-            </form>
-
-            <button class="btn btn-success mt-2 mt-md-0" data-toggle="modal" data-target="#modalUploadDokumen">
-                <i class="fas fa-plus"></i>
-                Tambah Dokumen
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" id="success-alert" role="alert" style="border-radius: 12px; border: none; border-left: 5px solid #28a745;">
+            <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
             </button>
+        </div>
+    @endif
 
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; overflow: hidden;">
+        
+        <div class="card-header bg-white border-bottom-0 py-4 d-flex justify-content-between align-items-center flex-wrap">
+            <h3 class="card-title font-weight-bold mb-0 text-dark w-100 mb-3">
+                Daftar Dokumen
+            </h3>
+            
+            <div class="w-100 d-flex flex-wrap align-items-center gap-3" style="gap: 15px;">
+                <div class="input-group" style="max-width: 350px;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-light border-right-0" style="border-radius: 8px 0 0 8px;">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                    </div>
+                    <input type="text" id="ajaxSearch" class="form-control bg-light border-left-0" style="border-radius: 0 8px 8px 0;" placeholder="Cari nama template dokumen...">
+                </div>
+                
+                <select id="ajaxTahun" class="form-control bg-light" style="border-radius: 8px; max-width: 200px; border: 1px solid #ced4da;">
+                    <option value="">Semua Tahun Ajaran</option>
+                    @php $currentYear = date('Y'); @endphp
+                    @for($i = -2; $i <= 5; $i++)
+                        @php 
+                            $y = $currentYear - $i; 
+                            $yearLabel = $y . '/' . ($y+1);
+                        @endphp
+                        <option value="{{ $yearLabel }}">{{ $yearLabel }}</option>
+                    @endfor
+                </select>
+                
+                <div class="spinner-border spinner-border-sm text-primary ml-2" id="loadingSpinner" style="display: none;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                
+                <button type="button" class="btn btn-primary px-4 shadow-sm ml-auto" data-toggle="modal" data-target="#modalUploadDokumen" style="border-radius: 8px;">
+                    <i class="fas fa-cloud-upload-alt mr-2"></i> Tambah Dokumen
+                </button>
+            </div>
         </div>
 
-    </div>
-
-    <div class="card-body p-0">
-
-        <table class="table table-bordered table-hover">
-
-            <thead>
-                <tr>
-                    <th width="50">No</th>
-                    <th>Judul Dokumen</th>
-                    <th>Jenis</th>
-                    <th>Tahun</th>
-                    <th>Dibuat</th>
-                    <th width="250">Aksi</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                @forelse($dokumen as $item)
-
-                    <tr>
-
-                        <td>{{ $loop->iteration }}</td>
-
-                        <td>
-                            {{ $item->judul }}
-                        </td>
-
-                        <td>
-
-                            @if($item->jenis_dokumen == 'Dokumen Administratif')
-                                <span class="badge badge-success">
-                                    Dokumen Administratif
-                                </span>
-                            @else
-                                <span class="badge badge-info">
-                                    Dokumen Non Administratif
-                                </span>
-                            @endif
-
-                        </td>
-
-                        <td>
-                            {{ $item->tahun ?? '-' }}
-                        </td>
-
-                        <td>
-                            {{ $item->created_at->format('d M Y H:i') }}
-                        </td>
-
-                        <td class="text-right">
-
-                            {{-- LIHAT PDF --}}
-                            @if($item->file_pdf)
-
-                                <a href="{{ asset('storage/' . $item->file_pdf) }}" target="_blank" class="btn btn-info btn-sm">
-
-                                    <i class="fas fa-eye"></i>
-                                    Lihat
-
-                                </a>
-
-                            @endif
-
-                            {{-- DOWNLOAD TEMPLATE --}}
-                            @if($item->file_word)
-                                @php
-                                    $wordExt = pathinfo($item->file_word, PATHINFO_EXTENSION);
-                                    $isExcel = in_array($wordExt, ['xls', 'xlsx']);
-                                @endphp
-                                <a href="{{ asset('storage/' . $item->file_word) }}" class="btn btn-success btn-sm">
-
-                                    <i class="fas {{ $isExcel ? 'fa-file-excel' : 'fa-file-word' }}"></i>
-                                    {{ $isExcel ? 'Excel' : 'Word' }}
-
-                                </a>
-
-                            @endif
-
-                            {{-- HAPUS --}}
-                            <form action="{{ route('admin.dokumenadm.delete', $item->id) }}" method="POST" class="d-inline">
-
-                                @csrf
-                                @method('DELETE')
-
-                                <button type="button" class="btn btn-danger btn-sm"
-                                    onclick="event.preventDefault(); Swal.fire({title: 'Hapus dokumen ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
-
-                                    <i class="fas fa-trash"></i>
-                                    Hapus
-
-                                </button>
-
-                            </form>
-
-                        </td>
-
-                    </tr>
-
-                @empty
-
-                    <tr>
-
-                        <td colspan="5" class="text-center text-muted">
-
-                            Belum ada dokumen
-
-                        </td>
-
-                    </tr>
-
-                @endforelse
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-    <div class="card-footer clearfix">
-        {{ $dokumen->links('pagination::bootstrap-4') }}
-    </div>
-
-</div>
-
-{{-- MODAL UPLOAD --}}
-<div class="modal fade" id="modalUploadDokumen" tabindex="-1" role="dialog">
-
-    <div class="modal-dialog modal-lg" role="document">
-
-        <div class="modal-content">
-
-            {{-- HEADER --}}
-            <div class="modal-header bg-success">
-
-                <h5 class="modal-title">
-                    Tambah Dokumen
-                </h5>
-
-                <button type="button" class="close text-white" data-dismiss="modal">
-
-                    <span>&times;</span>
-
-                </button>
-
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 px-4 py-3" width="5%">No</th>
+                            <th class="border-0 py-3 cursor-pointer sort-header" data-sort="judul" width="30%">Judul Dokumen <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 text-center cursor-pointer sort-header" data-sort="jenis_dokumen" width="20%">Jenis <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 text-center cursor-pointer sort-header" data-sort="tahun" width="10%">Tahun <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 text-center" width="35%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @include('admin.keloladokumenadm._table')
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-            {{-- FORM --}}
-            <form action="{{ route('admin.dokumenadm.store') }}" method="POST" enctype="multipart/form-data">
+        <div class="card-footer bg-white border-top py-3" id="paginationContainer">
+            @if($dokumen->hasPages())
+                {{ $dokumen->links('pagination::bootstrap-4') }}
+            @endif
+        </div>
+    </div>
 
-                @csrf
+    {{-- MODAL UPLOAD --}}
+    <div class="modal fade" id="modalUploadDokumen" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-cloud-upload-alt mr-2"></i> Tambah Template Dokumen</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
-                <div class="modal-body">
+                <form action="{{ route('admin.dokumenadm.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4 bg-light">
+                        <div class="card border-0 shadow-sm mb-0" style="border-radius: 12px;">
+                            <div class="card-body p-4">
+                                {{-- JUDUL --}}
+                                <div class="form-group mb-4">
+                                    <label class="font-weight-bold text-dark">Judul Dokumen <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="text" name="judul" id="judul_dokumen" class="form-control" style="border-radius: 8px 0 0 8px;" placeholder="Masukkan judul..." required>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text bg-white" style="border-radius: 0 8px 8px 0;">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="gunakan_nama_file">
+                                                    <label class="custom-control-label cursor-pointer user-select-none" for="gunakan_nama_file" style="font-size: 0.9rem;">Samakan nama file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    {{-- JUDUL --}}
-                    <div class="form-group">
-                        <label>Judul Dokumen</label>
-                        <div class="input-group">
-                            <input type="text" name="judul" id="judul_dokumen" class="form-control" required>
-                            <div class="input-group-append">
-                                <div class="input-group-text bg-light">
-                                    <input type="checkbox" id="gunakan_nama_file" class="mr-2 cursor-pointer"> 
-                                    <label for="gunakan_nama_file" class="mb-0 cursor-pointer user-select-none">Samakan dengan file</label>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{-- JENIS --}}
+                                        <div class="form-group mb-4">
+                                            <label class="d-block font-weight-bold text-dark mb-2">Jenis Dokumen <span class="text-danger">*</span></label>
+                                            <div class="custom-radio-btn d-flex">
+                                                <input type="radio" id="jenis1" name="jenis_dokumen" value="Dokumen Administratif" required>
+                                                <label for="jenis1" class="flex-fill text-center m-0">Administratif</label>
+                                                
+                                                <input type="radio" id="jenis2" name="jenis_dokumen" value="Dokumen Non Administratif" required>
+                                                <label for="jenis2" class="flex-fill text-center m-0" style="border-left: 0;">Non Administratif</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{-- TAHUN --}}
+                                        <div class="form-group mb-4">
+                                            <label class="font-weight-bold text-dark">Tahun Ajaran <span class="text-danger">*</span></label>
+                                            <select name="tahun" class="form-control" style="border-radius: 8px;" required>
+                                                <option value="" disabled selected>Pilih Tahun Ajaran...</option>
+                                                @php $currentYear = date('Y'); @endphp
+                                                @for($i = -2; $i <= 5; $i++)
+                                                    @php 
+                                                        $y = $currentYear - $i; 
+                                                        $yearLabel = $y . '/' . ($y+1);
+                                                    @endphp
+                                                    <option value="{{ $yearLabel }}">{{ $yearLabel }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- FILE --}}
+                                <div class="form-group mb-0">
+                                    <label class="font-weight-bold text-dark">Pilih File Template <span class="text-danger">*</span></label>
+                                    <div class="custom-file mb-2">
+                                        <input type="file" name="file" id="file_dokumen" class="custom-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+                                        <label class="custom-file-label" for="file_dokumen" style="border-radius: 8px;">Browse file...</label>
+                                    </div>
+                                    <div class="alert alert-info border-0 shadow-sm mt-3 mb-0" style="border-radius: 8px; border-left: 4px solid #17a2b8 !important;">
+                                        <small><i class="fas fa-info-circle mr-1"></i> Format didukung: <strong>PDF, DOC, DOCX, XLS, XLSX</strong> (Max 20MB).</small><br>
+                                        <small><i class="fas fa-check-circle mr-1"></i> File ini adalah master template yang akan diunduh oleh guru.</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {{-- JENIS --}}
-                    <div class="form-group">
-                        <label class="d-block">Jenis Dokumen</label>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" id="jenis1" name="jenis_dokumen" value="Dokumen Administratif" class="custom-control-input" required>
-                            <label class="custom-control-label font-weight-normal" for="jenis1">Dokumen Administratif</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" id="jenis2" name="jenis_dokumen" value="Dokumen Non Administratif" class="custom-control-input" required>
-                            <label class="custom-control-label font-weight-normal" for="jenis2">Dokumen Non Administratif</label>
-                        </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
+                        <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">
+                            <i class="fas fa-paper-plane mr-1"></i> Simpan Template
+                        </button>
                     </div>
-
-                    {{-- TAHUN --}}
-                    <div class="form-group">
-                        <label>Tahun Dokumen</label>
-                        <input type="number" name="tahun" class="form-control" min="2000" max="2100" step="1"
-                            placeholder="Ketik atau pilih tahun..." list="tahun_suggestions" required>
-                        <datalist id="tahun_suggestions">
-                            @php $currentYear = date('Y'); @endphp
-                            @for($i = 0; $i <= 5; $i++)
-                                <option value="{{ $currentYear - $i }}"></option>
-                            @endfor
-                        </datalist>
-                    </div>
-
-                    {{-- FILE --}}
-                    <div class="form-group">
-
-                        <label>
-                            File Dokumen
-                        </label>
-
-                        <input type="file" name="file" id="file_dokumen" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx"
-                            required>
-
-                        <small class="text-muted d-block">
-                            Format: PDF, DOC, DOCX, XLS, XLSX (Max 20MB)
-                        </small>
-                        <small class="text-info font-weight-bold d-block mt-1">
-                            Catatan: Format file yang Anda unggah adalah format asli yang akan diunduh langsung oleh
-                            user (Guru).
-                        </small>
-
-                    </div>
-
-                </div>
-
-                {{-- FOOTER --}}
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-
-                        Batal
-
-                    </button>
-
-                    <button type="submit" class="btn btn-success">
-
-                        <i class="fas fa-paper-plane"></i>
-                        Kirim
-
-                    </button>
-
-                </div>
-
-            </form>
-
+                </form>
+            </div>
         </div>
-
     </div>
 
-</div>
+@stop
 
+@section('js')
 <script>
-
     setTimeout(function () {
-
         let alertBox = document.getElementById('success-alert');
-
         if (alertBox) {
             $(alertBox).alert('close');
         }
-
     }, 5000);
 
     $(document).ready(function() {
+        if(typeof bsCustomFileInput !== 'undefined') {
+            bsCustomFileInput.init();
+        }
+        
+        // --- Form Modal Upload ---
         let originalTitle = '';
         
         $('#file_dokumen').on('change', function() {
             var fileName = $(this).val().split('\\').pop();
-            fileName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName; // Hapus ekstensi
+            fileName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName; 
             
             if ($('#gunakan_nama_file').is(':checked')) {
                 $('#judul_dokumen').val(fileName);
@@ -308,7 +239,7 @@
 
         $('#gunakan_nama_file').on('change', function() {
             if ($(this).is(':checked')) {
-                originalTitle = $('#judul_dokumen').val(); // Simpan judul saat ini
+                originalTitle = $('#judul_dokumen').val(); 
                 
                 var fileInput = $('#file_dokumen')[0];
                 if (fileInput.files && fileInput.files[0]) {
@@ -322,8 +253,81 @@
                 $('#judul_dokumen').val(originalTitle).prop('readonly', false);
             }
         });
+        
+        // --- AJAX Table Filters ---
+        let searchTimeout;
+        let currentSortColumn = 'created_at';
+        let currentSortDirection = 'desc';
+
+        function fetchDokumen(page = 1) {
+            const search = $('#ajaxSearch').val();
+            const tahun = $('#ajaxTahun').val();
+            
+            $('#loadingSpinner').show();
+            
+            $.ajax({
+                url: "{{ route('admin.dokumenadm.index') }}",
+                data: {
+                    search: search,
+                    tahun: tahun,
+                    sort: currentSortColumn,
+                    direction: currentSortDirection,
+                    page: page
+                },
+                success: function(response) {
+                    $('#tableBody').html(response);
+                    
+                    // Extract pagination from the hidden row in the partial view
+                    const paginationHtml = $('#tableBody .pagination-row td').html();
+                    if(paginationHtml && paginationHtml.trim() !== '') {
+                        $('#paginationContainer').html(paginationHtml);
+                    } else {
+                        $('#paginationContainer').empty();
+                    }
+                    
+                    $('#loadingSpinner').hide();
+                },
+                error: function() {
+                    $('#loadingSpinner').hide();
+                }
+            });
+        }
+
+        $('#ajaxSearch').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => fetchDokumen(1), 500);
+        });
+
+        $('#ajaxTahun').on('change', function() {
+            fetchDokumen(1);
+        });
+        
+        $('.sort-header').on('click', function() {
+            const column = $(this).data('sort');
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
+            }
+            
+            // Update icons
+            $('.sort-header i').removeClass('fa-sort-up fa-sort-down text-primary').addClass('fa-sort text-muted');
+            const iconClass = currentSortDirection === 'asc' ? 'fa-sort-up text-primary' : 'fa-sort-down text-primary';
+            $(this).find('i').removeClass('fa-sort text-muted').addClass(iconClass);
+            
+            fetchDokumen(1);
+        });
+
+        // Handle pagination links
+        $(document).on('click', '#paginationContainer a', function(e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            fetchDokumen(page);
+        });
+        
+        // Initialize sort icon
+        $('.sort-header').css('cursor', 'pointer');
     });
-
 </script>
-
 @stop
