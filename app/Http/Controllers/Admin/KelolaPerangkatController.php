@@ -27,7 +27,11 @@ class KelolaPerangkatController extends Controller
             ->get()
             ->groupBy('perangkat_template_id');
 
-        return view('admin.kelolaperangkat.index', compact('templates', 'tahunAjarans', 'selectedTahun', 'gurus', 'perangkatGurus'));
+        $latestTa = $tahunAjarans->first()->nama ?? '2025/2026';
+        $parts = explode('/', $latestTa);
+        $nextTahunAjaran = count($parts) == 2 ? ($parts[0] + 1) . '/' . ($parts[1] + 1) : null;
+
+        return view('admin.kelolaperangkat.index', compact('templates', 'tahunAjarans', 'selectedTahun', 'gurus', 'perangkatGurus', 'nextTahunAjaran'));
     }
 
     public function updateTenggat(Request $request)
@@ -59,6 +63,8 @@ class KelolaPerangkatController extends Controller
 
         $oldActive = TahunAjaran::orderBy('created_at', 'desc')->first();
         $oldYear = $oldActive ? $oldActive->nama : null;
+
+        TahunAjaran::query()->update(['is_active' => false]);
 
         $newTahunAjaran = TahunAjaran::create([
             'nama' => $request->nama,

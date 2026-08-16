@@ -106,6 +106,9 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
     Route::get('/repository', [RepositoryController::class, 'index'])
         ->name('guru.repository');
 
+    Route::get('/repository/show/{id}', [RepositoryController::class, 'show'])
+        ->name('guru.repository.show');
+
     Route::get('/repository/sertifikat/{id}', [RepositoryController::class, 'viewSertifikat'])
         ->name('guru.repository.sertifikat');
 

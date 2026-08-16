@@ -14,12 +14,25 @@
 @section('title', 'Repository Guru')
 
 @section('content_header')
-<div class="d-flex justify-content-between align-items-center">
-    <h1>Repository Kegiatan Guru</h1>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <h1 class="mb-2">Repository Kegiatan Guru</h1>
 
-    <button class="btn btn-success" data-toggle="modal" data-target="#modalTambah">
-        <i class="fas fa-plus"></i> Tambah Kegiatan
-    </button>
+    <div class="d-flex align-items-center flex-wrap mb-2">
+        <form action="{{ route('guru.repository') }}" method="GET" class="form-inline mr-3 mb-0">
+            <label for="tahun_ajaran" class="mr-2 font-weight-bold">Tahun Ajaran:</label>
+            <select name="tahun_ajaran" id="tahun_ajaran" class="form-control" style="min-width: 180px;" onchange="this.form.submit()">
+                @foreach($tahunAjarans as $ta)
+                    <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>
+                        {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+
+        <button class="btn btn-success" data-toggle="modal" data-target="#modalTambah">
+            <i class="fas fa-plus mr-1"></i> Tambah Kegiatan
+        </button>
+    </div>
 </div>
 @stop
 
@@ -86,6 +99,69 @@
     .repository-card:hover .repository-image img {
         transform: scale(1.08);
     }
+    
+    /* Modern Radio Button UI for Semester */
+    .btn-group-toggle .btn {
+        border-radius: 8px;
+        margin-right: 10px;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        color: #495057;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-group-toggle .btn.active {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: #fff;
+        box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+    }
+    .btn-group-toggle .btn:not(.active):hover {
+        background-color: #f8f9fa;
+    }
+    .btn-group-toggle input[type="radio"] {
+        display: none;
+    }
+    
+    /* Modern Modal UI */
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+        border-bottom: 1px solid #f1f3f5;
+        background-color: #fff;
+        border-radius: 16px 16px 0 0;
+        padding: 1.5rem;
+    }
+    .modal-title {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    .modal-body {
+        padding: 1.5rem;
+    }
+    .modal-footer {
+        border-top: 1px solid #f1f3f5;
+        border-radius: 0 0 16px 16px;
+        padding: 1.25rem 1.5rem;
+    }
+    .form-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 0.6rem 1rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
 </style>
 
 @if(session('success'))
@@ -99,157 +175,43 @@
     @forelse($repositories as $repo)
 
         <div class="col-md-4 mb-4">
+            <a href="{{ route('guru.repository.show', $repo->id) }}" class="text-decoration-none text-dark">
+                <div class="card repository-card border-0 h-100">
 
-            <div class="card repository-card border-0 h-100">
-
-                <div class="repository-image">
-                    <img src="{{ asset('storage/' . $repo->foto_kegiatan) }}" class="w-100 h-100" style="object-fit:cover;">
-                </div>
-
-                <div class="card-body">
-
-                    <div class="mb-2">
-                        <span class="badge badge-success">
-                            {{ $repo->semester }}
-                        </span>
-
-                        <span class="badge badge-primary">
-                            {{ $repo->tahun_ajaran }}
-                        </span>
+                    <div class="repository-image">
+                        <img src="{{ asset('storage/' . $repo->foto_kegiatan) }}" class="w-100 h-100" style="object-fit:cover;">
                     </div>
 
-                    <h5 class="font-weight-bold">
-                        {{ $repo->judul }}
-                    </h5>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge badge-success px-2 py-1">
+                                {{ $repo->semester }}
+                            </span>
 
-                    <p class="text-muted small">
-                        {{ Str::limit($repo->deskripsi, 100) }}
-                    </p>
+                            <span class="badge badge-primary px-2 py-1">
+                                {{ $repo->tahun_ajaran }}
+                            </span>
+                        </div>
 
-                </div>
+                        <h5 class="font-weight-bold mt-2">
+                            {{ $repo->judul }}
+                        </h5>
 
-                <div class="card-footer bg-white border-0">
-
-                    <div class="d-flex flex-wrap align-items-center">
-
-                        @if($repo->sertifikat)
-                            <a href="{{ route('guru.repository.sertifikat', $repo->id) }}" target="_blank"
-                                class="btn btn-sm btn-success mr-2 mb-2">
-                                <i class="fas fa-file"></i>
-                                Sertifikat
-                            </a>
-                        @endif
-
-                        <button class="btn btn-sm btn-warning mr-2 mb-2" data-toggle="modal"
-                            data-target="#editModal{{ $repo->id }}">
-                            <i class="fas fa-edit"></i>
-                            Edit
-                        </button>
-
-                        <form action="{{ route('guru.repository.delete', $repo->id) }}" method="POST">
-
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="button" class="btn btn-sm btn-danger mr-2 mb-2"
-                                onclick="event.preventDefault(); Swal.fire({title: 'Hapus kegiatan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
-                                <i class="fas fa-trash"></i>
-                                Hapus
-                            </button>
-
-                        </form>
-
+                        <p class="text-muted small mt-2">
+                            {{ Str::limit($repo->deskripsi, 100) }}
+                        </p>
                     </div>
 
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-
-
-        <div class="modal fade" id="editModal{{ $repo->id }}">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-
-                    <form action="{{ route('guru.repository.update', $repo->id) }}" method="POST"
-                        enctype="multipart/form-data">
-
-                        @csrf
-                        @method('PUT')
-
-                        <div class="modal-header">
-                            <h5>Edit Kegiatan</h5>
-
-                            <button type="button" class="close" data-dismiss="modal">
-                                &times;
-                            </button>
-                        </div>
-
-                        <div class="modal-body">
-
-                            <div class="form-group">
-                                <label>Tahun Ajaran</label>
-
-                                <input type="text" name="tahun_ajaran" class="form-control"
-                                    value="{{ $repo->tahun_ajaran }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Semester</label>
-
-                                <select name="semester" class="form-control">
-                                    <option value="Ganjil" {{ $repo->semester == 'Ganjil' ? 'selected' : '' }}>
-                                        Ganjil
-                                    </option>
-
-                                    <option value="Genap" {{ $repo->semester == 'Genap' ? 'selected' : '' }}>
-                                        Genap
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Judul</label>
-
-                                <input type="text" name="judul" class="form-control" value="{{ $repo->judul }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Deskripsi</label>
-
-                                <textarea name="deskripsi" class="form-control" rows="4">{{ $repo->deskripsi }}</textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Foto Kegiatan</label>
-
-                                <input type="file" name="foto_kegiatan" class="form-control">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Sertifikat</label>
-
-                                <input type="file" name="sertifikat" class="form-control">
-                            </div>
-
-                        </div>
-
-                        <div class="modal-footer">
-
-                            <button class="btn btn-primary">
-                                Update
-                            </button>
-
-                        </div>
-
-                    </form>
+                    @if($repo->sertifikat)
+                    <div class="card-footer bg-white border-0 pt-0 pb-3">
+                        <span class="badge badge-light border text-success px-2 py-1">
+                            <i class="fas fa-file-pdf mr-1"></i> Ada Sertifikat
+                        </span>
+                    </div>
+                    @endif
 
                 </div>
-            </div>
+            </a>
         </div>
 
     @empty
@@ -284,79 +246,86 @@
 </div>
 
 
-<div class="modal fade" id="modalTambah">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="modalTambah" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
-
             <form action="{{ route('guru.repository.store') }}" method="POST" enctype="multipart/form-data">
-
                 @csrf
-
                 <div class="modal-header">
-                    <h5>Tambah Kegiatan</h5>
-
-                    <button type="button" class="close" data-dismiss="modal">
-                        &times;
+                    <h5 class="modal-title">Tambah Kegiatan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body bg-light">
+                    <div class="card shadow-sm border-0 mb-0">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label>Tahun Ajaran <span class="text-danger">*</span></label>
+                                    <select name="tahun_ajaran" class="form-control" required>
+                                        @foreach($tahunAjarans as $ta)
+                                            <option value="{{ $ta->nama }}" {{ ($activeTahun && $activeTahun->id == $ta->id) ? 'selected' : '' }}>
+                                                {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 form-group">
+                                    <label class="d-block">Semester <span class="text-danger">*</span></label>
+                                    <div class="btn-group-toggle d-flex" data-toggle="buttons">
+                                        <label class="btn btn-outline-secondary flex-fill active">
+                                            <input type="radio" name="semester" value="Ganjil" autocomplete="off" checked required> Ganjil
+                                        </label>
+                                        <label class="btn btn-outline-secondary flex-fill">
+                                            <input type="radio" name="semester" value="Genap" autocomplete="off" required> Genap
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label>Tahun Ajaran</label>
+                            <div class="form-group mt-3">
+                                <label>Judul Kegiatan <span class="text-danger">*</span></label>
+                                <input type="text" name="judul" class="form-control" required placeholder="Contoh: Mengikuti Seminar Pendidikan Nasional">
+                            </div>
 
-                        <input type="text" name="tahun_ajaran" class="form-control" placeholder="2025/2026" required>
+                            <div class="form-group">
+                                <label>Deskripsi</label>
+                                <textarea name="deskripsi" class="form-control" rows="4" placeholder="Jelaskan detail kegiatan..."></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label>Foto Kegiatan <span class="text-danger">*</span></label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="customFotoTambah" name="foto_kegiatan" accept="image/*" required>
+                                        <label class="custom-file-label" for="customFotoTambah">Pilih file...</label>
+                                    </div>
+                                    <small class="form-text text-muted">Format: JPG, PNG.</small>
+                                </div>
+                                
+                                <div class="col-md-6 form-group">
+                                    <label>Sertifikat (Opsional)</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="customSertifikatTambah" name="sertifikat" accept=".pdf,image/*">
+                                        <label class="custom-file-label" for="customSertifikatTambah">Pilih file...</label>
+                                    </div>
+                                    <small class="form-text text-muted">Format: PDF, JPG, PNG.</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Semester</label>
-
-                        <select name="semester" class="form-control" required>
-
-                            <option value="">-- Pilih Semester --</option>
-
-                            <option value="Ganjil">Ganjil</option>
-                            <option value="Genap">Genap</option>
-
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Judul Kegiatan</label>
-
-                        <input type="text" name="judul" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Deskripsi</label>
-
-                        <textarea name="deskripsi" class="form-control" rows="4"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Foto Kegiatan</label>
-
-                        <input type="file" name="foto_kegiatan" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Sertifikat (Opsional)</label>
-
-                        <input type="file" name="sertifikat" class="form-control">
-                    </div>
-
                 </div>
 
-                <div class="modal-footer">
-
-                    <button class="btn btn-success">
-                        Simpan
+                <div class="modal-footer bg-white">
+                    <button type="button" class="btn btn-light border" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        </i> Simpan
                     </button>
-
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
@@ -364,4 +333,11 @@
 
 @section('js')
 <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.4/dist/dotlottie-wc.js" type="module"></script>
+<script>
+    // Update custom file input labels
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+</script>
 @stop

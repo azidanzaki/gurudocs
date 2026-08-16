@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Models\Repository;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -11,13 +12,28 @@ use Illuminate\Support\Facades\Response;
 
 class RepositoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $tahunAjarans = TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = TahunAjaran::where('is_active', true)->first();
+        
+        $selectedTahun = $request->query('tahun_ajaran', $activeTahun ? $activeTahun->nama : ($tahunAjarans->first()->nama ?? '2025/2026'));
+
         $repositories = Repository::where('user_id', Auth::id())
+            ->where('tahun_ajaran', $selectedTahun)
             ->latest()
             ->get();
 
-        return view('guru.repository.index', compact('repositories'));
+        return view('guru.repository.index', compact('repositories', 'tahunAjarans', 'activeTahun', 'selectedTahun'));
+    }
+
+    public function show($id)
+    {
+        $repo = Repository::where('user_id', Auth::id())->findOrFail($id);
+        
+        $tahunAjarans = TahunAjaran::orderBy('nama', 'desc')->get();
+
+        return view('guru.repository.show', compact('repo', 'tahunAjarans'));
     }
 
     public function store(Request $request)

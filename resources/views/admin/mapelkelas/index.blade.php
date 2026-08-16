@@ -18,7 +18,7 @@
             <input type="hidden" name="nama" value="{{ $nextTahunAjaran }}">
             <input type="hidden" name="redirect_to" value="admin.mapelkelas.index">
             <button type="button" class="btn btn-success" onclick="Swal.fire({title: 'Tambah Tahun Ajaran?', text: 'Tambahkan tahun ajaran {{ $nextTahunAjaran }}?', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, tambahkan!', cancelButtonText: 'Batal'}).then((result) => { if(result.isConfirmed) this.closest('form').submit(); })" title="Tambah Tahun Ajaran Baru">
-                <i class="fas fa-plus"></i>
+                <i class="fas fa-plus mr-1"></i> Tambah Tahun Ajaran
             </button>
         </form>
         @endif

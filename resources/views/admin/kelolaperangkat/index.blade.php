@@ -46,14 +46,16 @@
 
             </form>
 
-            <button class="btn btn-primary mt-2 mt-md-0"
-                    data-toggle="modal"
-                    data-target="#modalTambahTahun">
-
-                <i class="fas fa-plus"></i>
-                Tambah Tahun Ajaran
-
-            </button>
+            @if($nextTahunAjaran)
+            <form action="{{ route('admin.kelolaperangkat.storeTahunAjaran') }}" method="POST" class="mb-0">
+                @csrf
+                <input type="hidden" name="nama" value="{{ $nextTahunAjaran }}">
+                <input type="hidden" name="redirect_to" value="admin.kelolaperangkat">
+                <button type="button" class="btn btn-success mt-2 mt-md-0" onclick="Swal.fire({title: 'Tambah Tahun Ajaran?', text: 'Tambahkan tahun ajaran {{ $nextTahunAjaran }}?', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, tambahkan!', cancelButtonText: 'Batal'}).then((result) => { if(result.isConfirmed) this.closest('form').submit(); })" title="Tambah Tahun Ajaran Baru">
+                    <i class="fas fa-plus mr-1"></i> Tambah Tahun Ajaran
+                </button>
+            </form>
+            @endif
 
         </div>
 
@@ -426,82 +428,7 @@
     </div>
 </div>
 
-{{-- Modal Tambah Tahun Ajaran --}}
-<div class="modal fade" id="modalTambahTahun" tabindex="-1" role="dialog">
 
-    <div class="modal-dialog" role="document">
-
-        <div class="modal-content">
-
-            {{-- HEADER --}}
-            <div class="modal-header bg-success">
-
-                <h5 class="modal-title">
-                    Tambah Tahun Ajaran
-                </h5>
-
-                <button type="button" class="close text-white" data-dismiss="modal">
-
-                    <span>&times;</span>
-
-                </button>
-
-            </div>
-
-            {{-- FORM --}}
-            <form action="{{ route('admin.kelolaperangkat.storeTahunAjaran') }}" method="POST">
-
-                @csrf
-
-                <div class="modal-body">
-
-                    <div class="form-group">
-
-                        <label>
-                            Tahun Ajaran
-                        </label>
-
-                        <input
-                            type="text"
-                            name="nama"
-                            class="form-control"
-                            placeholder="Contoh: 2026/2027"
-                            required
-                        >
-
-                        <small class="text-muted d-block">
-                            Masukkan tahun ajaran dengan format YYYY/YYYY.
-                        </small>
-
-                    </div>
-
-                </div>
-
-                {{-- FOOTER --}}
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-
-                        Batal
-
-                    </button>
-
-                    <button type="submit" class="btn btn-success">
-
-                        <i class="fas fa-paper-plane"></i>
-                        Simpan
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
 
 @stop
 
