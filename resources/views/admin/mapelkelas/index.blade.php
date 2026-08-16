@@ -4,10 +4,13 @@
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center flex-wrap">
-    <h1>{{ __('Mapelkelas: Mata Pelajaran, Kelas & Guru') }}</h1>
-    <div class="form-inline mt-2 mt-md-0 d-flex align-items-center">
-        <label for="tahun_ajaran" class="mr-2">Tahun Ajaran:</label>
-        <select id="tahun_ajaran_selector" class="form-control mr-2" onchange="changeTahunAjaran(this.value)">
+    <div>
+        <h1 class="font-weight-bold text-dark">Mata Pelajaran & Kelas</h1>
+        <p class="text-muted mb-0">Kelola daftar mata pelajaran, kelas, dan penugasan guru.</p>
+    </div>
+    <div class="form-inline mt-3 mt-md-0 d-flex align-items-center bg-white p-2 shadow-sm" style="border-radius: 12px; border: 1px solid #eaeaea;">
+        <label for="tahun_ajaran" class="mr-2 mb-0 font-weight-bold text-dark ml-2">Tahun Ajaran:</label>
+        <select id="tahun_ajaran_selector" class="form-control mr-3 border-0 bg-light" style="border-radius: 8px; font-weight: bold;" onchange="changeTahunAjaran(this.value)">
             @foreach($tahunAjarans as $ta)
                 <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>{{ $ta->nama }}</option>
             @endforeach
@@ -17,16 +20,16 @@
             @csrf
             <input type="hidden" name="nama" value="{{ $nextTahunAjaran }}">
             <input type="hidden" name="redirect_to" value="admin.mapelkelas.index">
-            <button type="button" class="btn btn-success" onclick="Swal.fire({title: 'Tambah Tahun Ajaran?', text: 'Tambahkan tahun ajaran {{ $nextTahunAjaran }}?', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, tambahkan!', cancelButtonText: 'Batal'}).then((result) => { if(result.isConfirmed) this.closest('form').submit(); })" title="Tambah Tahun Ajaran Baru">
-                <i class="fas fa-plus mr-1"></i> Tambah Tahun Ajaran
+            <button type="button" class="btn btn-primary px-3 shadow-sm" style="border-radius: 8px;" onclick="Swal.fire({title: 'Tambah Tahun Ajaran?', text: 'Tambahkan tahun ajaran {{ $nextTahunAjaran }}?', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, tambahkan!', cancelButtonText: 'Batal'}).then((result) => { if(result.isConfirmed) this.closest('form').submit(); })" title="Tambah Tahun Ajaran Baru">
+                <i class="fas fa-plus mr-1"></i> Tambah TA ({{ $nextTahunAjaran }})
             </button>
         </form>
         @endif
     </div>
 </div>
 @if(!$isLatestYear)
-<div class="alert alert-info mt-3">
-    <i class="fas fa-info-circle"></i> Data Tahun Ajaran {{ $selectedTahun }}.
+<div class="alert alert-warning mt-3 shadow-sm border-0" style="border-radius: 12px; border-left: 5px solid #ffc107 !important;">
+    <i class="fas fa-exclamation-triangle mr-1"></i> Anda sedang melihat data historis untuk Tahun Ajaran <strong>{{ $selectedTahun }}</strong>. Data pada tahun ini tidak dapat diubah (Read-Only).
 </div>
 @endif
 @stop
@@ -70,23 +73,42 @@
     }
 @endphp
 
-<div class="card card-primary card-outline card-outline-tabs">
-    <div class="card-header p-0 border-bottom-0">
-        <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+<style>
+.nav-pills-custom .nav-link {
+    color: #6c757d;
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 8px 20px;
+    margin-right: 10px;
+    transition: all 0.2s;
+}
+.nav-pills-custom .nav-link.active {
+    background-color: #007bff;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+.nav-pills-custom .nav-link:hover:not(.active) {
+    background-color: #e9ecef;
+}
+</style>
+
+<div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; overflow: hidden;">
+    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+        <ul class="nav nav-pills nav-pills-custom" id="custom-tabs-four-tab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link {{ $activeTab == 'mapel' ? 'active' : '' }}" id="tab-mapel-tab" data-toggle="pill"
                     href="#tab-mapel" role="tab" aria-controls="tab-mapel"
-                    aria-selected="{{ $activeTab == 'mapel' ? 'true' : 'false' }}">Mata Pelajaran</a>
+                    aria-selected="{{ $activeTab == 'mapel' ? 'true' : 'false' }}"><i class="fas fa-book mr-1"></i> Mata Pelajaran</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ $activeTab == 'kelas' ? 'active' : '' }}" id="tab-kelas-tab" data-toggle="pill"
                     href="#tab-kelas" role="tab" aria-controls="tab-kelas"
-                    aria-selected="{{ $activeTab == 'kelas' ? 'true' : 'false' }}">Kelas</a>
+                    aria-selected="{{ $activeTab == 'kelas' ? 'true' : 'false' }}"><i class="fas fa-chalkboard mr-1"></i> Kelas</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ $activeTab == 'guru' ? 'active' : '' }}" id="tab-guru-tab" data-toggle="pill"
                     href="#tab-guru" role="tab" aria-controls="tab-guru"
-                    aria-selected="{{ $activeTab == 'guru' ? 'true' : 'false' }}">Guru</a>
+                    aria-selected="{{ $activeTab == 'guru' ? 'true' : 'false' }}"><i class="fas fa-chalkboard-teacher mr-1"></i> Penugasan Guru</a>
             </li>
         </ul>
     </div>
@@ -97,82 +119,94 @@
             <div class="tab-pane fade {{ $activeTab == 'mapel' ? 'show active' : '' }}" id="tab-mapel" role="tabpanel"
                 aria-labelledby="tab-mapel-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2" id="form-search-mapel">
-                        <input type="hidden" name="tab" value="mapel">
-                        <input type="hidden" name="tahun_ajaran" value="{{ $selectedTahun }}">
-                        <div class="input-group">
-                            <input type="text" name="search_mapel" class="form-control auto-search"
-                                placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
-                            @if(request('search_mapel'))
-                            <div class="input-group-append">
-                                <a href="{{ route('admin.mapelkelas.index') }}?tab=mapel&tahun_ajaran={{ $selectedTahun }}"
-                                    class="btn btn-secondary">Reset</a>
+                    <div class="w-100 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="mb-0" id="form-search-mapel" style="flex: 1; max-width: 400px;">
+                            <input type="hidden" name="tab" value="mapel">
+                            <input type="hidden" name="tahun_ajaran" value="{{ $selectedTahun }}">
+                            <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light border-right-0" style="border-radius: 8px 0 0 8px;">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                </div>
+                                <input type="text" name="search_mapel" class="form-control border-left-0 bg-light"
+                                    placeholder="Cari mata pelajaran..." value="{{ request('search_mapel') }}">
+                                @if(request('search_mapel'))
+                                <div class="input-group-append">
+                                    <a href="{{ route('admin.mapelkelas.index') }}?tab=mapel&tahun_ajaran={{ $selectedTahun }}"
+                                        class="btn btn-light border-left">
+                                        <i class="fas fa-times text-muted"></i>
+                                    </a>
+                                </div>
+                                @endif
                             </div>
-                            @endif
-                        </div>
-                    </form>
-                    @if($isLatestYear)
-                    <button class="btn btn-success mt-2" data-toggle="modal" data-target="#modalTambahMapel">
-                        <i class="fas fa-plus"></i> Tambah Mata Pelajaran
-                    </button>
-                    @endif
+                        </form>
+                        
+                        @if($isLatestYear)
+                        <button class="btn btn-primary px-4 shadow-sm ml-auto mt-3 mt-md-0" style="border-radius: 8px;" data-toggle="modal" data-target="#modalTambahMapel">
+                            <i class="fas fa-plus mr-2"></i> Tambah Mapel
+                        </button>
+                        @endif
+                    </div>
                 </div>
 
-                <div class="table-responsive" id="table-container-mapel">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr class="bg-light">
-                                <th width="50">No</th>
-                                <th>Nama Mata Pelajaran</th>
+                <div class="table-responsive mt-4" id="table-container-mapel">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 px-4 py-3" width="5%">No</th>
+                                <th class="border-0 py-3">Nama Mata Pelajaran</th>
                                 @if($isLatestYear)
-                                <th width="200" class="text-center">Aksi</th>
+                                <th class="border-0 py-3 text-center" width="20%">Aksi</th>
                                 @endif
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($mapels as $mapel)
                                 <tr>
-                                    <td>{{ $mapels->firstItem() + $loop->index }}</td>
-                                    <td>{{ $mapel->nama_mapel }}</td>
+                                    <td class="px-4 py-3 align-middle">{{ $mapels->firstItem() + $loop->index }}</td>
+                                    <td class="py-3 align-middle font-weight-bold text-dark">{{ $mapel->nama_mapel }}</td>
                                      @if($isLatestYear)
-                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-info" data-toggle="modal"
-                                            data-target="#modalEditMapel{{ $mapel->id }}"><i class="fas fa-edit"></i>
-                                            Edit</button>
-                                        <form action="{{ route('admin.mapelkelas.mapel.destroy', $mapel->id) }}"
-                                            method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Mata Pelajaran?', text: 'Yakin ingin menghapus mata pelajaran ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i class="fas fa-trash"></i>
-                                                Hapus</button>
-                                        </form>
+                                     <td class="py-3 align-middle text-center">
+                                        <div class="d-flex justify-content-center gap-2" style="gap: 8px;">
+                                            <button class="btn btn-outline-info btn-sm px-3" style="border-radius: 6px;" data-toggle="modal"
+                                                data-target="#modalEditMapel{{ $mapel->id }}"><i class="fas fa-edit"></i>
+                                                Edit</button>
+                                            <form action="{{ route('admin.mapelkelas.mapel.destroy', $mapel->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 6px;" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Mata Pelajaran?', text: 'Yakin ingin menghapus mata pelajaran ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i class="fas fa-trash"></i>
+                                                    Hapus</button>
+                                            </form>
+                                        </div>
                                         {{-- Modal Edit Mapel --}}
                                         <div class="modal fade" id="modalEditMapel{{ $mapel->id }}" tabindex="-1"
                                             role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog text-left">
-                                                <div class="modal-content">
+                                            <div class="modal-dialog text-left modal-dialog-centered">
+                                                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
                                                     <form action="{{ route('admin.mapelkelas.mapel.update', $mapel->id) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('PUT')
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Edit Mata Pelajaran</h5>
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
+                                                        <div class="modal-header bg-info text-white border-0 py-3">
+                                                            <h5 class="modal-title font-weight-bold"><i class="fas fa-edit mr-2"></i> Edit Mata Pelajaran</h5>
+                                                            <button type="button" class="close text-white" data-dismiss="modal"
+                                                                aria-label="Close" style="opacity: 0.8;">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </div>
-                                                        <div class="modal-body">
-                                                            <div class="form-group">
-                                                                <label>Nama Mata Pelajaran</label>
-                                                                <input type="text" name="nama_mapel" class="form-control"
+                                                        <div class="modal-body p-4 bg-light">
+                                                            <div class="form-group mb-0">
+                                                                <label class="font-weight-bold text-dark">Nama Mata Pelajaran <span class="text-danger">*</span></label>
+                                                                <input type="text" name="nama_mapel" class="form-control" style="border-radius: 8px;"
                                                                     value="{{ $mapel->nama_mapel }}" required>
                                                             </div>
                                                         </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
+                                                        <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
+                                                            <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;"
                                                                 data-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                                            <button type="submit" class="btn btn-info px-4 shadow-sm" style="border-radius: 8px;">Simpan Perubahan</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -183,7 +217,10 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ $isLatestYear ? 3 : 2 }}" class="text-center">Belum ada data mata pelajaran.</td>
+                                    <td colspan="{{ $isLatestYear ? 3 : 2 }}" class="text-center py-5 text-muted">
+                                        <i class="fas fa-book-open fa-3x mb-3 opacity-25"></i>
+                                        <p class="mb-0">Belum ada data mata pelajaran ditemukan.</p>
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -197,16 +234,19 @@
             {{-- TAB KELAS --}}
             <div class="tab-pane fade {{ $activeTab == 'kelas' ? 'show active' : '' }}" id="tab-kelas" role="tabpanel"
                 aria-labelledby="tab-kelas-tab">
-                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-                    <!-- Pencarian Kelas dinonaktifkan -->
+                
+                <div class="alert alert-light border-0 shadow-sm mb-4" style="border-radius: 12px; border-left: 4px solid #17a2b8 !important;">
+                    <i class="fas fa-info-circle mr-2 text-info"></i> Daftar kelas ini akan digunakan untuk penugasan dan pengelompokan.
                 </div>
 
                 <div class="row">
                     @foreach($kelasGroups as $groupName => $kelasItems)
                         <div class="col-md-4 mb-4">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-header bg-info text-white d-flex align-items-center">
-                                    <h5 class="card-title mb-0">{{ $groupName }}</h5>
+                            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; overflow: hidden;">
+                                <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
+                                    <h5 class="card-title font-weight-bold mb-0 text-dark">
+                                        <i class="fas fa-layer-group text-info mr-2"></i> {{ $groupName }}
+                                    </h5>
 
                                     @if(in_array($groupName, ['Kelas VII', 'Kelas VIII', 'Kelas IX']) && $isLatestYear)
                                         @php $prefix = str_replace('Kelas ', '', $groupName); @endphp
@@ -216,34 +256,33 @@
                                             @csrf
                                             <input type="hidden" name="prefix" value="{{ $prefix }}">
 
-                                            <button type="submit" class="btn btn-sm btn-light text-info">
-                                                <i class="fas fa-plus mr-1"></i> Tambah Kelas
+                                            <button type="submit" class="btn btn-sm btn-outline-primary px-3 shadow-sm" style="border-radius: 6px;">
+                                                <i class="fas fa-plus"></i> Tambah
                                             </button>
                                         </form>
                                     @endif
                                 </div>
                                 <div class="card-body p-0">
-                                    <table class="table table-sm table-hover mb-0">
-                                        <thead>
+                                    <table class="table table-hover mb-0">
+                                        <thead class="bg-light">
                                             <tr>
-                                                <th>Nama Kelas</th>
+                                                <th class="border-0 px-4 py-2 text-muted">Nama Kelas</th>
                                                 @if($isLatestYear)
-                                                <th width="120" class="text-center">Aksi</th>
+                                                <th class="border-0 px-4 py-2 text-center text-muted" width="100">Aksi</th>
                                                 @endif
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @forelse($kelasItems as $k)
                                                 <tr>
-                                                    <td class="align-middle">{{ $k->nama_kelas }}</td>
+                                                    <td class="align-middle px-4 py-3 font-weight-bold text-dark">{{ $k->nama_kelas }}</td>
                                                      @if($isLatestYear)
-                                                     <td class="text-center align-middle">
+                                                     <td class="text-center align-middle py-3">
                                                         <form action="{{ route('admin.mapelkelas.kelas.destroy', $k->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="button" class="btn btn-sm btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Kelas?', text: 'Yakin ingin menghapus kelas ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i
-                                                                    class="fas fa-trash"></i>Hapus</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" style="border-radius: 6px; padding: 2px 8px; font-size: 12px;" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Kelas?', text: 'Yakin ingin menghapus kelas ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })" title="Hapus"><i class="fas fa-times"></i></button>
                                                         </form>
                                                     </td>
                                                     @endif
@@ -266,155 +305,163 @@
             <div class="tab-pane fade {{ $activeTab == 'guru' ? 'show active' : '' }}" id="tab-guru" role="tabpanel"
                 aria-labelledby="tab-guru-tab">
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="form-inline mt-2" id="form-search-guru">
+                    <form action="{{ route('admin.mapelkelas.index') }}" method="GET" class="mb-0 w-100" id="form-search-guru" style="max-width: 400px;">
                         <input type="hidden" name="tab" value="guru">
                         <input type="hidden" name="tahun_ajaran" value="{{ $selectedTahun }}">
-                        <div class="input-group">
-                            <input type="text" name="search_guru" class="form-control auto-search"
-                                placeholder="Cari nama atau NIP..." value="{{ request('search_guru') }}">
+                        <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-right-0" style="border-radius: 8px 0 0 8px;">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                            </div>
+                            <input type="text" name="search_guru" class="form-control border-left-0 bg-light"
+                                placeholder="Cari nama guru atau NIP..." value="{{ request('search_guru') }}">
                             @if(request('search_guru'))
                             <div class="input-group-append">
                                 <a href="{{ route('admin.mapelkelas.index') }}?tab=guru&tahun_ajaran={{ $selectedTahun }}"
-                                    class="btn btn-secondary">Reset</a>
+                                    class="btn btn-light border-left">
+                                    <i class="fas fa-times text-muted"></i>
+                                </a>
                             </div>
                             @endif
                         </div>
                     </form>
                 </div>
 
-                <div class="table-responsive" id="table-container-guru">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr class="bg-light">
-                                <th width="50">No</th>
-                                <th>Nama Guru</th>
-                                <th>NIP</th>
-                                <th>Mata Pelajaran</th>
-                                <th>Kelas</th>
-                                <th width="150" class="text-center">Aksi</th>
+                <div class="table-responsive mt-4" id="table-container-guru">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 px-4 py-3" width="5%">No</th>
+                                <th class="border-0 py-3">Nama Guru</th>
+                                <th class="border-0 py-3">NIP</th>
+                                <th class="border-0 py-3">Mata Pelajaran</th>
+                                <th class="border-0 py-3">Kelas</th>
+                                <th class="border-0 py-3 text-center" width="20%">Penugasan</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($gurus as $guru)
                                 <tr>
-                                    <td>{{ $gurus->firstItem() + $loop->index }}</td>
-                                    <td>{{ $guru->name }}</td>
-                                    <td>{{ $guru->nip }}</td>
-                                    <td>
+                                    <td class="px-4 py-3 align-middle">{{ $gurus->firstItem() + $loop->index }}</td>
+                                    <td class="py-3 align-middle font-weight-bold text-dark">{{ $guru->name }}</td>
+                                    <td class="py-3 align-middle">{{ $guru->nip }}</td>
+                                    <td class="py-3 align-middle">
                                         @if($guru->mapels->count() > 0)
-                                            <ul class="mb-0 pl-3">
+                                            <div class="d-flex flex-wrap gap-1" style="gap: 4px;">
                                                 @foreach($guru->mapels as $m)
-                                                    <li>{{ $m->nama_mapel }}</li>
+                                                    <span class="badge badge-light border text-muted px-2 py-1" style="border-radius: 4px;">{{ $m->nama_mapel }}</span>
                                                 @endforeach
-                                            </ul>
+                                            </div>
                                         @else
-                                            <span class="text-muted">Belum ada</span>
+                                            <span class="text-muted font-italic small">Belum ada mapel</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="py-3 align-middle">
                                         @if($guru->kelas->count() > 0)
-                                            <ul class="mb-0 pl-3">
+                                            <div class="d-flex flex-wrap gap-1" style="gap: 4px;">
                                                 @foreach($guru->kelas as $k)
-                                                    <li>{{ $k->nama_kelas }}</li>
+                                                    <span class="badge badge-light border text-muted px-2 py-1" style="border-radius: 4px;">{{ $k->nama_kelas }}</span>
                                                 @endforeach
-                                            </ul>
+                                            </div>
                                         @else
-                                            <span class="text-muted">Belum ada</span>
+                                            <span class="text-muted font-italic small">Belum ada kelas</span>
                                         @endif
                                     </td>
-                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-primary" data-toggle="modal"
+                                     <td class="py-3 align-middle text-center">
+                                        <button class="btn btn-sm btn-outline-primary px-3" style="border-radius: 6px;" data-toggle="modal"
                                             data-target="#modalPenugasan{{ $guru->id }}">
                                             @if($isLatestYear)
-                                            <i class="fas fa-tasks"></i> Kelola Mapel dan Kelas
+                                            <i class="fas fa-tasks mr-1"></i> Kelola
                                             @else
-                                            <i class="fas fa-eye"></i> Lihat Penugasan
+                                            <i class="fas fa-eye mr-1"></i> Lihat
                                             @endif
                                         </button>
 
                                         {{-- Modal Kelola Penugasan --}}
                                         <div class="modal fade" id="modalPenugasan{{ $guru->id }}" tabindex="-1"
                                             role="dialog" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg text-left">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-primary text-white">
-                                                        <h5 class="modal-title">Kelola Penugasan: {{ $guru->name }}</h5>
+                                            <div class="modal-dialog modal-lg text-left modal-dialog-centered">
+                                                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                                                    <div class="modal-header bg-primary text-white border-0 py-3">
+                                                        <h5 class="modal-title font-weight-bold"><i class="fas fa-tasks mr-2"></i> Kelola Penugasan: {{ $guru->name }}</h5>
                                                         <button type="button" class="close text-white" data-dismiss="modal"
-                                                            aria-label="Close">
+                                                            aria-label="Close" style="opacity: 0.8;">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body">
+                                                    <div class="modal-body p-4 bg-light">
 
-                                                        <h6 class="font-weight-bold">Daftar Penugasan Saat Ini</h6>
-                                                        <table class="table table-sm table-bordered mt-2 mb-4">
-                                                            <thead class="bg-light">
-                                                                <tr>
-                                                                    <th>Mata Pelajaran</th>
-                                                                    <th>Kelas</th>
-                                                                    <th width="100" class="text-center">Aksi</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                 @php
-                                                                    $penugasans = \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')
-                                                                        ->join('mapels', 'guru_mapel_kelas.mapel_id', '=', 'mapels.id')
-                                                                        ->join('kelas', 'guru_mapel_kelas.kelas_id', '=', 'kelas.id')
-                                                                        ->where('guru_mapel_kelas.user_id', $guru->id)
-                                                                        ->where('guru_mapel_kelas.tahun_ajaran', $selectedTahun)
-                                                                        ->select('guru_mapel_kelas.id', 'mapels.nama_mapel', 'kelas.nama_kelas')
-                                                                        ->get();
-                                                                @endphp
-                                                                @forelse($penugasans as $p)
+                                                        <h6 class="font-weight-bold text-primary mb-3"><i class="fas fa-list-ul mr-2"></i>Daftar Penugasan Saat Ini</h6>
+                                                        <div class="table-responsive shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #eaeaea;">
+                                                            <table class="table table-hover mb-0">
+                                                                <thead class="bg-white">
                                                                     <tr>
-                                                                        <td>{{ $p->nama_mapel }}</td>
-                                                                        <td>{{ $p->nama_kelas }}</td>
-                                                                         <td class="text-center">
-                                                                            @if($isLatestYear)
-                                                                            <form
-                                                                                action="{{ route('admin.mapelkelas.penugasan.destroy', $p->id) }}"
-                                                                                method="POST" class="d-inline">
-                                                                                @csrf
-                                                                                @method('DELETE')
-                                                                                <button type="button"
-                                                                                    class="btn btn-xs btn-danger" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Penugasan?', text: 'Hapus penugasan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })"><i
-                                                                                        class="fas fa-times"></i> Hapus</button>
-                                                                            </form>
-                                                                            @else
-                                                                            <span class="text-muted">-</span>
-                                                                            @endif
-                                                                        </td>
+                                                                        <th class="border-0 text-muted">Mata Pelajaran</th>
+                                                                        <th class="border-0 text-muted">Kelas</th>
+                                                                        <th width="100" class="border-0 text-center text-muted">Aksi</th>
                                                                     </tr>
-                                                                @empty
-                                                                    <tr>
-                                                                        <td colspan="3" class="text-center text-muted">Belum ada
-                                                                            penugasan</td>
-                                                                    </tr>
-                                                                @endforelse
-                                                            </tbody>
-                                                        </table>
+                                                                </thead>
+                                                                <tbody>
+                                                                     @php
+                                                                        $penugasans = \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')
+                                                                            ->join('mapels', 'guru_mapel_kelas.mapel_id', '=', 'mapels.id')
+                                                                            ->join('kelas', 'guru_mapel_kelas.kelas_id', '=', 'kelas.id')
+                                                                            ->where('guru_mapel_kelas.user_id', $guru->id)
+                                                                            ->where('guru_mapel_kelas.tahun_ajaran', $selectedTahun)
+                                                                            ->select('guru_mapel_kelas.id', 'mapels.nama_mapel', 'kelas.nama_kelas')
+                                                                            ->get();
+                                                                    @endphp
+                                                                    @forelse($penugasans as $p)
+                                                                        <tr>
+                                                                            <td class="align-middle font-weight-bold text-dark">{{ $p->nama_mapel }}</td>
+                                                                            <td class="align-middle"><span class="badge badge-light border text-muted px-2 py-1" style="border-radius: 4px;">{{ $p->nama_kelas }}</span></td>
+                                                                             <td class="align-middle text-center">
+                                                                                @if($isLatestYear)
+                                                                                <form
+                                                                                    action="{{ route('admin.mapelkelas.penugasan.destroy', $p->id) }}"
+                                                                                    method="POST" class="d-inline">
+                                                                                    @csrf
+                                                                                    @method('DELETE')
+                                                                                    <button type="button"
+                                                                                        class="btn btn-sm btn-outline-danger" style="border-radius: 6px; padding: 2px 8px; font-size: 12px;" onclick="event.preventDefault(); Swal.fire({title: 'Hapus Penugasan?', text: 'Hapus penugasan ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })" title="Hapus"><i class="fas fa-times"></i></button>
+                                                                                </form>
+                                                                                @else
+                                                                                <span class="text-muted">-</span>
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @empty
+                                                                        <tr>
+                                                                            <td colspan="3" class="text-center py-4 text-muted">
+                                                                                <i class="fas fa-info-circle mb-2 d-block"></i>
+                                                                                Belum ada penugasan
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforelse
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
 
                                                          @if($isLatestYear)
-                                                        <hr>
+                                                        <hr class="my-4" style="border-top: 2px dashed #eaeaea;">
 
-                                                        <h6 class="font-weight-bold">Tambah Penugasan Baru</h6>
-                                                        <p class="text-muted small">Anda bisa menambahkan beberapa mata
-                                                            pelajaran dan beberapa kelas sekaligus.</p>
+                                                        <h6 class="font-weight-bold text-success mb-2"><i class="fas fa-plus-circle mr-2"></i>Tambah Penugasan Baru</h6>
+                                                        <p class="text-muted small mb-3">Pilih mata pelajaran beserta kelas-kelas yang diajar.</p>
 
                                                         <form
                                                             action="{{ route('admin.mapelkelas.penugasan.store', $guru->id) }}"
-                                                            method="POST">
+                                                            method="POST" class="bg-white p-3 shadow-sm border" style="border-radius: 12px;">
                                                             @csrf
                                                             <div id="dynamic-penugasan-container-{{ $guru->id }}">
-                                                                <div class="row penugasan-row mb-3 pb-3 border-bottom">
+                                                                <div class="row penugasan-row align-items-start mb-3">
                                                                     <div class="col-md-5">
-                                                                        <div class="form-group">
-                                                                            <label>Mata Pelajaran <span
+                                                                        <div class="form-group mb-0">
+                                                                            <label class="small font-weight-bold text-muted">Mata Pelajaran <span
                                                                                     class="text-danger">*</span></label>
                                                                             <select name="penugasans[0][mapel_id]"
-                                                                                class="form-control" required>
-                                                                                <option value="">-- Pilih Mata Pelajaran --
-                                                                                </option>
+                                                                                class="form-control" style="border-radius: 8px;" required>
+                                                                                <option value="">-- Pilih --</option>
                                                                                 @foreach($allMapels as $m)
                                                                                     <option value="{{ $m->id }}">
                                                                                         {{ $m->nama_mapel }}</option>
@@ -422,14 +469,13 @@
                                                                             </select>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-7">
-                                                                        <div class="form-group">
-                                                                            <label>Kelas (Bisa pilih lebih dari satu) <span
-                                                                                    class="text-danger">*</span></label>
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-group mb-0">
+                                                                            <label class="small font-weight-bold text-muted">Kelas <span class="text-danger">*</span></label>
                                                                             <select name="penugasans[0][kelas_ids][]"
-                                                                                class="select2bs4" multiple="multiple"
+                                                                                class="select2bs4 form-control" multiple="multiple"
                                                                                 data-placeholder="Pilih kelas..."
-                                                                                style="width: 100%;" required>
+                                                                                style="width: 100%; border-radius: 8px;" required>
                                                                                 @foreach($allKelas as $k)
                                                                                     <option value="{{ $k->id }}">
                                                                                         {{ $k->nama_kelas }}</option>
@@ -437,32 +483,30 @@
                                                                             </select>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-1 d-flex align-items-center">
+                                                                    <div class="col-md-1 pl-0">
+                                                                        <label class="small d-block mb-1">&nbsp;</label>
                                                                         <button type="button"
-                                                                            class="btn btn-danger btn-sm btn-remove-row"
-                                                                            style="display:none;" title="Hapus Baris"><i
-                                                                                class="fas fa-trash"></i></button>
+                                                                            class="btn btn-outline-danger btn-sm btn-remove-row w-100"
+                                                                            style="display:none; border-radius: 8px; height: 38px;" title="Hapus Baris"><i
+                                                                                class="fas fa-times"></i></button>
                                                                     </div>
                                                                 </div>
                                                             </div>
 
-                                                            <div class="mb-3">
+                                                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3" style="border-top: 1px solid #eaeaea;">
                                                                 <button type="button"
-                                                                    class="btn btn-outline-primary btn-sm btn-add-row"
-                                                                    data-guru="{{ $guru->id }}"><i class="fas fa-plus"></i>
-                                                                    Tambah Mapel & Kelas Lain</button>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <button type="submit" class="btn btn-success btn-block"><i
-                                                                        class="fas fa-save"></i> Simpan</button>
+                                                                    class="btn btn-outline-primary btn-sm btn-add-row" style="border-radius: 6px;"
+                                                                    data-guru="{{ $guru->id }}"><i class="fas fa-plus mr-1"></i>
+                                                                    Baris Baru</button>
+                                                                <button type="submit" class="btn btn-success px-4 shadow-sm" style="border-radius: 8px;"><i
+                                                                        class="fas fa-save mr-1"></i> Simpan Penugasan</button>
                                                             </div>
                                                         </form>
                                                         @endif
 
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
+                                                    <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
+                                                        <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;"
                                                             data-dismiss="modal">Tutup</button>
                                                     </div>
                                                 </div>
@@ -472,7 +516,10 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">Belum ada data guru.</td>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="fas fa-chalkboard-teacher fa-3x mb-3 opacity-25"></i>
+                                        <p class="mb-0">Belum ada data guru ditemukan.</p>
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -489,25 +536,25 @@
 
 {{-- Modal Tambah Mapel --}}
 <div class="modal fade" id="modalTambahMapel" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
             <form action="{{ route('admin.mapelkelas.mapel.store') }}" method="POST">
                 @csrf
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Tambah Mata Pelajaran</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-plus mr-2"></i> Tambah Mata Pelajaran</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Nama Mata Pelajaran</label>
-                        <input type="text" name="nama_mapel" class="form-control" required>
+                <div class="modal-body p-4 bg-light">
+                    <div class="form-group mb-0">
+                        <label class="font-weight-bold text-dark">Nama Mata Pelajaran <span class="text-danger">*</span></label>
+                        <input type="text" name="nama_mapel" class="form-control" style="border-radius: 8px;" placeholder="Masukkan nama mapel" required>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">Simpan</button>
+                <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
+                    <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;"><i class="fas fa-save mr-1"></i> Simpan Mapel</button>
                 </div>
             </form>
         </div>

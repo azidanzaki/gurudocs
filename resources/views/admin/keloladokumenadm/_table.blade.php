@@ -17,13 +17,13 @@
         <td class="py-3 align-middle text-center font-weight-bold">{{ $item->tahun ?? '-' }}</td>
         <td class="py-3 align-middle text-center">
             @if ($item->file_pdf)
-                <a href="{{ asset('storage/' . $item->file_pdf) }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 mr-1" target="_blank" title="Lihat PDF">
+                <a href="{{ asset('storage/' . $item->file_pdf) }}" class="btn btn-outline-danger btn-sm px-3 mr-1" style="border-radius: 6px;" target="_blank" title="Lihat PDF">
                     <i class="fas fa-file-pdf mr-1"></i> PDF
                 </a>
             @endif
 
             @if ($item->file_word)
-                <a href="{{ asset('storage/' . $item->file_word) }}" class="btn btn-outline-success btn-sm rounded-pill px-3 mr-1" title="Unduh File">
+                <a href="{{ asset('storage/' . $item->file_word) }}" class="btn btn-outline-success btn-sm px-3 mr-1" style="border-radius: 6px;" title="Unduh File">
                     <i class="fas fa-download mr-1"></i> File Asli
                 </a>
             @endif
@@ -31,7 +31,7 @@
             <form action="{{ route('admin.dokumenadm.delete', $item->id) }}" method="POST" class="d-inline">
                 @csrf
                 @method('DELETE')
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3"
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3" style="border-radius: 6px;"
                     onclick="event.preventDefault(); Swal.fire({title: 'Hapus dokumen ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
                     <i class="fas fa-trash"></i>
                 </button>

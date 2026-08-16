@@ -12,31 +12,47 @@ use App\Models\Kelas;
 class KelolaUserController extends Controller
 {
     public function users(Request $request)
-{
-    $query = User::query();
+    {
+        $query = User::query();
 
-    // Search
-    if ($request->filled('search')) {
-        $search = $request->search;
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
 
-        $query->where(function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('nip', 'like', "%{$search}%")
-              ->orWhere('role', 'like', "%{$search}%");
-        });
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%")
+                  ->orWhere('role', 'like', "%{$search}%");
+            });
+        }
+
+        // Sorting
+        $sortColumn = $request->input('sort', 'created_at');
+        $sortDirection = $request->input('direction', 'desc');
+        
+        // Ensure only valid columns can be sorted
+        $allowedSorts = ['name', 'nip', 'role', 'is_active', 'created_at'];
+        if (in_array($sortColumn, $allowedSorts)) {
+            $query->orderBy($sortColumn, $sortDirection);
+        } else {
+            $query->latest();
+        }
+
+        $users = $query->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return view('admin.kelolauser._table', compact('users'))->render();
+        }
+
+        $mapels = Mapel::all();
+        $kelas = Kelas::all();
+
+        return view('admin.kelolauser.index', compact(
+            'users',
+            'mapels',
+            'kelas'
+        ));
     }
-
-    $users = $query->latest()->paginate(10)->withQueryString();
-
-    $mapels = Mapel::all();
-    $kelas = Kelas::all();
-
-    return view('admin.kelolauser.index', compact(
-        'users',
-        'mapels',
-        'kelas'
-    ));
-}
 
     // FORM TAMBAH USER
     public function createUser()
@@ -52,7 +68,7 @@ class KelolaUserController extends Controller
             'nip' => 'required|unique:users,nip',
             'role' => 'required',
         ]);
-
+        
         $defaultPassword = $request->nip;
 
         $user = User::create([
@@ -63,31 +79,37 @@ class KelolaUserController extends Controller
             'default_password' => $defaultPassword,
         ]);
 
-
         return redirect()
             ->route('admin.users')
             ->with('success', 'User berhasil ditambahkan');
     }
+    
     public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
         $request->validate([
             'name' => 'required',
-            'nip' => 'required',
             'role' => 'required',
         ]);
 
-        $user->update([
-            'name' => $request->name,
-            'nip' => $request->nip,
-            'role' => $request->role,
-        ]);
+        $user->name = $request->name;
+        $user->nip = $request->nip;
+        $user->role = $request->role;
+        
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+            // We usually don't update default_password if they change it manually, 
+            // but we can if we want to show it. For security, maybe just change the password.
+        }
+
+        $user->save();
 
         return redirect()
             ->route('admin.users')
             ->with('success', 'User berhasil diupdate');
     }
+    
     public function deleteUser($id)
     {
         $user = User::findOrFail($id);

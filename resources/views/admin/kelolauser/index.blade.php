@@ -1,377 +1,258 @@
 @extends('adminlte::page')
 
-@section('title', __('Manajemen User'))
+@section('title', 'Manajemen User')
 
 @section('content_header')
-<h1>{{ __('Manajemen User') }}</h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="font-weight-bold text-dark">Manajemen User</h1>
+            <p class="text-muted mb-0">Kelola data pengguna, hak akses, dan status akun.</p>
+        </div>
+    </div>
 @stop
 
 @section('content')
 
-@if(session('success'))
-    <div id="success-alert" class="alert alert-success">
-        {{ __(session('success')) }}
-    </div>
-@endif
+<style>
+/* Custom Radio Toggle for Role */
+.custom-radio-btn input[type="radio"] {
+    display: none;
+}
+.custom-radio-btn label {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #ced4da;
+    background-color: #fff;
+    color: #495057;
+    transition: all 0.2s ease-in-out;
+}
+.custom-radio-btn input[type="radio"]:checked + label {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+}
+.custom-radio-btn label:first-of-type {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.custom-radio-btn label:last-of-type {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+</style>
 
-<div class="card">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" id="success-alert" role="alert" style="border-radius: 12px; border: none; border-left: 5px solid #28a745;">
+            <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
 
-    <div class="card-header">
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; overflow: hidden;">
+        
+        <div class="card-header bg-white border-bottom-0 py-4 d-flex justify-content-between align-items-center flex-wrap">
+            <h3 class="card-title font-weight-bold mb-0 text-dark w-100 mb-3">
+                Daftar Pengguna
+            </h3>
+            
+            <div class="w-100 d-flex flex-wrap align-items-center gap-3" style="gap: 15px;">
+                <div class="input-group" style="max-width: 400px;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-light border-right-0" style="border-radius: 8px 0 0 8px;">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                    </div>
+                    <input type="text" id="ajaxSearch" class="form-control bg-light border-left-0" style="border-radius: 0 8px 8px 0;" placeholder="Cari nama, NIP atau role..." value="{{ request('search') }}">
+                </div>
+                
+                <div class="spinner-border spinner-border-sm text-primary ml-2" id="loadingSpinner" style="display: none;" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
 
-<div class="d-flex justify-content-between align-items-center flex-wrap">
-
-    <form action="{{ route('admin.users') }}" method="GET" class="form-inline">
-
-        <input type="text"
-               name="search"
-               class="form-control mr-2"
-               placeholder="Cari nama, NIP atau role..."
-               value="{{ request('search') }}">
-
-        <button class="btn btn-primary">
-            <i class="fas fa-search"></i> Cari
-        </button>
-
-        @if(request('search'))
-            <a href="{{ route('admin.users') }}" class="btn btn-secondary ml-2">
-                Reset
-            </a>
-        @endif
-
-    </form>
-
-    <button class="btn btn-primary mt-2 mt-md-0"
-            data-toggle="modal"
-            data-target="#modalTambahUser">
-
-        <i class="fas fa-plus"></i>
-        Tambah User
-
-    </button>
-
-</div>
-
-    </div>
-
-    <div class="card-body p-0">
-
-        <table class="table table-bordered table-hover">
-
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>{{ __('Nama') }}</th>
-                    <th>NIP</th>
-                    <th>{{ __('Role') }}</th>
-                    <th>{{ __('Status') }}</th>
-                    <th>{{ __('Password Default') }}</th>
-                    <th>{{ __('Dibuat') }}</th>
-                    <th width="250">{{ __('Aksi') }}</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                @forelse($users as $user)
-
-                    <tr>
-                        <td>{{ $users->firstItem() + $loop->index }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->nip }}</td>
-
-                        <td>
-                            @if($user->role == 'admin')
-                                <span class="badge badge-danger">
-                                    Admin
-                                </span>
-
-                            @elseif($user->role == 'kepala_sekolah')
-                                <span class="badge badge-warning">
-                                    {{ __('Kepala Sekolah') }}
-                                </span>
-
-                            @else
-                                <span class="badge badge-success">
-                                    {{ __('Guru') }}
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($user->is_active)
-                                <span class="badge badge-success">
-                                    {{ __('Aktif') }}
-                                </span>
-                            @else
-                                <span class="badge badge-danger">
-                                    {{ __('Nonaktif') }}
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="badge badge-secondary">
-                                {{ $user->default_password }}
-                            </span>
-                        </td>
-
-                        <td>
-                            {{ $user->created_at->format('d-M-Y H:i:s') }}
-                        </td>
-                        <td class="project-actions text-center">
-
-                            <!-- EDIT -->
-                            <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
-                                data-target="#modalEdit{{ $user->id }}">
-                                <i class="fas fa-pencil-alt"></i> {{ __('Edit') }}
-                            </a>
-                            <!-- TOGGLE AKTIF / NONAKTIF -->
-                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="d-inline">
-
-                                @csrf
-                                @method('DELETE')
-
-                                @if($user->is_active)
-                                    <button type="button" class="btn btn-danger btn-sm"
-                                        onclick="event.preventDefault(); Swal.fire({title: '{{ __('Nonaktifkan user ini?') }}', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, nonaktifkan!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
-                                        <i class="fas fa-user-slash"></i> {{ __('Nonaktifkan') }}
-                                    </button>
-                                @else
-                                    <button type="button" class="btn btn-success btn-sm"
-                                        onclick="event.preventDefault(); Swal.fire({title: '{{ __('Aktifkan user ini?') }}', icon: 'question', showCancelButton: true, confirmButtonColor: '#28a745', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, aktifkan!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
-                                        <i class="fas fa-user-check"></i> {{ __('Aktifkan') }}
-                                    </button>
-                                @endif
-
-                            </form>
-
-                        </td>
-                    </tr>
-
-                @empty
-
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            {{ __('Belum ada user') }}
-                        </td>
-                    </tr>
-
-                @endforelse
-
-            </tbody>
-
-        </table>
-
-    </div>
-    <div class="mt-3 d-flex justify-content-center">
-    {{ $users->links('pagination::bootstrap-4') }}
-</div> 
-</div>
-<!-- MODAL TAMBAH USER -->
-<div class="modal fade" id="modalTambahUser" tabindex="-1" role="dialog">
-
-    <div class="modal-dialog modal-lg" role="document">
-
-        <div class="modal-content">
-
-            <!-- HEADER -->
-            <div class="modal-header bg-success">
-
-                <h5 class="modal-title">
-                    {{ __('Tambah User') }}
-                </h5>
-
-                <button type="button" class="close text-white" data-dismiss="modal">
-
-                    <span>&times;</span>
-
+                <button class="btn btn-primary px-4 shadow-sm ml-auto" data-toggle="modal" data-target="#modalTambahUser" style="border-radius: 8px;">
+                    <i class="fas fa-user-plus mr-2"></i> Tambah User
                 </button>
-
             </div>
-
-            <!-- FORM -->
-            <form action="{{ route('admin.users.store') }}" method="POST">
-
-                @csrf
-
-                <div class="modal-body">
-
-                    <!-- NAMA -->
-                    <div class="form-group">
-                        <label>{{ __('Nama') }}</label>
-
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-
-                    <!-- NIP -->
-                    <div class="form-group">
-                        <label>NIP</label>
-
-                        <input type="text" name="nip" class="form-control" required>
-                    </div>
-
-                    <!-- ROLE -->
-                    <div class="form-group">
-                        <label>{{ __('Role') }}</label>
-
-                        <select name="role" class="form-control" required>
-
-                            <option value="guru">
-                                {{ __('Guru') }}
-                            </option>
-
-                            <option value="kepala">
-                                {{ __('Kepala Sekolah') }}
-                            </option>
-
-                            <option value="admin">
-                                Admin
-                            </option>
-
-                        </select>
-                    </div>
-                </div>
-
-                <!-- FOOTER -->
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-
-                        {{ __('Batal') }}
-
-                    </button>
-
-                    <button type="submit" class="btn btn-success">
-
-                        <i class="fas fa-save"></i>
-                        {{ __('Simpan') }}
-
-                    </button>
-
-                </div>
-
-            </form>
-
         </div>
 
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 px-4 py-3" width="5%">No</th>
+                            <th class="border-0 py-3 cursor-pointer sort-header" data-sort="name" width="20%">Nama <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 cursor-pointer sort-header" data-sort="nip" width="10%">NIP <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 cursor-pointer sort-header" data-sort="role" width="15%">Role <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 text-center cursor-pointer sort-header" data-sort="is_active" width="10%">Status <i class="fas fa-sort text-muted ml-1"></i></th>
+                            <th class="border-0 py-3 text-center" width="15%">Password Default</th>
+                            <th class="border-0 py-3 cursor-pointer sort-header" data-sort="created_at" width="15%">Dibuat <i class="fas fa-sort-down text-primary ml-1"></i></th>
+                            <th class="border-0 py-3 text-center" width="10%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @include('admin.kelolauser._table')
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white border-top py-3" id="paginationContainer">
+            @if($users->hasPages())
+                {{ $users->links('pagination::bootstrap-4') }}
+            @endif
+        </div>
     </div>
 
-</div>
-@foreach($users as $user)
+    <!-- MODAL TAMBAH USER -->
+    <div class="modal fade" id="modalTambahUser" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-user-plus mr-2"></i> Tambah User Baru</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
-    <div class="modal fade" id="modalEdit{{ $user->id }}" tabindex="-1">
-
-        <div class="modal-dialog">
-
-            <div class="modal-content">
-
-                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
-
+                <form action="{{ route('admin.users.store') }}" method="POST">
                     @csrf
-                    @method('PUT')
+                    <div class="modal-body p-4 bg-light">
+                        <div class="card border-0 shadow-sm mb-0" style="border-radius: 12px;">
+                            <div class="card-body p-4">
+                                <!-- NAMA -->
+                                <div class="form-group mb-4">
+                                    <label class="font-weight-bold text-dark">Nama Lengkap <span class="text-danger">*</span></label>
+                                    <input type="text" name="name" class="form-control" style="border-radius: 8px;" placeholder="Masukkan nama pengguna" required>
+                                </div>
 
-                    <div class="modal-header bg-warning">
+                                <!-- NIP -->
+                                <div class="form-group mb-4">
+                                    <label class="font-weight-bold text-dark">NIP <span class="text-danger">*</span></label>
+                                    <input type="text" name="nip" class="form-control" style="border-radius: 8px;" placeholder="Masukkan NIP" required>
+                                </div>
 
-                        <h5 class="modal-title">
-                            {{ __('Edit User') }}
-                        </h5>
-
-                        <button type="button" class="close" data-dismiss="modal">
-
-                            <span>&times;</span>
-
-                        </button>
-
+                                <!-- ROLE -->
+                                <div class="form-group mb-0">
+                                    <label class="d-block font-weight-bold text-dark mb-2">Role <span class="text-danger">*</span></label>
+                                    <div class="custom-radio-btn d-flex flex-wrap">
+                                        <input type="radio" id="roleAdmin" name="role" value="admin" required>
+                                        <label for="roleAdmin" class="flex-fill text-center m-0">Admin</label>
+                                        
+                                        <input type="radio" id="roleKepsek" name="role" value="kepala_sekolah" required>
+                                        <label for="roleKepsek" class="flex-fill text-center m-0" style="border-left: 0;">Kepala Sekolah</label>
+                                        
+                                        <input type="radio" id="roleGuru" name="role" value="guru" checked required>
+                                        <label for="roleGuru" class="flex-fill text-center m-0" style="border-left: 0;">Guru</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info border-0 shadow-sm mt-4 mb-0" style="border-radius: 8px; border-left: 4px solid #17a2b8 !important;">
+                                    <small><i class="fas fa-info-circle mr-1"></i> Password bawaan (default) akan di-generate secara acak oleh sistem.</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-<div class="modal-body">
-
-    <!-- NAMA -->
-    <div class="form-group">
-
-        <label>{{ __('Nama') }}</label>
-
-        <input type="text"
-               name="name"
-               class="form-control"
-               value="{{ $user->name }}"
-               required>
-
-    </div>
-
-    <!-- NIP -->
-    <div class="form-group">
-
-        <label>NIP</label>
-
-        <input type="text"
-               name="nip"
-               class="form-control"
-               value="{{ $user->nip }}"
-               required>
-
-    </div>
-
-    <!-- ROLE -->
-    <div class="form-group">
-
-        <label>{{ __('Role') }}</label>
-
-        <select name="role" class="form-control">
-
-            <option value="guru"
-                {{ $user->role == 'guru' ? 'selected' : '' }}>
-                {{ __('Guru') }}
-            </option>
-
-            <option value="kepala_sekolah"
-                {{ $user->role == 'kepala_sekolah' ? 'selected' : '' }}>
-                {{ __('Kepala Sekolah') }}
-            </option>
-
-            <option value="admin"
-                {{ $user->role == 'admin' ? 'selected' : '' }}>
-                Admin
-            </option>
-
-        </select>
-
-    </div>
-
-
-
-
-</div>
-
-                    <div class="modal-footer">
-
-                        <button type="submit" class="btn btn-warning">
-
-                            <i class="fas fa-save"></i>
-                            {{ __('Update') }}
-
+                    <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
+                        <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">
+                            <i class="fas fa-save mr-1"></i> Simpan User
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     </div>
 
-@endforeach
+@stop
 
-
+@section('js')
 <script>
+    // Hilangkan alert sukses otomatis
     setTimeout(function () {
-
         let alertBox = document.getElementById('success-alert');
-
         if (alertBox) {
             $(alertBox).alert('close');
         }
+    }, 5000);
 
-    }, {{ session('timeout', 5000) }});
+    $(document).ready(function() {
+        // --- AJAX Table Search & Sort ---
+        let searchTimeout;
+        let currentSortColumn = 'created_at';
+        let currentSortDirection = 'desc';
+
+        function fetchUsers(page = 1) {
+            const search = $('#ajaxSearch').val();
+            
+            $('#loadingSpinner').show();
+            
+            $.ajax({
+                url: "{{ route('admin.users') }}",
+                data: {
+                    search: search,
+                    sort: currentSortColumn,
+                    direction: currentSortDirection,
+                    page: page
+                },
+                success: function(response) {
+                    $('#tableBody').html(response);
+                    
+                    // Extract pagination from the hidden row in the partial view
+                    const paginationHtml = $('#tableBody .pagination-row td').html();
+                    if(paginationHtml && paginationHtml.trim() !== '') {
+                        $('#paginationContainer').html(paginationHtml);
+                    } else {
+                        $('#paginationContainer').empty();
+                    }
+                    
+                    $('#loadingSpinner').hide();
+                },
+                error: function() {
+                    $('#loadingSpinner').hide();
+                }
+            });
+        }
+
+        $('#ajaxSearch').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => fetchUsers(1), 500);
+        });
+        
+        $('.sort-header').on('click', function() {
+            const column = $(this).data('sort');
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
+            }
+            
+            // Update icons
+            $('.sort-header i').removeClass('fa-sort-up fa-sort-down text-primary').addClass('fa-sort text-muted');
+            const iconClass = currentSortDirection === 'asc' ? 'fa-sort-up text-primary' : 'fa-sort-down text-primary';
+            $(this).find('i').removeClass('fa-sort text-muted').addClass(iconClass);
+            
+            fetchUsers(1);
+        });
+
+        // Handle pagination links
+        $(document).on('click', '#paginationContainer a', function(e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            fetchUsers(page);
+        });
+        
+        // Initialize sort icon cursor
+        $('.sort-header').css('cursor', 'pointer');
+    });
 </script>
 @stop
