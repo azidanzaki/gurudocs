@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header bg-info text-white border-0 py-3">
-                <h5 class="modal-title font-weight-bold"><i class="fas fa-user-edit mr-2"></i> Edit User</h5>
+                <h5 class="modal-title font-weight-bold"><i class="fas fa-user-edit mr-2"></i> Edit Pengguna</h5>
                 <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -35,7 +35,7 @@
 
                             <!-- ROLE -->
                             <div class="form-group mb-0">
-                                <label class="d-block font-weight-bold text-dark mb-2">Role <span class="text-danger">*</span></label>
+                                <label class="d-block font-weight-bold text-dark mb-2">Peran <span class="text-danger">*</span></label>
                                 <div class="custom-radio-btn d-flex flex-wrap">
                                     <input type="radio" id="roleEditAdmin{{ $user->id }}" name="role" value="admin" {{ $user->role == 'admin' ? 'checked' : '' }} required>
                                     <label for="roleEditAdmin{{ $user->id }}" class="flex-fill text-center m-0">Admin</label>
@@ -53,7 +53,7 @@
                 <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
                     <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;" data-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-info px-4 shadow-sm" style="border-radius: 8px;">
-                        <i class="fas fa-save mr-1"></i> Simpan Perubahan
+                        <i class="fas fa-save mr-1"></i> Simpan
                     </button>
                 </div>
             </form>

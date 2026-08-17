@@ -185,7 +185,7 @@
                                 </div>
                                 <div class="form-group row mt-4">
                                     <div class="offset-sm-3 col-sm-9">
-                                        <button type="submit" class="btn btn-primary px-4 font-weight-bold shadow-sm" style="border-radius: 8px;"><i class="fas fa-save mr-2"></i> Simpan Perubahan</button>
+                                        <button type="submit" class="btn btn-primary px-4 font-weight-bold shadow-sm" style="border-radius: 8px;">Simpan Profil</button>
                                     </div>
                                 </div>
                             </form>

@@ -184,6 +184,7 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 
     // kelola perangkat pembelajaran
     Route::get('/admin/kelola-perangkat', [KelolaPerangkatController::class, 'index'])->name('admin.kelolaperangkat');
+    Route::get('/admin/kelola-perangkat/list-guru-ajax', [KelolaPerangkatController::class, 'listGuruAjax'])->name('admin.kelolaperangkat.listGuruAjax');
     Route::post('/admin/kelola-perangkat/update-tenggat', [KelolaPerangkatController::class, 'updateTenggat'])->name('admin.kelolaperangkat.updateTenggat');
     Route::post('/admin/kelola-perangkat/tahun-ajaran', [KelolaPerangkatController::class, 'storeTahunAjaran'])->name('admin.kelolaperangkat.storeTahunAjaran');
     Route::post('/admin/kelola-perangkat/{id}/reopen', [KelolaPerangkatController::class, 'reopen'])->name('admin.kelolaperangkat.reopen');

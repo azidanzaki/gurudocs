@@ -8,22 +8,23 @@
 
 @section('content')
 
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{{ route('guru.perangkat.index') }}" class="btn btn-sm btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Kembali
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <a href="{{ route('guru.perangkat.index') }}" class="btn btn-light border px-3 shadow-sm" style="border-radius: 8px;">
+        <i class="fas fa-arrow-left mr-1"></i> Kembali
     </a>
-    <form action="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}" method="GET" class="d-flex">
-        <label class="mr-2 mb-0 align-self-center" style="white-space: nowrap;">
-    Tahun Ajaran:
-</label>
-        <select name="tahun_ajaran" class="form-control form-control" onchange="this.form.submit()">
-            @foreach($tahunAjarans as $ta)
-                <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>
-                    {{ $ta->nama }}
-                </option>
-            @endforeach
-        </select>
-    </form>
+    
+    <div class="form-inline d-flex align-items-center bg-white p-2 shadow-sm" style="border-radius: 12px; border: 1px solid #eaeaea;">
+        <label class="mr-2 mb-0 font-weight-bold text-dark ml-2">Tahun Ajaran:</label>
+        <form action="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}" method="GET" class="mb-0">
+            <select name="tahun_ajaran" class="form-control border-0 bg-light mb-0" style="border-radius: 8px; font-weight: bold; min-width: 150px;" onchange="this.form.submit()">
+                @foreach($tahunAjarans as $ta)
+                    <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>
+                        {{ $ta->nama }} @if(in_array($ta->nama, $teachingYears)) (Mengajar) @endif
+                    </option>
+                @endforeach
+            </select>
+        </form>
+    </div>
 </div>
 
 @if(session('success'))
@@ -65,18 +66,19 @@
     $no = 1;
 @endphp
 
-<div class="card shadow-sm border-0">
+@if($isTeaching)
+<div class="card shadow-sm border-0" style="border-radius: 16px; overflow: hidden;">
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover table-bordered mb-0">
+            <table class="table table-hover mb-0">
                 <thead class="bg-light text-center">
                     <tr>
-                        <th width="5%">No.</th>
-                        <th width="35%">Nama Perangkat</th>
-                        <th width="15%">Status</th>
-                        <th width="15%">Tenggat Waktu</th>
-                        <th width="15%">Kirim Perangkat</th>
-                        <th width="15%">Aksi</th>
+                        <th class="border-0 px-4 py-3" width="5%">No.</th>
+                        <th class="border-0 py-3 text-left" width="35%">Nama Perangkat</th>
+                        <th class="border-0 py-3" width="15%">Status</th>
+                        <th class="border-0 py-3" width="15%">Tenggat Waktu</th>
+                        <th class="border-0 py-3" width="15%">Kumpulkan Perangkat</th>
+                        <th class="border-0 py-3" width="15%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,52 +108,49 @@
                                 }
                                 $tenggatInfo = $tenggatDate->translatedFormat('d F Y H:i') . ' <br><small class="text-muted">(' . $sisaText . ')</small>';
                             } else {
-                                $tenggatInfo = '<span class="text-warning"><i class="fas fa-info-circle"></i> Belum diatur</span>';
+                                $tenggatInfo = '<span class="text-warning"><i class="fas fa-info-circle"></i> Belum ada batas waktu</span>';
                             }
                         @endphp
                         <tr>
-                            <td class="text-center">{{ $no++ }}</td>
-                            <td>
+                            <td class="text-center align-middle py-3 px-4">{{ $no++ }}</td>
+                            <td class="align-middle py-3">
                                 <strong>{{ $template->nama_perangkat }}</strong>
                             </td>
-                            <td class="text-center align-middle">{!! renderStatus($pg, $isPastDeadline) !!}</td>
-                            <td class="text-center align-middle">
+                            <td class="text-center align-middle py-3">{!! renderStatus($pg, $isPastDeadline) !!}</td>
+                            <td class="text-center align-middle py-3">
                                 {!! $tenggatInfo !!}
                             </td>
-                            <td class="text-center align-middle">
+                            <td class="text-center align-middle py-3">
                                 @if($pg && !$pg->is_completed)
-                                    <button class="btn btn-success btn-submit-doc" 
+                                    <button class="btn btn-sm btn-success btn-submit-doc shadow-sm px-3" style="border-radius: 6px;"
                                             data-id="{{ $pg->id }}" 
                                             data-past-deadline="{{ $isPastDeadline ? '1' : '0' }}"
                                             data-no-deadline="{{ is_null($tenggatDate) ? '1' : '0' }}"
-                                            {!! $isPastDeadline ? 'disabled style="background-color: #6c757d; border-color: #6c757d;"' : '' !!}>
-                                        <i class="fas fa-paper-plane"></i> Kirim Perangkat
+                                            {!! $isPastDeadline ? 'disabled style="background-color: #6c757d; border-color: #6c757d; border-radius: 6px;"' : '' !!}>
+                                        <i class="fas fa-paper-plane mr-1"></i> Kumpulkan
                                     </button>
                                 @elseif($pg && $pg->is_completed)
-                                    <span class="text-success"><i class="fas fa-check-circle"></i> Terkirim</span>
+                                    <span class="text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> Terkirim</span>
                                 @endif
                             </td>
-                            <td class="text-center align-middle">
+                            <td class="text-center align-middle py-3">
                                 @if($pg)
-                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-primary {{ $pg->is_completed || $isPastDeadline ? 'd-none' : '' }}" id="btn_edit_{{ $pg->id }}">
+                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-sm btn-primary shadow-sm px-3 {{ $pg->is_completed || $isPastDeadline ? 'd-none' : '' }}" style="border-radius: 6px;" id="btn_edit_{{ $pg->id }}">
                                         <i class="fas fa-edit"></i> {{ !$pg->isDraft() ? 'Lihat/Edit' : 'Isi' }}
                                     </a>
-                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-secondary {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" id="btn_edit_{{ $pg->id }}">
+                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-sm btn-secondary shadow-sm px-3 {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" style="border-radius: 6px;" id="btn_edit_{{ $pg->id }}">
                                         <i class="fas fa-eye"></i> {{ !$pg->isDraft() ? 'Lihat' : 'Isi' }}
                                     </a>
-                                    <!-- <button class="btn btn-secondary {{ $pg->is_completed || $isPastDeadline ? '' : 'd-none' }}" disabled id="btn_disabled_{{ $pg->id }}" title="Perangkat telah selesai atau dikunci">
-                                        <i class="fas fa-lock"></i> Terkunci
-                                    </button> -->
                                     @if($pg->status !== 'revisi')
-                                    <a href="{{ route('guru.perangkat.print', $pg->id) }}" target="_blank" class="btn btn-outline-secondary" title="Cetak">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary shadow-sm px-3" style="border-radius: 6px;" title="Cetak" onclick="printDoc('{{ route('guru.perangkat.print', $pg->id) }}')">
                                         <i class="fas fa-print"></i>
-                                    </a>
+                                    </button>
                                     @endif
                                 @else
-                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-primary {{ $isPastDeadline ? 'd-none' : '' }}">
+                                    <a href="{{ route('guru.perangkat.edit', [$mapel->id, $kelas->id, $template->id, 'tahun_ajaran' => $selectedTahun]) }}" class="btn btn-sm btn-primary shadow-sm px-3 {{ $isPastDeadline ? 'd-none' : '' }}" style="border-radius: 6px;">
                                         <i class="fas fa-edit"></i> Isi
                                     </a>
-                                    <button class="btn btn-secondary {{ $isPastDeadline ? '' : 'd-none' }}" disabled title="Terkunci karena melewati tenggat">
+                                    <button class="btn btn-sm btn-secondary shadow-sm px-3 {{ $isPastDeadline ? '' : 'd-none' }}" style="border-radius: 6px;" disabled title="Terkunci karena melewati tenggat">
                                         <i class="fas fa-lock"></i> Terkunci
                                     </button>
                                 @endif
@@ -185,11 +184,34 @@
         </div>
     </div>
 </div>
+@else
+<div class="card shadow-sm border-0" style="border-radius: 16px;">
+    <div class="card-body text-center py-5">
+        <div class="mb-4 text-muted">
+            <i class="fas fa-exclamation-circle fa-4x text-warning"></i>
+        </div>
+        <h4 class="font-weight-bold text-dark mb-3">Tidak Ada Data</h4>
+        <p class="text-muted mb-0" style="font-size: 1.1rem;">
+            Tidak ada data perangkat pembelajaran karena Anda tidak mengajar mata pelajaran <strong>{{ $mapel->nama_mapel }}</strong> di kelas <strong>{{ $kelas->nama_kelas_simple }}</strong> pada tahun ajaran <strong>{{ $selectedTahun }}</strong>.
+        </p>
+    </div>
+</div>
+@endif
+
+<iframe id="printFrame" style="position: absolute; width: 1px; height: 1px; visibility: hidden; border: 0;"></iframe>
 
 @stop
 
 @push('js')
 <script>
+function printDoc(url) {
+    var frame = document.getElementById('printFrame');
+    frame.src = url;
+    frame.onload = function() {
+        frame.contentWindow.print();
+    };
+}
+
 $(document).ready(function() {
     $('.btn-submit-doc').click(function() {
         var btn = $(this);
@@ -200,11 +222,11 @@ $(document).ready(function() {
             // Allow submission even if deadline not set
 
         Swal.fire({
-            title: 'Yakin ingin mensubmit?',
-            text: 'Kalau sudah submit tidak bisa edit lagi dan otomatis terkirim.',
+            title: 'Kumpulkan Perangkat?',
+            text: 'Perangkat yang sudah di kirim tidak bisa di ubah.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Submit!',
+            confirmButtonText: 'Kumpulkan',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {

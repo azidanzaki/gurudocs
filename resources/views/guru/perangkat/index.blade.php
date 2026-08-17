@@ -3,7 +3,21 @@
 @section('title', 'Perangkat Pembelajaran')
 
 @section('content_header')
-<h1 class="font-weight-bold text-dark">Perangkat Pembelajaran</h1>
+<div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-3">
+    <h1 class="m-0 text-dark font-weight-bold">Perangkat Pembelajaran</h1>
+    <div class="form-inline d-flex align-items-center bg-white p-2 shadow-sm" style="border-radius: 12px; border: 1px solid #eaeaea;">
+        <label for="tahun_ajaran_id" class="mr-2 mb-0 font-weight-bold text-dark ml-2">Tahun Ajaran:</label>
+        <form action="{{ route('guru.perangkat.index') }}" method="GET" class="mb-0">
+            <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-control border-0 bg-light mb-0" style="border-radius: 8px; font-weight: bold; min-width: 190px; width: auto;" onchange="this.form.submit()">
+                @foreach($tahunAjarans as $ta)
+                    <option value="{{ $ta->id }}" {{ $selectedTahunId == $ta->id ? 'selected' : '' }}>
+                        {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+</div>
 @stop
 
 @section('content')
@@ -71,13 +85,26 @@
                     <div class="subject-icon-box flex-shrink-0">
                         <i class="fas fa-book fa-2x"></i>
                     </div>
-                    <div class="ml-3 mt-1">
+                    <div class="ml-3 mt-1 flex-grow-1">
                         <h5 class="mb-2 font-weight-bold text-dark" style="line-height: 1.3;">
                             {{ $combo->mapel->nama_mapel }}
                         </h5>
-                        <span class="badge-class">
-                            <i class="fas fa-chalkboard mr-1"></i> Kelas {{ $combo->kelas->nama_kelas_simple }}
-                        </span>
+                        <div class="d-flex flex-wrap gap-1 mb-3 align-items-center">
+                            <span class="badge-class mr-1">
+                                <i class="fas fa-chalkboard mr-1"></i> Kelas {{ $combo->kelas->nama_kelas_simple }}
+                            </span>
+                            <span class="badge badge-light border text-muted px-2 py-1" style="border-radius: 6px; font-size: 0.8rem; font-weight: 500;">
+                                <i class="fas fa-calendar-alt mr-1"></i> {{ $selectedTahunName }}
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-1" style="font-size: 0.9rem;">
+                            <i class="fas fa-tasks mr-1"></i> {{ $combo->completed_count }}/{{ $totalTemplates }} perangkat selesai
+                        </p>
+                        @if($combo->revision_count > 0)
+                        <p class="text-danger small font-weight-bold mb-0" style="font-size: 0.9rem;">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> {{ $combo->revision_count }} perangkat perlu di revisi
+                        </p>
+                        @endif
                     </div>
                 </div>
                 <a href="{{ route('guru.perangkat.kelas', [$combo->mapel->id, $combo->kelas->id]) }}"

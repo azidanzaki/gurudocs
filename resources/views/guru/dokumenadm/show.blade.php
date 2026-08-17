@@ -49,11 +49,6 @@
                     </a>
                 @endif
             </div>
-            
-            <div class="alert alert-info border-0 shadow-sm text-left mb-0 mt-4 mx-auto" style="border-radius: 12px; max-width: 800px; border-left: 4px solid #17a2b8 !important;">
-                <i class="fas fa-info-circle mr-2"></i>
-                <strong>Catatan:</strong> Dokumen pratinjau di bawah ini hanya untuk referensi visual. Silakan unduh file aslinya di atas untuk digunakan.
-            </div>
         </div>
 
         <div class="p-0 bg-secondary" style="min-height: 500px;">

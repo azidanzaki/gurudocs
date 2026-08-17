@@ -42,7 +42,7 @@
     <tr>
         <td colspan="5" class="text-center py-5 text-muted">
             <i class="fas fa-folder-open fa-3x mb-3 opacity-25"></i>
-            <p class="mb-0">Belum ada template dokumen yang diunggah.</p>
+            <p class="mb-0">Tidak ada dokumen yang ditemukan.</p>
         </td>
     </tr>
 @endforelse

@@ -11,6 +11,10 @@ class PerangkatTemplateTenggatWaktu extends Model
     
     protected $guarded = [];
 
+    protected $casts = [
+        'tenggat_waktu' => 'datetime',
+    ];
+
     public function template()
     {
         return $this->belongsTo(PerangkatTemplate::class, 'perangkat_template_id');

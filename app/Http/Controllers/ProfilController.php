@@ -52,6 +52,45 @@ class ProfilController extends Controller
                     'time' => $r->updated_at
                 ]);
             }
+        } elseif ($user->role === 'admin') {
+            // 1. DokumenAdm activities
+            $dokumens = \App\Models\DokumenAdm::orderBy('updated_at', 'desc')->take(10)->get();
+            foreach ($dokumens as $d) {
+                $activities->push([
+                    'type' => 'dokumen',
+                    'icon' => 'fas fa-file-alt bg-primary',
+                    'description' => "Memperbarui dokumen administrasi <b>" . $d->nama_dokumen . "</b>.",
+                    'time' => $d->updated_at
+                ]);
+            }
+
+            // 2. PerangkatTemplate activities
+            $templates = \App\Models\PerangkatTemplate::orderBy('created_at', 'desc')->take(5)->get();
+            foreach ($templates as $t) {
+                $activities->push([
+                    'type' => 'template',
+                    'icon' => 'fas fa-book bg-success',
+                    'description' => "Menambahkan template perangkat pembelajaran <b>" . $t->nama_perangkat . "</b>.",
+                    'time' => $t->created_at
+                ]);
+            }
+        } elseif ($user->role === 'kepala_sekolah') {
+            // PenilaianKinerja activities
+            $penilaians = \App\Models\PenilaianKinerja::where('penilai_id', $user->id)
+                ->orderBy('updated_at', 'desc')
+                ->take(15)
+                ->get();
+            
+            foreach ($penilaians as $p) {
+                $guru = \App\Models\User::find($p->guru_id);
+                $status = $p->status === 'submitted' ? 'Menyelesaikan' : 'Memperbarui';
+                $activities->push([
+                    'type' => 'penilaian',
+                    'icon' => $p->status === 'submitted' ? 'fas fa-check-double bg-success' : 'fas fa-edit bg-info',
+                    'description' => "$status penilaian kinerja untuk guru <b>" . ($guru ? $guru->name : 'Unknown') . "</b> pada Aspek {$p->aspek}.",
+                    'time' => $p->updated_at
+                ]);
+            }
         }
 
         // Sort all activities by time desc and take top 15

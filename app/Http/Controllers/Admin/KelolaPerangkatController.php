@@ -161,4 +161,43 @@ class KelolaPerangkatController extends Controller
 
         return back()->with('success', 'Perangkat berhasil dibuka kembali agar guru dapat melakukan revisi.');
     }
+
+    public function listGuruAjax(Request $request)
+    {
+        $templateId = $request->query('template_id');
+        $tahunAjaran = $request->query('tahun_ajaran');
+        $search = $request->query('search');
+        $sort = $request->query('sort', 'name');
+        $direction = $request->query('direction', 'asc');
+
+        $query = User::where('role', 'guru');
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($sort === 'name') {
+            $query->orderBy('name', $direction);
+        }
+
+        $gurus = $query->get();
+
+        $perangkatGurus = PerangkatGuru::with(['mapel', 'kelas'])
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->where('perangkat_template_id', $templateId)
+            ->get();
+
+        $pgsByUser = $perangkatGurus->groupBy('user_id');
+
+        if ($sort === 'status') {
+            $gurus = $gurus->sortBy(function ($guru) use ($pgsByUser) {
+                $pgs = $pgsByUser->get($guru->id, collect());
+                if ($pgs->isEmpty()) return 3; // Belum Dibuat
+                if ($pgs->contains(fn($p) => $p->status == 'submitted' || $p->is_completed)) return 1; // Disubmit
+                return 2; // Draft
+            }, SORT_REGULAR, $direction === 'desc')->values();
+        }
+
+        return view('admin.kelolaperangkat._list_guru_ajax', compact('gurus', 'pgsByUser'));
+    }
 }

@@ -39,6 +39,13 @@
         </form>
     </div>
     <div class="card-body p-0">
+        @if($mengajarAssignments->isEmpty())
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                <h5>Tidak Ada Data Mata Pelajaran</h5>
+                <p>Guru ini tidak memiliki data mata pelajaran pada tahun ajaran <strong>{{ $selectedTahun ?? 'Semua Tahun' }}</strong>.</p>
+            </div>
+        @else
         <div class="table-responsive p-3">
             <table id="dokumenTable" class="table table-hover m-0 align-middle">
                 <thead>
@@ -117,12 +124,25 @@
                 </tbody>
             </table>
         </div>
+        @endif
     </div>
 </div>
 
 <div class="card card-info card-outline mt-4 shadow-sm">
-    <div class="card-header border-0">
-        <h3 class="card-title font-weight-bold"><i class="fas fa-running mr-2 text-info"></i> Riwayat Kegiatan Guru</h3>
+    <div class="card-header border-0 d-flex align-items-center mb-0">
+        <h3 class="card-title font-weight-bold m-0"><i class="fas fa-running mr-2 text-info"></i> Riwayat Kegiatan Guru</h3>
+        <form action="{{ route('kepala.penilaian.kelengkapan', $guru->id) }}" method="GET" class="d-flex ml-auto mb-0" id="filterFormKegiatan">
+            <input type="hidden" name="mapel_kelas" value="{{ $selectedMapelKelas }}">
+            <label for="tahun_ajaran_kegiatan" class="mr-2 mb-0 font-weight-bold text-dark ml-2" style="font-size: 0.9rem;">Tahun Ajaran:</label>
+            <select name="tahun_ajaran" id="tahun_ajaran_kegiatan" class="form-control form-control-sm border-0 bg-light mb-0" style="border-radius: 8px; font-weight: bold; min-width: 150px; width: auto;" onchange="this.form.submit()">
+                <option value="">Semua Tahun Ajaran</option>
+                @foreach($tahunAjarans as $ta)
+                    <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>
+                        {{ $ta->nama }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive p-3">

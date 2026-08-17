@@ -48,12 +48,12 @@
                     @method('DELETE')
                     @if($user->is_active)
                         <button type="button" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 6px;"
-                            onclick="event.preventDefault(); Swal.fire({title: 'Nonaktifkan user ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, nonaktifkan!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
+                            onclick="event.preventDefault(); Swal.fire({title: 'Nonaktifkan Pengguna ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Nonaktifkan'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
                             <i class="fas fa-user-slash"></i> Nonaktif
                         </button>
                     @else
                         <button type="button" class="btn btn-outline-success btn-sm px-3" style="border-radius: 6px;"
-                            onclick="event.preventDefault(); Swal.fire({title: 'Aktifkan user ini?', icon: 'question', showCancelButton: true, confirmButtonColor: '#28a745', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, aktifkan!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
+                            onclick="event.preventDefault(); Swal.fire({title: 'Aktifkan Pengguna ini?', icon: 'question', showCancelButton: true, confirmButtonColor: '#28a745', cancelButtonColor: '#3085d6', confirmButtonText: 'Aktifkan'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
                             <i class="fas fa-user-check"></i> Aktifkan
                         </button>
                     @endif

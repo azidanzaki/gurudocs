@@ -46,11 +46,13 @@ class KelolaUserController extends Controller
 
         $mapels = Mapel::all();
         $kelas = Kelas::all();
+        $hasActiveKepsek = User::where('role', 'kepala_sekolah')->where('is_active', true)->exists();
 
         return view('admin.kelolauser.index', compact(
             'users',
             'mapels',
-            'kelas'
+            'kelas',
+            'hasActiveKepsek'
         ));
     }
 
@@ -65,9 +67,17 @@ class KelolaUserController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
-            'nip' => 'required|unique:users,nip',
+            'nip' => ['required', 'unique:users,nip', 'digits:18'],
             'role' => 'required',
         ]);
+
+        // Enforce single active kepala sekolah
+        if ($request->role === 'kepala_sekolah') {
+            $hasActiveKepsek = User::where('role', 'kepala_sekolah')->where('is_active', true)->exists();
+            if ($hasActiveKepsek) {
+                return redirect()->back()->withInput()->with('error', 'Tidak dapat menambahkan Kepala Sekolah baru. Sudah ada Kepala Sekolah yang aktif. Nonaktifkan terlebih dahulu sebelum menambahkan yang baru.');
+            }
+        }
         
         $defaultPassword = $request->nip;
 

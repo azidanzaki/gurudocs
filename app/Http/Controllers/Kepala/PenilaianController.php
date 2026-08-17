@@ -12,49 +12,183 @@ use Illuminate\Support\Facades\Log;
 
 class PenilaianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        
+        $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
+        $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
+
         $gurus = User::where('role', 'guru')->get();
-        return view('kepala.penilaian.index', compact('gurus'));
+
+        $mapels = \App\Models\Mapel::all()->keyBy('id');
+        $kelases = \App\Models\Kelas::all()->keyBy('id');
+
+        // Fetch teaching assignments for the selected tahun ajaran
+        $assignmentsRaw = \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')
+            ->where('tahun_ajaran', $selectedTahunObj ? $selectedTahunObj->nama : '')
+            ->get();
+
+        // Create mappings for each guru's classes to group them
+        $guruKelasIdMapping = []; // "guruId-mapelId-kelasId" => representative_kelas_id
+        $guruRepresentativeMap = []; // "guruId-mapelId-simpleName" => representative_kelas_id
+
+        foreach ($assignmentsRaw as $assignment) {
+            $kelas = $kelases->get($assignment->kelas_id);
+            if ($kelas) {
+                $simpleName = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+                $repKey = $assignment->user_id . '-' . $assignment->mapel_id . '-' . $simpleName;
+                if (!isset($guruRepresentativeMap[$repKey])) {
+                    $guruRepresentativeMap[$repKey] = $assignment->kelas_id;
+                }
+                $guruKelasIdMapping[$assignment->user_id . '-' . $assignment->mapel_id . '-' . $assignment->kelas_id] = $guruRepresentativeMap[$repKey];
+            }
+        }
+
+        // Map assignments to representative kelas_id and unique them
+        $assignments = collect($assignmentsRaw)->map(function ($assignment) use ($kelases, $guruKelasIdMapping) {
+            $kelas = $kelases->get($assignment->kelas_id);
+            if ($kelas) {
+                $simpleName = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+                $assignment->nama_kelas_simple = $simpleName;
+            }
+            $mapKey = $assignment->user_id . '-' . $assignment->mapel_id . '-' . $assignment->kelas_id;
+            if (isset($guruKelasIdMapping[$mapKey])) {
+                $assignment->kelas_id = $guruKelasIdMapping[$mapKey];
+            }
+            return $assignment;
+        })->unique(function ($assignment) {
+            return $assignment->user_id . '-' . $assignment->mapel_id . '-' . ($assignment->nama_kelas_simple ?? $assignment->kelas_id);
+        })->values();
+            
+        $assignmentsByGuru = $assignments->groupBy('user_id');
+        
+        // Get completed aspects (status = submitted)
+        $penilaians = \App\Models\PenilaianKinerja::where('tahun_ajaran_id', $selectedTahunId)
+            ->where('status', 'submitted')
+            ->get();
+            
+        $completedPenilaians = []; 
+        foreach ($gurus as $guru) {
+            $assigns = $assignmentsByGuru->get($guru->id, collect());
+            $guruPenilaians = $penilaians->where('guru_id', $guru->id);
+            $fullyCompleted = 0;
+            
+            foreach ($assigns as $assignment) {
+                $mappedKelasId = $assignment->kelas_id;
+                $aspectsCount = $guruPenilaians
+                    ->where('mapel_id', $assignment->mapel_id)
+                    ->where('kelas_id', $mappedKelasId)
+                    ->unique('aspek')
+                    ->count();
+                    
+                if ($aspectsCount == 7) {
+                    $fullyCompleted++;
+                }
+            }
+            $completedPenilaians[$guru->id] = $fullyCompleted;
+        }
+        
+        $teachingInfo = [];
+        foreach ($gurus as $guru) {
+            $assigns = $assignmentsByGuru->get($guru->id, collect());
+            $mapelsGrouped = [];
+            foreach ($assigns as $m) {
+                $m_obj = $mapels->get($m->mapel_id);
+                $k_obj = $kelases->get($m->kelas_id);
+                if ($m_obj && $k_obj) {
+                    $simpleClassName = trim(preg_replace('/\d+$/', '', $k_obj->nama_kelas));
+                    if (!isset($mapelsGrouped[$m_obj->nama_mapel])) {
+                        $mapelsGrouped[$m_obj->nama_mapel] = [];
+                    }
+                    if (!in_array($simpleClassName, $mapelsGrouped[$m_obj->nama_mapel])) {
+                        $mapelsGrouped[$m_obj->nama_mapel][] = $simpleClassName;
+                    }
+                }
+            }
+            $infoStr = [];
+            foreach ($mapelsGrouped as $mapelName => $kelasNames) {
+                $infoStr[] = '<strong>'.$mapelName . '</strong> (' . implode(', ', $kelasNames) . ')';
+            }
+            $teachingInfo[$guru->id] = empty($infoStr) ? '-' : implode('<br>', $infoStr);
+        }
+
+        return view('kepala.penilaian.index', compact('gurus', 'tahunAjarans', 'selectedTahunId', 'assignmentsByGuru', 'completedPenilaians', 'teachingInfo'));
     }
 
-    public function showGuru($id)
+    public function showGuru(Request $request, $id)
     {
         $guru = User::findOrFail($id);
         if ($guru->role !== 'guru') {
             abort(404);
         }
 
-        $mengajarRaw = $guru->mengajar();
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->first();
+        
+        $selectedTahunId = $request->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
+        $selectedTahunObj = \App\Models\TahunAjaran::find($selectedTahunId);
+
+        $mengajarRaw = \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')
+            ->where('user_id', $guru->id)
+            ->where('tahun_ajaran', $selectedTahunObj ? $selectedTahunObj->nama : '')
+            ->get();
+
         $mapelIds = collect($mengajarRaw)->pluck('mapel_id')->unique();
         $kelasIds = collect($mengajarRaw)->pluck('kelas_id')->unique();
         $mapels = \App\Models\Mapel::whereIn('id', $mapelIds)->get()->keyBy('id');
         $kelases = \App\Models\Kelas::whereIn('id', $kelasIds)->get()->keyBy('id');
 
-        $mengajarAssignments = collect($mengajarRaw)->map(function ($assignment) use ($kelases) {
+        // Create simplified class names mapping to group them
+        $representativeMap = []; // "mapelId-simpleName" => representative_kelas_id
+        $kelasIdMapping = []; // "mapelId-kelasId" => representative_kelas_id
+
+        foreach ($mengajarRaw as $assignment) {
             $kelas = $kelases->get($assignment->kelas_id);
             if ($kelas) {
-                $assignment->nama_kelas_simple = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
-                $kelas->nama_kelas = $assignment->nama_kelas_simple; // Override for view
+                $simpleName = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+                $key = $assignment->mapel_id . '-' . $simpleName;
+                if (!isset($representativeMap[$key])) {
+                    $representativeMap[$key] = $assignment->kelas_id;
+                }
+                $kelasIdMapping[$assignment->mapel_id . '-' . $assignment->kelas_id] = $representativeMap[$key];
+            }
+        }
+
+        // Apply simplified class names and group assignments
+        $mengajarAssignments = collect($mengajarRaw)->map(function ($assignment) use ($kelases, $kelasIdMapping) {
+            $kelas = $kelases->get($assignment->kelas_id);
+            if ($kelas) {
+                $simpleName = trim(preg_replace('/\d+$/', '', $kelas->nama_kelas));
+                $assignment->nama_kelas_simple = $simpleName;
+                $kelas->nama_kelas = $simpleName; // Override for view
+            }
+            // Map kelas_id to the representative one
+            $mapKey = $assignment->mapel_id . '-' . $assignment->kelas_id;
+            if (isset($kelasIdMapping[$mapKey])) {
+                $assignment->kelas_id = $kelasIdMapping[$mapKey];
             }
             return $assignment;
         })->unique(function ($assignment) {
             return $assignment->mapel_id . '-' . ($assignment->nama_kelas_simple ?? $assignment->kelas_id);
         })->values();
 
-        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
-        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
-        
-        $selectedTahunId = request()->query('tahun_ajaran_id', $activeTahun ? $activeTahun->id : null);
-
+        // Calculate completed counts, mapping the assessed kelas_id to the representative one if needed
         $completedCounts = \App\Models\PenilaianKinerja::where('guru_id', $id)
             ->where('tahun_ajaran_id', $selectedTahunId)
             ->where('status', 'submitted')
             ->get()
-            ->groupBy(function($item) {
-                return $item->mapel_id . '-' . $item->kelas_id;
+            ->groupBy(function($item) use ($kelasIdMapping) {
+                // If the stored assessment was for a kelas_id that got mapped, use the representative one
+                $mapKey = $item->mapel_id . '-' . $item->kelas_id;
+                $repKelasId = isset($kelasIdMapping[$mapKey]) ? $kelasIdMapping[$mapKey] : $item->kelas_id;
+                return $item->mapel_id . '-' . $repKelasId;
             })
-            ->map->count();
+            ->map(function ($group) {
+                // Count unique aspects in the group to avoid counting duplicates if both classes had assessments
+                return $group->unique('aspek')->count();
+            });
 
         return view('kepala.penilaian.show', compact('guru', 'mengajarAssignments', 'mapels', 'kelases', 'completedCounts', 'tahunAjarans', 'selectedTahunId', 'activeTahun'));
     }
@@ -66,6 +200,12 @@ class PenilaianController extends Controller
             abort(404);
         }
 
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
+        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
+
+        $selectedMapelKelas = $request->query('mapel_kelas');
+        $selectedTahun = $request->query('tahun_ajaran', $activeTahun ? $activeTahun->nama : null);
+
         // Existing documents
         $existingDokumens = \App\Models\PerangkatGuru::with(['mapel', 'kelas', 'template'])
             ->where('user_id', $id)
@@ -74,9 +214,15 @@ class PenilaianController extends Controller
                 return $item->perangkat_template_id . '-' . $item->mapel_id . '-' . $item->kelas_id;
             });
 
-        // Templates and teaching assignments
+        // Templates and teaching assignments (filtered by the selected year)
         $templates = \App\Models\PerangkatTemplate::where('is_active', true)->orderBy('urutan')->get();
-        $mengajarRaw = $guru->mengajar(); 
+        
+        $mengajarRawQuery = \Illuminate\Support\Facades\DB::table('guru_mapel_kelas')
+            ->where('user_id', $id);
+        if ($selectedTahun) {
+            $mengajarRawQuery->where('tahun_ajaran', $selectedTahun);
+        }
+        $mengajarRaw = $mengajarRawQuery->get();
         
         $mapelIds = collect($mengajarRaw)->pluck('mapel_id')->unique();
         $kelasIds = collect($mengajarRaw)->pluck('kelas_id')->unique();
@@ -93,12 +239,6 @@ class PenilaianController extends Controller
         })->unique(function ($assignment) {
             return $assignment->mapel_id . '-' . ($assignment->nama_kelas_simple ?? $assignment->kelas_id);
         })->values();
-
-        $tahunAjarans = \App\Models\TahunAjaran::orderBy('nama', 'desc')->get();
-        $activeTahun = \App\Models\TahunAjaran::where('is_active', 1)->orderBy('nama', 'desc')->first() ?? $tahunAjarans->first();
-
-        $selectedMapelKelas = $request->query('mapel_kelas');
-        $selectedTahun = $request->query('tahun_ajaran', $activeTahun ? $activeTahun->nama : null);
 
         $dokumens = collect();
 

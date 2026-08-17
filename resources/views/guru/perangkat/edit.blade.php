@@ -10,20 +10,24 @@
 <style>
     /* Lock the header area visually */
     .doc-header {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 12px;
         padding: 20px 24px;
         margin-bottom: 24px;
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
     }
     .section-readonly {
         background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        padding: 10px 14px;
+        border: 1px solid #eaeaea;
+        border-radius: 8px;
+        padding: 12px 16px;
         color: #495057;
-        min-height: 38px;
+        min-height: 48px;
         white-space: pre-wrap;
+    }
+    .form-control {
+        border-radius: 8px;
     }
     .required-star { color: #dc3545; }
     .sticky-actions {
@@ -40,74 +44,60 @@
 @section('content')
 
 {{-- Breadcrumb --}}
-<div class="mb-3 d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-2">
+<div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div class="d-flex align-items-center">
         <a href="{{ route('guru.perangkat.kelas', [$mapel->id, $kelas->id]) }}"
-           class="btn btn btn-outline-secondary mr-2">
-            <i class="fas fa-arrow-left"></i> Kembali
+           class="btn btn-light border px-3 shadow-sm mr-3" style="border-radius: 8px;">
+            <i class="fas fa-arrow-left mr-1"></i> Kembali
         </a>
-        <span class="text-muted mr-3">
-            {{ $mapel->nama_mapel }} / {{ $kelas->nama_kelas }} / {{ $template->nama_perangkat }}
+        <span class="text-muted font-weight-bold">
+            {{ $mapel->nama_mapel }} <i class="fas fa-chevron-right mx-2 text-black-50" style="font-size: 10px;"></i> {{ $kelas->nama_kelas }} <i class="fas fa-chevron-right mx-2 text-black-50" style="font-size: 10px;"></i> <span class="text-dark">{{ $template->nama_perangkat }}</span>
         </span>
     </div>
 
     @if(!$perangkatGuru->is_completed)
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center flex-wrap gap-2">
         @if($perangkatGuru->status === 'revisi')
-        <button type="button" class="btn btn-info mr-2" data-toggle="modal" data-target="#catatanModal">
-            <i class="fas fa-comment-dots"></i> Catatan Revisi
+        <button type="button" class="btn btn-info shadow-sm mr-2" style="border-radius: 8px;" data-toggle="modal" data-target="#catatanModal">
+            <i class="fas fa-comment-dots mr-1"></i> Catatan Revisi
         </button>
         @endif
-        <button type="button" class="btn btn-success btn-submit-doc mr-2" data-id="{{ $perangkatGuru->id }}">
-            <i class="fas fa-paper-plane"></i> Kirim Perangkat
+        <button type="button" class="btn btn-success btn-submit-doc shadow-sm mr-2" style="border-radius: 8px;" data-id="{{ $perangkatGuru->id }}">
+            <i class="fas fa-paper-plane mr-1"></i> Kumpulkan Perangkat
         </button>
-        <button type="button" id="btn-reset" class="btn btn-danger mr-2">
-            <i class="fas fa-trash"></i> Reset
+        <button type="button" id="btn-reset" class="btn btn-danger shadow-sm mr-2" style="border-radius: 8px;">
+            <i class="fas fa-trash mr-1"></i> Reset
         </button>
-        <button type="button" id="btn-save-top" class="btn btn-secondary mr-2">
-            <i class="fas fa-save"></i> Simpan
+        <button type="button" id="btn-save-top" class="btn btn-primary shadow-sm mr-2" style="border-radius: 8px;">
+            <i class="fas fa-save mr-1"></i> Simpan
         </button>
         @if($perangkatGuru->status !== 'revisi')
-        <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#cetakModal">
-            <i class="fas fa-print"></i> Cetak
+        <button type="button" class="btn btn-outline-dark shadow-sm" style="border-radius: 8px;" onclick="document.getElementById('printFrame').contentWindow.print()">
+            <i class="fas fa-print mr-1"></i> Cetak
         </button>
         @endif
-        <span id="save-indicator-top" class="text-muted small ml-2" style="display:none;">
-            <i class="fas fa-circle-notch fa-spin"></i> Menyimpan...
+        <span id="save-indicator-top" class="text-muted small ml-3 font-weight-bold" style="display:none;">
+            <i class="fas fa-circle-notch fa-spin text-primary"></i> Menyimpan...
         </span>
     </div>
     @else
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center flex-wrap gap-2">
         @if($perangkatGuru->status === 'revisi')
-        <button type="button" class="btn btn-info mr-2" data-toggle="modal" data-target="#catatanModal">
-            <i class="fas fa-comment-dots"></i> Catatan Revisi
+        <button type="button" class="btn btn-info shadow-sm mr-2" style="border-radius: 8px;" data-toggle="modal" data-target="#catatanModal">
+            <i class="fas fa-comment-dots mr-1"></i> Catatan Revisi
         </button>
         @endif
         @if($perangkatGuru->status !== 'revisi')
-        <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#cetakModal">
-            <i class="fas fa-print"></i> Cetak Dokumen
+        <button type="button" class="btn btn-outline-dark shadow-sm" style="border-radius: 8px;" onclick="document.getElementById('printFrame').contentWindow.print()">
+            <i class="fas fa-print mr-1"></i> Cetak Dokumen
         </button>
         @endif
     </div>
     @endif
 </div>
 
-<!-- Modal Cetak PDF -->
-<div class="modal fade" id="cetakModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content" style="height: 90vh;">
-            <div class="modal-header">
-                <h5 class="modal-title">Cetak Dokumen - {{ $template->nama_perangkat }}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-0">
-                <iframe src="{{ route('guru.perangkat.print', $perangkatGuru->id) }}" style="width: 100%; height: 100%; border: none;"></iframe>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Hidden Iframe untuk Cetak -->
+<iframe id="printFrame" style="position: absolute; width: 1px; height: 1px; visibility: hidden; border: 0;" src="{{ route('guru.perangkat.print', $perangkatGuru->id) }}"></iframe>
 
 <!-- Modal Catatan Revisi -->
 @if($perangkatGuru->status === 'revisi')
@@ -155,26 +145,27 @@
 @endif
 
 {{-- Document header (read-only, admin-defined info) --}}
+{{-- Document header (read-only, admin-defined info) --}}
 @if($template->id != 3)
 <div class="doc-header">
     <div class="row">
         <div class="col-md-6">
             <table class="table table-sm table-borderless mb-0">
-                <tr><th width="140">Mata Pelajaran</th><td>: {{ $mapel->nama_mapel }}</td></tr>
-                <tr><th>Kelas</th><td>: {{ $kelas->nama_kelas }}</td></tr>
-                <tr><th>Guru</th><td>: {{ Auth::user()->name }}</td></tr>
+                <tr><th width="140" class="text-muted">Mata Pelajaran</th><td class="font-weight-bold">: {{ $mapel->nama_mapel }}</td></tr>
+                <tr><th class="text-muted">Kelas</th><td class="font-weight-bold">: {{ $kelas->nama_kelas }}</td></tr>
+                <tr><th class="text-muted">Guru</th><td class="font-weight-bold">: {{ Auth::user()->name }}</td></tr>
             </table>
         </div>
         <div class="col-md-6">
             <table class="table table-sm table-borderless mb-0">
-                <tr><th width="140">Tahun Ajaran</th><td>: {{ $perangkatGuru->tahun_ajaran }}</td></tr>
-                <tr><th>Semester</th><td>: {{ $perangkatGuru->semester }}</td></tr>
+                <tr><th width="140" class="text-muted">Tahun Ajaran</th><td class="font-weight-bold">: {{ $perangkatGuru->tahun_ajaran }}</td></tr>
+                <tr><th class="text-muted">Semester</th><td class="font-weight-bold">: {{ $perangkatGuru->semester }}</td></tr>
                 @if($perangkatGuru->bab > 0)
-                <tr><th>Bab Ke-</th><td>: {{ $perangkatGuru->bab }}</td></tr>
+                <tr><th class="text-muted">Bab Ke-</th><td class="font-weight-bold">: {{ $perangkatGuru->bab }}</td></tr>
                 @endif
-                <tr><th>Status</th>
-                    <td>:
-                        <span class="badge badge-{{ $perangkatGuru->statusBadgeClass() }}">
+                <tr><th class="text-muted align-middle">Status</th>
+                    <td class="align-middle">:
+                        <span class="badge badge-{{ $perangkatGuru->statusBadgeClass() }} px-2 py-1 ml-1" style="border-radius: 6px;">
                             {{ ucfirst($perangkatGuru->status) }}
                         </span>
                     </td>
@@ -189,8 +180,8 @@
 <form id="perangkat-form" novalidate>
     @csrf
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
+    <div class="card shadow-sm border-0" style="border-radius: 16px;">
+        <div class="card-body p-4">
 
             @foreach($template->sections as $index => $section)
                 @php
@@ -427,11 +418,11 @@ $('.btn-submit-doc').click(function() {
     var pgId = btn.data('id');
 
     Swal.fire({
-        title: 'Yakin ingin mensubmit?',
-        text: 'Kalau sudah submit tidak bisa edit lagi dan otomatis terkirim.',
+        title: 'Kumpulkan Perangkat?',
+        text: 'Perangkat yang sudah di kirim tidak bisa di ubah.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Ya, Submit!',
+        confirmButtonText: 'Kumpulkan',
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -448,12 +439,12 @@ $('.btn-submit-doc').click(function() {
                     if (response.success) {
                         window.location.reload();
                     } else {
-                        Swal.fire('Gagal', 'Gagal submit perangkat.', 'error');
+                        Swal.fire('Gagal', 'Gagal mengirim perangkat.', 'error');
                         btn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Kirim Perangkat');
                     }
                 },
                 error: function() {
-                    Swal.fire('Error', 'Gagal mensubmit status perangkat.', 'error');
+                    Swal.fire('Error', 'Gagal mengirim perangkat.', 'error');
                     btn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Kirim Perangkat');
                 }
             });

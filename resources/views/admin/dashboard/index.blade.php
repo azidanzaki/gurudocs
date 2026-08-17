@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Admin')
 
 @section('content_header')
-    <h1 class="font-weight-bold text-dark"><i class="fas fa-chart-line mr-2"></i>Dashboard Admin</h1>
+    <h1 class="font-weight-bold text-dark">Dashboard Admin</h1>
 @stop
 
 @section('content')
@@ -132,11 +132,11 @@
     <div style="position: relative; z-index: 2;">
         <h2 class="title">Selamat Datang, {{ Auth::user()->name }} 👋</h2>
         <p class="subtitle">
-            Dashboard admin digunakan untuk mengelola pengguna, perangkat pembelajaran, serta template dokumen administrasi guru dengan cepat dan efisien.
+            Dashboard admin digunakan untuk mengelola pengguna, perangkat pembelajaran, serta dokumen-dokumen yang dibutuhkan guru dengan cepat dan efisien.
         </p>
         <div class="d-flex gap-2 flex-wrap" style="gap: 10px; display: flex;">
             <a href="{{ route('admin.users') }}" class="btn font-weight-bold mr-2 border-0 px-4 shadow-sm" style="background: white; color: #007bff; border-radius: 50px;">
-                <i class="fas fa-users mr-1"></i> Kelola User
+                <i class="fas fa-users mr-1"></i> Kelola Pengguna
             </a>
             <a href="{{ route('admin.kelolaperangkat') }}" class="btn font-weight-bold border-2 px-4" style="border: 2px solid white; color: white; border-radius: 50px;">
                 <i class="fas fa-cogs mr-1"></i> Kelola Perangkat
@@ -193,7 +193,7 @@
                 </div>
                 <div class="info-wrapper pb-3">
                     <h3>{{ \App\Models\DokumenAdm::count() }}</h3>
-                    <p>Template Dokumen</p>
+                    <p>Dokumen</p>
                 </div>
                 <div class="action-link text-danger">
                     Kelola Dokumen <i class="fas fa-arrow-right ml-1"></i>

@@ -340,7 +340,7 @@ Loading<span class="dot">...</span>
         ],
 
         [
-            'text' => 'Manajemen User',
+            'text' => 'Manajemen Pengguna',
             'route' => 'admin.users',
             'icon' => 'fas fa-users',
             'can' => 'admin',
@@ -385,26 +385,26 @@ Loading<span class="dot">...</span>
         ],
 
         [
-            'text' => 'Kelola Perangkat Pembelajaran',
+            'text' => 'Perangkat Pembelajaran',
             'icon' => 'fas fa-book',
             'route' => 'admin.kelolaperangkat',
             'can' => 'admin',
         ],
 
         [
-            'text' => 'Template Dokumen',
+            'text' => 'Dokumen',
             'icon' => 'far fa-folder-open',
             'route' => 'guru.dokumenadmguru.index',
             'can' => 'guru',
         ],
         [
-            'text' => 'Template Dokumen',
+            'text' => 'Dokumen',
             'icon' => 'far fa-folder-open',
             'route' => 'guru.dokumenadmguru.index',
             'can' => 'kepala',
         ],
         [
-            'text' => 'Kelola Dokumen',
+            'text' => 'Dokumen',
             'icon' => 'far fa-folder-open',
             'route' => 'admin.dokumenadm.index',
             'can' => 'admin',

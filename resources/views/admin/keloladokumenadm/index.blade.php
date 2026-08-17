@@ -3,12 +3,26 @@
 @section('title', 'Kelola Dokumen')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="font-weight-bold text-dark"><i class="fas fa-folder-open text-primary mr-2"></i>Kelola Dokumen Admin</h1>
-            <p class="text-muted mb-0">Kelola semua template dokumen administrasi untuk diunduh oleh guru.</p>
-        </div>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+        <h1 class="font-weight-bold text-dark">Kelola Dokumen</h1>
+        <p class="text-muted mb-0">Kelola semua dokumen yang dibutuhkan oleh guru.</p>
     </div>
+    <div class="form-inline mt-3 mt-md-0 d-flex align-items-center bg-white p-2 shadow-sm" style="border-radius: 12px; border: 1px solid #eaeaea;">
+        <label for="ajaxTahun" class="mr-2 mb-0 font-weight-bold text-dark ml-2">Tahun Ajaran:</label>
+        <select id="ajaxTahun" class="form-control border-0 bg-light mb-0 mr-3" style="border-radius: 8px; font-weight: bold; width: 160px;">
+            <option value="">Semua Tahun</option>
+            @php $currentYear = date('Y'); @endphp
+            @for($i = -2; $i <= 5; $i++)
+                @php 
+                    $y = $currentYear - $i; 
+                    $yearLabel = $y . '/' . ($y+1);
+                @endphp
+                <option value="{{ $yearLabel }}">{{ $yearLabel }}</option>
+            @endfor
+        </select>
+    </div>
+</div>
 @stop
 
 @section('content')
@@ -67,20 +81,10 @@
                             <i class="fas fa-search text-muted"></i>
                         </span>
                     </div>
-                    <input type="text" id="ajaxSearch" class="form-control bg-light border-left-0" style="border-radius: 0 8px 8px 0;" placeholder="Cari nama template dokumen...">
+                    <input type="text" id="ajaxSearch" class="form-control bg-light border-left-0" style="border-radius: 0 8px 8px 0;" placeholder="Cari dokumen...">
                 </div>
                 
-                <select id="ajaxTahun" class="form-control bg-light" style="border-radius: 8px; max-width: 200px; border: 1px solid #ced4da;">
-                    <option value="">Semua Tahun Ajaran</option>
-                    @php $currentYear = date('Y'); @endphp
-                    @for($i = -2; $i <= 5; $i++)
-                        @php 
-                            $y = $currentYear - $i; 
-                            $yearLabel = $y . '/' . ($y+1);
-                        @endphp
-                        <option value="{{ $yearLabel }}">{{ $yearLabel }}</option>
-                    @endfor
-                </select>
+
                 
                 <div class="spinner-border spinner-border-sm text-primary ml-2" id="loadingSpinner" style="display: none;" role="status">
                     <span class="sr-only">Loading...</span>
@@ -123,7 +127,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
                 <div class="modal-header bg-primary text-white border-0 py-3">
-                    <h5 class="modal-title font-weight-bold"><i class="fas fa-cloud-upload-alt mr-2"></i> Tambah Template Dokumen</h5>
+                    <h5 class="modal-title font-weight-bold">Tambah Dokumen</h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.8;">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -143,7 +147,7 @@
                                             <div class="input-group-text bg-white" style="border-radius: 0 8px 8px 0;">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input" id="gunakan_nama_file">
-                                                    <label class="custom-control-label cursor-pointer user-select-none" for="gunakan_nama_file" style="font-size: 0.9rem;">Samakan nama file</label>
+                                                    <label class="custom-control-label cursor-pointer user-select-none" for="gunakan_nama_file" style="font-size: 0.9rem;">Sama dengan nama file</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -185,14 +189,13 @@
 
                                 {{-- FILE --}}
                                 <div class="form-group mb-0">
-                                    <label class="font-weight-bold text-dark">Pilih File Template <span class="text-danger">*</span></label>
+                                    <label class="font-weight-bold text-dark">Pilih File Dokumen <span class="text-danger">*</span></label>
                                     <div class="custom-file mb-2">
                                         <input type="file" name="file" id="file_dokumen" class="custom-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
-                                        <label class="custom-file-label" for="file_dokumen" style="border-radius: 8px;">Browse file...</label>
+                                        <label class="custom-file-label" for="file_dokumen" style="border-radius: 8px;">Pilih file...</label>
                                     </div>
                                     <div class="alert alert-info border-0 shadow-sm mt-3 mb-0" style="border-radius: 8px; border-left: 4px solid #17a2b8 !important;">
-                                        <small><i class="fas fa-info-circle mr-1"></i> Format didukung: <strong>PDF, DOC, DOCX, XLS, XLSX</strong> (Max 20MB).</small><br>
-                                        <small><i class="fas fa-check-circle mr-1"></i> File ini adalah master template yang akan diunduh oleh guru.</small>
+                                        <small><i class="fas fa-info-circle mr-1"></i> Format didukung: <strong>PDF, DOC, DOCX, XLS, XLSX</strong> (Max 20MB).</small>
                                     </div>
                                 </div>
                             </div>
@@ -201,7 +204,7 @@
                     <div class="modal-footer border-0 pt-0 pb-4 pr-4 bg-light">
                         <button type="button" class="btn btn-secondary px-4 shadow-sm" style="border-radius: 8px;" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">
-                            <i class="fas fa-paper-plane mr-1"></i> Simpan Template
+                            Kumpulkan Perangkat
                         </button>
                     </div>
                 </form>

@@ -3,17 +3,17 @@
 @section('title', 'Setting Indikator PKG')
 
 @section('content_header')
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="m-0 text-dark">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-2">
+        <h1 class="m-0 text-dark font-weight-bold">
             Indikator Penilaian Kinerja Guru
         </h1>
-        <div>
-            <form action="{{ route('kepala.pkg_settings.index') }}" method="GET" class="form-inline mb-0">
-                @if(!$isEditable)
-                    <span class="badge badge-warning mr-3 mt-1"><i class="fas fa-lock mr-1"></i> Mode View-Only</span>
-                @endif
-                <label for="tahun_ajaran_id" class="mr-2 mb-0 font-weight-bold">Tahun Ajaran:</label>
-                <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-control form-control-sm" onchange="this.form.submit()">
+        <div class="form-inline d-flex align-items-center bg-white p-2 shadow-sm" style="border-radius: 12px; border: 1px solid #eaeaea;">
+            @if(!$isEditable)
+                <span class="badge badge-warning px-3 py-2 mr-3 font-weight-bold shadow-sm" style="border-radius: 8px;"><i class="fas fa-lock mr-1"></i> Mode View-Only</span>
+            @endif
+            <label for="tahun_ajaran_id" class="mr-2 mb-0 font-weight-bold text-dark ml-2">Tahun Ajaran:</label>
+            <form action="{{ route('kepala.pkg_settings.index') }}" method="GET" class="mb-0">
+                <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-control border-0 bg-light mb-0" style="border-radius: 8px; font-weight: bold; min-width: 190px; width: auto;" onchange="this.form.submit()">
                     @foreach($tahunAjarans as $ta)
                         <option value="{{ $ta->id }}" {{ $selectedTahunId == $ta->id ? 'selected' : '' }}>
                             {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
@@ -73,12 +73,12 @@ $aspekData = [
 
 
 
-    <div class="card card-primary card-outline shadow-sm">
-        <div class="card-header p-0 border-bottom-0">
-            <ul class="nav nav-tabs" id="aspekTabs" role="tablist">
+    <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+        <div class="card-header bg-white p-0 border-bottom">
+            <ul class="nav nav-tabs border-0" id="aspekTabs" role="tablist">
                 @for($i = 1; $i <= 7; $i++)
                     <li class="nav-item">
-                        <a class="nav-link {{ $i == 1 ? 'active' : '' }}" href="#aspek-{{ $i }}" data-toggle="tab" role="tab">
+                        <a class="nav-link border-0 text-secondary font-weight-bold py-3 px-4 {{ $i == 1 ? 'active text-primary' : '' }}" style="{{ $i == 1 ? 'border-bottom: 3px solid #007bff !important;' : '' }}" href="#aspek-{{ $i }}" data-toggle="tab" role="tab" onclick="updateTabStyles(this)">
                             <span class="d-none d-md-inline">Aspek</span> {{ $i }}
                         </a>
                     </li>
@@ -95,13 +95,13 @@ $aspekData = [
                         
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div>
-                                <h5 class="m-0 font-weight-bold text-secondary">
-                                    <i class="fas fa-list-ul mr-2"></i> {{ $aspekData[$i]['title'] }}
+                                <h5 class="m-0 font-weight-bold text-dark">
+                                    {{ $aspekData[$i]['title'] }}
                                 </h5>
                                 <p class="text-muted small mt-1 mb-0">{{ $aspekData[$i]['desc'] }}</p>
                             </div>
                             @if($isEditable)
-                            <button type="button" class="btn btn-primary btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddKategori-{{ $i }}">
+                            <button type="button" class="btn btn-primary shadow-sm px-4" style="border-radius: 8px;" data-toggle="modal" data-target="#modalAddKategori-{{ $i }}">
                                 <i class="fas fa-plus mr-1"></i> Tambah Kategori
                             </button>
                             @endif
@@ -139,27 +139,30 @@ $aspekData = [
                         @if($kategoris->count() > 0)
                             <div class="accordion" id="accordion-aspek-{{ $i }}">
                                 @foreach($kategoris as $kategori)
-                                    <div class="card card-outline card-secondary mb-3 shadow-sm" style="border-top-width: 2px;">
-                                        <div class="card-header d-flex justify-content-between align-items-center bg-white p-3" id="heading-kat-{{ $kategori->id }}">
+                                    <div class="card mb-3 shadow-sm border-0" style="border-radius: 12px; overflow: hidden; border: 1px solid #eaeaea !important;">
+                                        <div class="card-header d-flex justify-content-between align-items-center bg-white p-3 border-bottom-0" id="heading-kat-{{ $kategori->id }}">
                                             <div class="d-flex align-items-center w-100 cursor-pointer" data-toggle="collapse" data-target="#collapse-kat-{{ $kategori->id }}" aria-expanded="true" aria-controls="collapse-kat-{{ $kategori->id }}">
-                                                <h5 class="mb-0 text-dark font-weight-bold">
+                                                <div class="bg-light text-primary rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px;">
+                                                    <i class="fas fa-folder-open"></i>
+                                                </div>
+                                                <h5 class="mb-0 text-dark font-weight-bold" style="font-size: 1.1rem;">
                                                     {{ $kategori->nama }}
                                                 </h5>
-                                                <span class="badge badge-info ml-3 badge-pill px-2 py-1">
+                                                <span class="badge badge-info ml-3 px-3 py-1 shadow-sm" style="border-radius: 6px;">
                                                     {{ $kategori->indikators->count() }} Indikator
                                                 </span>
                                             </div>
                                             
                                             @if($isEditable)
                                             <div class="d-flex flex-shrink-0 ml-3">
-                                                <button class="btn btn-sm btn-outline-primary mr-2" data-toggle="modal" data-target="#modalEditKategori-{{ $kategori->id }}" title="Edit Kategori">
-                                                    <i class="fas fa-edit"></i> Edit
+                                                <button class="btn btn-sm btn-light border shadow-sm px-3 mr-2" style="border-radius: 6px;" data-toggle="modal" data-target="#modalEditKategori-{{ $kategori->id }}" title="Edit Kategori">
+                                                    <i class="fas fa-edit text-info"></i>
                                                 </button>
                                                 <form action="{{ route('kepala.pkg_settings.kategori.destroy', $kategori->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Kategori" onclick="event.preventDefault(); Swal.fire({title: 'Peringatan!', text: 'Menghapus kategori ini juga akan menghapus SEMUA indikator di dalamnya. Lanjutkan?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
-                                                        <i class="fas fa-trash"></i> Hapus Kategori
+                                                    <button type="button" class="btn btn-sm btn-light border shadow-sm px-3" style="border-radius: 6px;" title="Hapus Kategori" onclick="event.preventDefault(); Swal.fire({title: 'Peringatan!', text: 'Menghapus kategori ini juga akan menghapus SEMUA indikator di dalamnya. Lanjutkan?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
+                                                        <i class="fas fa-trash text-danger"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -187,7 +190,7 @@ $aspekData = [
                                                         </div>
                                                         <div class="modal-footer bg-light">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-info"><i class="fas fa-save mr-1"></i> Simpan Perubahan</button>
+                                                            <button type="submit" class="btn btn-info"><i class="fas fa-save mr-1"></i> Simpan</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -197,10 +200,10 @@ $aspekData = [
                                         <div id="collapse-kat-{{ $kategori->id }}" class="collapse show" aria-labelledby="heading-kat-{{ $kategori->id }}" data-parent="#accordion-aspek-{{ $i }}">
                                             <div class="card-body p-0">
                                                 
-                                                <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
-                                                    <span class="text-muted text-sm"><i class="fas fa-info-circle"></i> Daftar pertanyaan/indikator untuk kategori ini.</span>
+                                                <div class="p-3 bg-light border-top border-bottom d-flex justify-content-between align-items-center">
+                                                    <span class="text-muted text-sm font-weight-bold"><i class="fas fa-info-circle mr-1"></i> Daftar indikator penilaian</span>
                                                     @if($isEditable)
-                                                    <button class="btn btn-success btn-sm shadow-sm" data-toggle="modal" data-target="#modalAddIndikator-{{ $kategori->id }}">
+                                                    <button class="btn btn-success btn-sm shadow-sm px-3" style="border-radius: 6px;" data-toggle="modal" data-target="#modalAddIndikator-{{ $kategori->id }}">
                                                         <i class="fas fa-plus mr-1"></i> Tambah Indikator
                                                     </button>
                                                     @endif
@@ -237,20 +240,22 @@ $aspekData = [
                                                 @if($kategori->indikators->count() > 0)
                                                     <ul class="list-group list-group-flush">
                                                         @foreach($kategori->indikators as $index => $indikator)
-                                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-action">
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-action py-3 border-0 border-bottom">
                                                                 <div class="d-flex align-items-start">
-                                                                    <span class="badge badge-secondary mr-3 mt-1">{{ $index + 1 }}</span>
-                                                                    <span>{{ $indikator->nama }}</span>
+                                                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mr-3 flex-shrink-0" style="width: 28px; height: 28px; font-size: 12px; font-weight: bold;">
+                                                                        {{ $index + 1 }}
+                                                                    </div>
+                                                                    <span class="text-dark" style="line-height: 1.6;">{{ $indikator->nama }}</span>
                                                                 </div>
                                                                 @if($isEditable)
-                                                                <div class="d-flex flex-shrink-0 ml-3">
-                                                                    <button class="btn btn-sm btn-outline-info mr-2" data-toggle="modal" data-target="#modalEditIndikator-{{ $indikator->id }}" title="Edit Indikator">
+                                                                <div class="d-flex flex-shrink-0 ml-4">
+                                                                    <button class="btn btn-sm btn-light text-info border shadow-sm px-3 mr-2" style="border-radius: 6px;" data-toggle="modal" data-target="#modalEditIndikator-{{ $indikator->id }}" title="Edit Indikator">
                                                                         <i class="fas fa-edit"></i>
                                                                     </button>
                                                                     <form action="{{ route('kepala.pkg_settings.indikator.destroy', $indikator->id) }}" method="POST" class="d-inline">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Hapus Indikator" onclick="event.preventDefault(); Swal.fire({title: 'Yakin ingin menghapus indikator ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
+                                                                        <button type="button" class="btn btn-sm btn-light text-danger border shadow-sm px-3" style="border-radius: 6px;" title="Hapus Indikator" onclick="event.preventDefault(); Swal.fire({title: 'Yakin ingin menghapus indikator ini?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } })">
                                                                             <i class="fas fa-trash"></i>
                                                                         </button>
                                                                     </form>
@@ -279,7 +284,7 @@ $aspekData = [
                                                                             </div>
                                                                             <div class="modal-footer bg-light">
                                                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                                <button type="submit" class="btn btn-info"><i class="fas fa-save mr-1"></i> Simpan Perubahan</button>
+                                                                                <button type="submit" class="btn btn-info"><i class="fas fa-save mr-1"></i> Simpan</button>
                                                                             </div>
                                                                         </form>
                                                                     </div>
@@ -321,9 +326,35 @@ $aspekData = [
     .list-group-item-action:hover {
         background-color: #f8f9fa;
     }
-    .accordion .card-header[data-toggle="collapse"]:hover {
-        background-color: #f4f6f9 !important;
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        border-bottom: 3px solid transparent !important;
+        transition: all 0.2s;
+    }
+    .nav-tabs .nav-link:hover {
+        color: #007bff;
+        border-bottom: 3px solid #dee2e6 !important;
+    }
+    .nav-tabs .nav-link.active {
+        color: #007bff !important;
+        border-bottom: 3px solid #007bff !important;
+        background-color: transparent !important;
     }
 </style>
+<script>
+    function updateTabStyles(activeTab) {
+        // Reset all tabs
+        document.querySelectorAll('.nav-tabs .nav-link').forEach(function(tab) {
+            tab.style.borderBottom = '3px solid transparent';
+            tab.classList.remove('text-primary');
+            tab.classList.add('text-secondary');
+        });
+        
+        // Highlight active tab
+        activeTab.style.borderBottom = '3px solid #007bff';
+        activeTab.classList.remove('text-secondary');
+        activeTab.classList.add('text-primary');
+    }
+</script>
 @endpush
 @stop

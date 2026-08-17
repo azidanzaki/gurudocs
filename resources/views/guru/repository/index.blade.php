@@ -15,21 +15,26 @@
 
 @section('content_header')
 <div class="d-flex justify-content-between align-items-center flex-wrap">
-    <h1 class="mb-2">Repository Kegiatan Guru</h1>
+    <div>
+        <h1 class="font-weight-bold text-dark">Repository Kegiatan Guru</h1>
+        <p class="text-muted mb-0">Kelola dokumentasi kegiatan, pelatihan, dan sertifikat.</p>
+    </div>
 
-    <div class="d-flex align-items-center flex-wrap mb-2">
-        <form action="{{ route('guru.repository') }}" method="GET" class="form-inline mr-3 mb-0">
-            <label for="tahun_ajaran" class="mr-2 font-weight-bold">Tahun Ajaran:</label>
-            <select name="tahun_ajaran" id="tahun_ajaran" class="form-control" style="min-width: 180px;" onchange="this.form.submit()">
-                @foreach($tahunAjarans as $ta)
-                    <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>
-                        {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
-                    </option>
-                @endforeach
-            </select>
-        </form>
+    <div class="d-flex align-items-center flex-wrap mt-3 mt-md-0">
+        <div class="form-inline d-flex align-items-center bg-white p-2 shadow-sm mr-3" style="border-radius: 12px; border: 1px solid #eaeaea;">
+            <label for="tahun_ajaran" class="mr-2 mb-0 font-weight-bold text-dark ml-2">Tahun Ajaran:</label>
+            <form action="{{ route('guru.repository') }}" method="GET" class="mb-0">
+                <select name="tahun_ajaran" id="tahun_ajaran" class="form-control border-0 bg-light mb-0" style="border-radius: 8px; font-weight: bold; min-width: 190px; width: auto;" onchange="this.form.submit()">
+                    @foreach($tahunAjarans as $ta)
+                        <option value="{{ $ta->nama }}" {{ $selectedTahun == $ta->nama ? 'selected' : '' }}>
+                            {{ $ta->nama }} {{ $ta->is_active ? '(Aktif)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
 
-        <button class="btn btn-success" data-toggle="modal" data-target="#modalTambah">
+        <button class="btn btn-success px-4 shadow-sm" style="border-radius: 8px;" data-toggle="modal" data-target="#modalTambah">
             <i class="fas fa-plus mr-1"></i> Tambah Kegiatan
         </button>
     </div>
