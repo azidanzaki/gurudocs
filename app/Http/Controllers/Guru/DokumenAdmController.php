@@ -27,8 +27,7 @@ class DokumenAdmController extends Controller
             $query->where('tahun', $request->tahun_dokumen);
         }
 
-        $dokumen = $query->latest()->get();
-
+        $dokumen = $query->latest()->paginate(12)->withQueryString();
         if ($request->ajax()) {
             return view('guru.dokumenadm._grid', compact('dokumen'))->render();
         }

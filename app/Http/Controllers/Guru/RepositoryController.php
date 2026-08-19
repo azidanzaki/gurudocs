@@ -22,7 +22,7 @@ class RepositoryController extends Controller
         $repositories = Repository::where('user_id', Auth::id())
             ->where('tahun_ajaran', $selectedTahun)
             ->latest()
-            ->get();
+            ->paginate(9)->withQueryString();
 
         return view('guru.repository.index', compact('repositories', 'tahunAjarans', 'activeTahun', 'selectedTahun'));
     }

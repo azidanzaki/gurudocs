@@ -167,6 +167,33 @@
         border-color: #80bdff;
         box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
     }
+    
+    /* Custom Pagination UI */
+    .custom-pagination-ui .page-item .page-link {
+        border-radius: 8px;
+        margin: 0 4px;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 8px 16px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .custom-pagination-ui .page-item.active .page-link {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    }
+    
+    .custom-pagination-ui .page-item.disabled .page-link {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+    
+    .custom-pagination-ui .page-item .page-link:hover:not(.disabled) {
+        background-color: #e9ecef;
+    }
 </style>
 
 @if(session('success'))
@@ -249,6 +276,16 @@
     @endforelse
 
 </div>
+
+@if($repositories->hasPages())
+<div class="row mt-4">
+    <div class="col-12 d-flex justify-content-center">
+        <div class="pagination-wrapper custom-pagination-ui">
+            {{ $repositories->links('pagination::bootstrap-4') }}
+        </div>
+    </div>
+</div>
+@endif
 
 
 <div class="modal fade" id="modalTambah" tabindex="-1" role="dialog" aria-hidden="true">

@@ -41,3 +41,11 @@
         <p class="text-muted">Belum ada template dokumen yang tersedia di kategori ini.</p>
     </div>
 @endforelse
+
+@if($dokumen->hasPages())
+<div class="col-12 mt-4 d-flex justify-content-center">
+    <div class="pagination-wrapper custom-pagination-ui">
+        {{ $dokumen->links('pagination::bootstrap-4') }}
+    </div>
+</div>
+@endif

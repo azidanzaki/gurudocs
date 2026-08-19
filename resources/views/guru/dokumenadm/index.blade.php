@@ -1,4 +1,4 @@
-﻿@extends('adminlte::page')
+@extends('adminlte::page')
 
 @section('title', 'Template Dokumen')
 
@@ -89,6 +89,33 @@
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,.03);
     margin-bottom: 25px;
+}
+
+/* Custom Pagination UI */
+.custom-pagination-ui .page-item .page-link {
+    border-radius: 8px;
+    margin: 0 4px;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.custom-pagination-ui .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.custom-pagination-ui .page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.custom-pagination-ui .page-item .page-link:hover:not(.disabled) {
+    background-color: #e9ecef;
 }
 </style>
 
@@ -192,7 +219,7 @@
         let searchTimeout;
         let currentJenis = '';
 
-        function fetchDokumen() {
+        function fetchDokumen(page = 1) {
             const search = $('#ajaxSearch').val();
             const tahun = $('#ajaxTahun').val();
             
@@ -204,7 +231,8 @@
                 data: {
                     search: search,
                     tahun_dokumen: tahun,
-                    jenis_dokumen: currentJenis
+                    jenis_dokumen: currentJenis,
+                    page: page
                 },
                 success: function(response) {
                     $('#dokumenGrid').html(response).css('opacity', '1');
@@ -222,16 +250,22 @@
 
         $('#ajaxSearch').on('input', function() {
             clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(fetchDokumen, 500);
+            searchTimeout = setTimeout(() => fetchDokumen(1), 500);
         });
 
-        $('#ajaxTahun').on('change', fetchDokumen);
+        $('#ajaxTahun').on('change', () => fetchDokumen(1));
         
         $('.ajax-tab').on('click', function() {
             $('.ajax-tab').removeClass('active');
             $(this).addClass('active');
             currentJenis = $(this).data('jenis');
-            fetchDokumen();
+            fetchDokumen(1);
+        });
+
+        $(document).on('click', '.pagination-wrapper a', function(e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            fetchDokumen(page);
         });
     });
 </script>
