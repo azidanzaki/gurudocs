@@ -9,13 +9,6 @@ class Mapel extends Model
     protected $fillable = [
         'nama_mapel',
     ];
-    public function gurus()
-    {
-        return $this->belongsToMany(User::class, 'guru_mapel');
-    }
-    public function perangkats()
-    {
-        return $this->hasMany(Perangkat::class);
-    }
+
 
 }

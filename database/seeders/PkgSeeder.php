@@ -157,18 +157,23 @@ class PkgSeeder extends Seeder
             ]
         ];
 
-        foreach ($aspects as $aspectNum => $categories) {
-            foreach ($categories as $catName => $indicators) {
-                $kategori = \App\Models\PkgKategori::firstOrCreate([
-                    'aspek' => $aspectNum,
-                    'nama' => $catName
-                ]);
+        $tahunAjarans = \App\Models\TahunAjaran::all();
 
-                foreach ($indicators as $indName) {
-                    \App\Models\PkgIndikator::firstOrCreate([
-                        'kategori_id' => $kategori->id,
-                        'nama' => $indName
+        foreach ($tahunAjarans as $ta) {
+            foreach ($aspects as $aspectNum => $categories) {
+                foreach ($categories as $catName => $indicators) {
+                    $kategori = \App\Models\PkgKategori::firstOrCreate([
+                        'aspek' => $aspectNum,
+                        'nama' => $catName,
+                        'tahun_ajaran_id' => $ta->id
                     ]);
+
+                    foreach ($indicators as $indName) {
+                        \App\Models\PkgIndikator::firstOrCreate([
+                            'kategori_id' => $kategori->id,
+                            'nama' => $indName
+                        ]);
+                    }
                 }
             }
         }

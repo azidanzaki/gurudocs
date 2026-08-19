@@ -49,10 +49,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Kelas::class, 'guru_mapel_kelas', 'user_id', 'kelas_id')->distinct();
     }
 
-    public function waliKelas()
-    {
-        return $this->belongsToMany(Kelas::class, 'wali_kelas');
-    }
 
     // Kelas for a specific mapel
     public function kelasForMapel(int $mapelId)

@@ -411,6 +411,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PerangkatTemplateSeeder::class,
+            PkgSeeder::class,
         ]);
     }
 }

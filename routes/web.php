@@ -121,12 +121,7 @@ Route::prefix('guru')->middleware(['auth'])->group(function () {
     Route::delete('/repository/delete/{id}', [RepositoryController::class, 'destroy'])
         ->name('guru.repository.delete');
 
-    // Perangkat Routes
-    // Route::get('/perangkat', [PerangkatController::class, 'index'])
-    //     ->name('guru.perangkat');
 
-    // Route::get('/perangkat/{id}', [PerangkatController::class, 'show'])
-    //     ->name('guru.perangkat.show');
 
     Route::get('/dokumen-admin', [GuruController::class, 'dokumenAdmin'])->name('dokumenadmguru');
 
@@ -218,10 +213,6 @@ Route::middleware(['auth', 'can:admin'])->group(function () {
 */
 
 Route::middleware(['auth'])->group(function () {
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
     // General profile update route for all roles
     Route::post('/profil/update', [ProfilController::class, 'update'])->name('profil.update');
 });
